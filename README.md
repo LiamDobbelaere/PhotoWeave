@@ -1,4 +1,5 @@
 # Project S5: Verilin
+[![Build Status](https://travis-ci.org/TomDobbelaere/PhotoWeave.svg?branch=master)](https://travis-ci.org/TomDobbelaere/PhotoWeave)
 
 ## Logboek
 
