@@ -4,4 +4,4 @@ jdk:
   - oraclejdk8          // tells Travis to use Java 8
 
 before_install:
-- chmod +x gradlew
+  - chmod +x gradlew
