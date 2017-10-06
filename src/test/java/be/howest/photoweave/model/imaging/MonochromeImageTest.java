@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import javax.imageio.ImageIO;
 
+import java.awt.*;
 import java.io.File;
 
 import static org.junit.Assert.*;
@@ -21,14 +22,37 @@ public class MonochromeImageTest {
     }
 
     @Test
-    public void testGrayscale16ToMonochromeHasBlackLeftWhiteRight() throws Exception {
+    public void testGrayscale16ToMonochrome2LevelsHasBlackLeftWhiteRight() throws Exception {
         MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
         mi.redraw();
-        ImageIO.write(mi.getModifiedImage(), "png", new File("test.png"));
 
         assertEquals("Far left pixel of 2-level posterized grayscale16 should be black",
                 0xff000000, mi.getModifiedImage().getRGB(0, 0));
         assertEquals("Far right pixel of 2-level posterized grayscale16 should be white",
                 0xffffffff, mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() - 1, 0));
     }
+
+    @Test
+    public void testGrayscale16ToMonochrome3LevelsHasGrayCenter() throws Exception {
+        MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        mi.setLevels(3);
+        mi.redraw();
+
+        assertEquals("Center pixel of 3-level posterized grayscale16 should be 127, 127, 127",
+                new Color(127, 127, 127).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 2, 0));
+    }
+
+    @Test
+    public void testGrayscale16ToMonochrome4LevelsHasGrayCenter() throws Exception {
+        MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        mi.setLevels(4);
+        mi.redraw();
+
+        assertEquals("2nd block of 4-level posterized grayscale16 should be 85, 85, 85",
+                new Color(85, 85, 85).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 4, 0));
+
+        assertEquals("3rd block of 4-level posterized grayscale16 should be 170, 170, 170",
+                new Color(170, 170, 170).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 4 * 2, 0));
+    }
+
 }
