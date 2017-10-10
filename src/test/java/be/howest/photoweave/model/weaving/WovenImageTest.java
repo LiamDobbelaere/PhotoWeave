@@ -30,7 +30,7 @@ public class WovenImageTest {
     }
 
     @Test
-    public void testGarbage() throws Exception {
+    public void testOutputMustManuallyCheck() throws Exception {
         WovenImage wovenImage = new WovenImage(this.polar4Levels);
 
         wovenImage.setPattern(0, this.shade0);

@@ -83,6 +83,7 @@ public class WovenImage {
         DataBufferInt dbb = (DataBufferInt) this.resultImage.getRaster().getDataBuffer();
         int[] targetData = dbb.getData();
 
+        //Tiling algorithm
         for (int i = 0; i < imageData.length; i++) {
             BufferedImage pattern = this.patterns[this.indexedColors.get(imageData[i])];
 
@@ -90,24 +91,6 @@ public class WovenImage {
             int y = ((int) Math.floor(i / this.sourceImage.getWidth())) % pattern.getHeight();
 
             targetData[i] = pattern.getRGB(x, y); //pattern[x + (y * 10)]; //pattern.getRGB(x, y); //agh[x + (y * 10)];
-        }
-
-        int lastValue = -1;
-        int lastCount = 0;
-
-        for (int i = 0; i < targetData.length; i++) {
-            if (lastValue != targetData[i]) {
-                lastValue = targetData[i];
-                lastCount = 0;
-            } else {
-                lastCount++;
-
-                if (lastCount > 3) {
-                    targetData[i] = ~targetData[i];
-                    lastCount = 0;
-                    lastValue = -1;
-                }
-            }
         }
     }
 }
