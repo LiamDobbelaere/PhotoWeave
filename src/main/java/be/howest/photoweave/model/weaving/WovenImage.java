@@ -4,7 +4,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by tomdo on 6/10/2017.
@@ -35,19 +38,29 @@ public class WovenImage {
     }
 
     private void indexColors() {
-        this.indexedColors.clear();
+        List<Integer> sortedColors = new ArrayList<>();
+
+        //this.indexedColors.clear();
 
         DataBufferInt dbb = (DataBufferInt) this.sourceImage.getRaster().getDataBuffer();
         int[] imageData = dbb.getData();
 
         for (int rgb : imageData) {
-            if (!this.indexedColors.containsKey(rgb))
-                this.indexedColors.put(rgb, this.indexedColors.size());
+            //if (!this.indexedColors.containsKey(rgb))
+            //    this.indexedColors.put(rgb, this.indexedColors.size());
+
+            if (!sortedColors.contains(rgb))
+                sortedColors.add(rgb);
+        }
+
+        sortedColors.sort(Collections.reverseOrder());
+
+        for (int i = 0; i < sortedColors.size(); i++) {
+            int rgb = sortedColors.get(i);
+            this.indexedColors.put(rgb, i);
         }
 
         this.patterns = new BufferedImage[this.indexedColors.size()];
-
-        //this.patterns = new int[this.indexedColors.size()][];
     }
 
     public BufferedImage getResultImage() {
