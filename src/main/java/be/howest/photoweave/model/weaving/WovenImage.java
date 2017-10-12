@@ -106,4 +106,31 @@ public class WovenImage {
             targetData[i] = pattern.getRGB(x, y); //pattern[x + (y * 10)]; //pattern.getRGB(x, y); //agh[x + (y * 10)];
         }
     }
+
+    public boolean hasFloaters() {
+        DataBufferInt dbb = (DataBufferInt) this.resultImage.getRaster().getDataBuffer();
+        int[] targetData = dbb.getData();
+
+        boolean hasFloaters = false;
+        int colorCount = 0;
+        int lastColor = 0;
+        //Floaters checking
+        for (int i = 0; i < targetData.length; i++) {
+            int color = targetData[i];
+
+            if (color == lastColor) colorCount++;
+            else colorCount = 0;
+
+            if (colorCount > 3) {
+                //targetData[i] = Color.red.getRGB();
+
+                hasFloaters = true;
+                //colorCount = 0;
+            }
+
+            lastColor = color;
+        }
+
+        return hasFloaters;
+    }
 }
