@@ -41,10 +41,10 @@ public class WovenImageTest {
     public void testOutputMustManuallyCheck() throws Exception {
         WovenImage wovenImage = new WovenImage(this.polar4Levels);
 
-        wovenImage.setPattern(0, this.shade0);
-        wovenImage.setPattern(1, this.shade1);
-        wovenImage.setPattern(2, this.shade2);
-        wovenImage.setPattern(3, this.shade3);
+        wovenImage.setPattern(0, this.shade3);
+        wovenImage.setPattern(1, this.shade2);
+        wovenImage.setPattern(2, this.shade1);
+        wovenImage.setPattern(3, this.shade0);
 
         wovenImage.redraw();
 
