@@ -24,4 +24,4 @@ out/
 build/
 bin/
 
-test.png
+test*.png
