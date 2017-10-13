@@ -1,8 +1,11 @@
 package be.howest.photoweave.model.imaging;
 
+import be.howest.photoweave.model.weaving.WovenImage;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +25,7 @@ public class MonochromeImage {
      */
     public MonochromeImage(BufferedImage originalImage) {
         this.originalImage = originalImage;
-        this.modifiedImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        this.modifiedImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         this.posterizeFilter = new PosterizeFilter();
 
@@ -62,23 +65,17 @@ public class MonochromeImage {
     }
     
     private void applyFilters() {
-        DataBufferByte dbb = (DataBufferByte) this.modifiedImage.getRaster().getDataBuffer();
-        byte[] imageData = dbb.getData();
+        DataBufferInt dbi = (DataBufferInt) this.modifiedImage.getRaster().getDataBuffer();
+        int[] imageData = dbi.getData();
 
-        for (int i = 0; i < imageData.length; i += 3) {
-            byte b = imageData[i];
-            byte g = imageData[i + 1];
-            byte r = imageData[i + 2];
-
-            int rgb = (r & 0xff) << 16 | (g & 0xff) << 8 | (b & 0xff);
+        for (int i = 0; i < imageData.length; i++) {
+            int rgb = imageData[i];
 
             for (RGBFilter filter : filters) {
                 rgb = filter.applyTo(rgb);
             }
 
-            imageData[i] = (byte) (rgb);
-            imageData[i + 1] = (byte) (rgb >> 8);
-            imageData[i + 2] = (byte) (rgb >> 16);
+            imageData[i] = rgb;
         }
     }
 }
