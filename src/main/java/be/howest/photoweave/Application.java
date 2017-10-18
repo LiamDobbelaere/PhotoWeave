@@ -16,7 +16,7 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        AnchorPane pane = FXMLLoader.load(getClass().getResource("view/OpenPhoto.fxml"));
+        AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/OpenPhoto.fxml"));
 
         Scene scene = new Scene(pane);
         stage.setTitle("Choose Image");

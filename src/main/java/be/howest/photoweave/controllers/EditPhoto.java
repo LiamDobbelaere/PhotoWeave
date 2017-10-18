@@ -37,7 +37,7 @@ public class EditPhoto {
         this.path = path;
         img = new Image("file:" + path);
         photoview.setImage(img);
-        fileNameId.setText("File: " + img.getUrl().substring(img.getUrl().lastIndexOf('/') + 1, img.getUrl().length()));
+        //fileNameId.setText("File: " + img.getUrl().substring(img.getUrl().lastIndexOf('/') + 1, img.getUrl().length()));
         imageSizeId.setText("Width: " + img.getWidth() + "px; Height: " + img.getHeight() + "px;");
         widthinputtextfield.setText(String.valueOf(img.getWidth()));
         heightinputtextfield.setText(String.valueOf(img.getHeight()));
