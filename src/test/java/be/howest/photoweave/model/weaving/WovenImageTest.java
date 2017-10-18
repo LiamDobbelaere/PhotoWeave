@@ -6,9 +6,6 @@ import org.junit.Test;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by tomdo on 6/10/2017.

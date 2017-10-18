@@ -8,7 +8,6 @@ import java.awt.*;
 import java.io.File;
 
 import static org.junit.Assert.*;
-import static org.testng.AssertJUnit.assertEquals;
 
 /**
  * Created by tomdo on 6/10/2017.
