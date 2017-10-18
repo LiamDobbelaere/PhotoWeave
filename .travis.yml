@@ -5,3 +5,8 @@ jdk:
 
 before_install:
   - chmod +x gradlew
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always

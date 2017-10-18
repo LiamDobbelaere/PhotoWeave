@@ -27,9 +27,9 @@ public class MonochromeImageTest {
         mi.redraw();
 
         assertEquals("Far left pixel of 2-level posterized grayscale16 should be black",
-                0xff000000, mi.getModifiedImage().getRGB(0, 0));
+                Color.black.getRGB(), mi.getModifiedImage().getRGB(0, 0));
         assertEquals("Far right pixel of 2-level posterized grayscale16 should be white",
-                0xffffffff, mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() - 1, 0));
+                Color.white.getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() - 1, 0));
     }
 
     @Test
