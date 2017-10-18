@@ -55,7 +55,7 @@
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <Slider fx:id="quantizationscale" onDragDone="#sliderMoving" />
+                        <Slider fx:id="slider" max="24.0" min="1.0" value="10.0" />
                         <Label fx:id="widthinputlabel" text="Width in pixels:">
                            <font>
                               <Font size="14.0" />
