@@ -47,7 +47,7 @@ public class OpenPhoto {
 
     public Stage editPicture() throws IOException {
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../view/EditPhoto.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
 
         Stage stage = new Stage(StageStyle.DECORATED);
         stage.setScene(new Scene((Pane) loader.load()));
