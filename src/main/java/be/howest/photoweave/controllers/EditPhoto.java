@@ -184,7 +184,6 @@ public class EditPhoto {
                 System.out.println(ex.getMessage());
             }
         }
-
     }
 
     private void updateTexts() {
