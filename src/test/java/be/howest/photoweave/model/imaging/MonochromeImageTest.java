@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
-
 import java.awt.*;
 import java.io.File;
 

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0"
+            prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121"
+            fx:controller="be.howest.photoweave.controllers.EditPhoto">
+    <children>
+        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0"
+              prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox maxHeight="50.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="50.0"
+                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <children>
+                        <Label alignment="BOTTOM_CENTER" contentDisplay="BOTTOM" maxHeight="1.7976931348623157E308"
+                               maxWidth="200.0" minWidth="200.0" prefWidth="200.0" text="PhotoWeave">
+                            <font>
+                                <Font name="System Bold" size="28.0"/>
+                            </font>
+                        </Label>
+                        <HBox maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="600.0"
+                              HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label fx:id="fileNameId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM"
+                                       maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="FileName.jpg">
+                                    <font>
+                                        <Font size="14.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="imageSizeId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM"
+                                       maxHeight="1.7976931348623157E308" text="Width: 100px; Height 100px"
+                                       textAlignment="CENTER">
+                                    <HBox.margin>
+                                        <Insets left="30.0"/>
+                                    </HBox.margin>
+                                </Label>
+                                <HBox alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308"
+                                      maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0"
+                                      HBox.hgrow="ALWAYS">
+                                    <children>
+                                        <Button id="zoomInButton" alignment="CENTER" contentDisplay="CENTER"
+                                                minWidth="30.0" mnemonicParsing="false" onAction="#zoomin" text="+"
+                                                textAlignment="CENTER">
+                                            <HBox.margin>
+                                                <Insets right="2.0"/>
+                                            </HBox.margin>
+                                        </Button>
+                                        <Button id="zoomOutButton" alignment="CENTER" contentDisplay="CENTER"
+                                                minWidth="30.0" mnemonicParsing="false" onAction="#zoomout" text="-"
+                                                textAlignment="CENTER"/>
+                                    </children>
+                                    <padding>
+                                        <Insets right="20.0"/>
+                                    </padding>
+                                    <HBox.margin>
+                                        <Insets/>
+                                    </HBox.margin>
+                                </HBox>
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="550.0"
+                      minWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <children>
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="200.0" minWidth="200.0" prefWidth="200.0">
+                            <children>
+                                <Label text="Posterization Scale">
+                                    <font>
+                                        <Font size="14.0"/>
+                                    </font>
+                                </Label>
+                                <Slider fx:id="slider" max="24.0" min="1.0" value="10.0"/>
+                                <Label fx:id="widthinputlabel" text="Width in pixels:">
+                                    <font>
+                                        <Font size="14.0"/>
+                                    </font>
+                                </Label>
+                                <TextField fx:id="widthinputtextfield"/>
+                                <Label fx:id="heightinputlabel" text="Height in pixels:">
+                                    <font>
+                                        <Font size="14.0"/>
+                                    </font>
+                                </Label>
+                                <TextField fx:id="heightinputtextfield"/>
+                            </children>
+                            <padding>
+                                <Insets left="20.0" right="5.0" top="10.0"/>
+                            </padding>
+                        </VBox>
+                        <VBox fx:id="imagevbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                              style="-fx-background-color: #336699;">
+                            <children>
+                                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true"
+                                            AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <AnchorPane id="anchorpane" fx:id="anchorpane">
+                                            <children>
+                                                <ImageView id="photoview" fx:id="photoview" pickOnBounds="true"
+                                                           preserveRatio="true">
+                                                    <image>
+                                                        <Image url="@../logo.png"/>
+                                                    </image>
+                                                </ImageView>
+                                            </children>
+                                        </AnchorPane>
+                                    </content>
+                                </ScrollPane>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
