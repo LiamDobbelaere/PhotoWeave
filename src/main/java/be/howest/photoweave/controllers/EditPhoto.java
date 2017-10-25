@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.model.imaging.MonochromeImage;
+import be.howest.photoweave.model.weaving.WovenImage;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -24,25 +25,25 @@ import java.io.IOException;
 
 public class EditPhoto {
     @FXML
-    ImageView photoview;
+    private ImageView photoview;
     @FXML
-    Slider slider;
+    private Slider slider;
     @FXML
-    VBox imagevbox;
+    private VBox imagevbox;
     @FXML
-    AnchorPane anchorpane;
+    private AnchorPane anchorpane;
     @FXML
-    AnchorPane window;
+    private AnchorPane window;
     @FXML
-    Label fileNameId;
+    private Label fileNameId;
     @FXML
-    Label imageSizeId;
+    private Label imageSizeId;
     @FXML
-    TextField widthinputtextfield;
+    private TextField widthinputtextfield;
     @FXML
-    TextField heightinputtextfield;
+    private TextField heightinputtextfield;
     @FXML
-    Label amountColorsLabel;
+    private Label amountColorsLabel;
 
     //Image parameters
     private String path;
@@ -52,6 +53,7 @@ public class EditPhoto {
     private BufferedImage img;
     private BufferedImage originalImg;
     private MonochromeImage monochromeImg;
+    private WovenImage wovenImage;
     private Image endImage;
     private Stage stage;
 
@@ -143,7 +145,7 @@ public class EditPhoto {
         updateTexts();
     }
 
-    public void resizeImage() {
+    private void resizeImage() {
         System.out.println("resizeImage()");
         BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
