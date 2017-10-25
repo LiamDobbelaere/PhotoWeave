@@ -1,5 +1,8 @@
 package be.howest.photoweave.components;
 
+import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.util.ImageUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -17,12 +20,23 @@ import java.awt.Color;
  * Created by tomdo on 25/10/2017.
  */
 public class SelectBinding extends VBox {
-    private ObservableList<BufferedImage> items = FXCollections.observableArrayList();
-    private ObservableList<Color> colorItems = FXCollections.observableArrayList();
-    private ComboBox<BufferedImage> comboBox = new ComboBox<>(items);
-    private ComboBox<Color> comboBoxColors = new ComboBox<>(colorItems);
+    private ObservableList<Binding> items = FXCollections.observableArrayList();
+    private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
+    private ComboBox<Binding> comboBox = new ComboBox<>(items);
+    private ComboBox<Integer> comboBoxColors = new ComboBox<>(colorItems);
+
+    private BindingPalette bindingPalette;
 
     public SelectBinding() {
+        //Todo: delete this, bindingPalette should be set to the WovenImage's BindingPalette
+        try {
+            this.bindingPalette = new BindingPalette(
+                    ImageUtil.convertImageToRGBInt(
+                            ImageIO.read(new File(this.getClass().getClassLoader().getResource("test/polar_24levels.png").toURI()))));
+        } catch (IOException | URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("components/SelectBinding.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -33,17 +47,8 @@ public class SelectBinding extends VBox {
         this.getChildren().add(comboBox);
         this.getChildren().add(comboBoxColors);
 
-        colorItems.add(Color.red);
-        colorItems.add(Color.green);
-        colorItems.add(Color.blue);
-
-        try {
-            for (int i = 0; i <= 24; i++) {
-                items.add(ImageIO.read(new File(this.getClass().getClassLoader().getResource("bindings/shadow/" + i + ".png").toURI())));
-            }
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
+        items.addAll(this.bindingPalette.getBindingPalette().values());
+        colorItems.addAll(this.bindingPalette.getBindingPalette().keySet());
 
         try {
             fxmlLoader.load();

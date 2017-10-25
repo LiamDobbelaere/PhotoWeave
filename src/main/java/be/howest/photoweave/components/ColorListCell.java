@@ -12,18 +12,20 @@ import java.awt.image.BufferedImage;
 /**
  * Created by tomdo on 25/10/2017.
  */
-public class ColorListCell extends ListCell<Color> {
+public class ColorListCell extends ListCell<Integer> {
     private BorderPane pane = new BorderPane();
 
     @Override
-    protected void updateItem(Color item, boolean empty) {
+    protected void updateItem(Integer item, boolean empty) {
         super.updateItem(item, empty);
 
         setGraphic(null);
         setText(null);
 
         if (item != null) {
-            pane.setStyle("-fx-background-color: " + String.format("#%02x%02x%02x", item.getRed(), item.getGreen(), item.getBlue()));
+            Color color = new Color(item);
+
+            pane.setStyle("-fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
             pane.setMaxHeight(40);
             pane.setMaxWidth(40);
             setGraphic(pane);

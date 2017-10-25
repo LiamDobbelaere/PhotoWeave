@@ -26,7 +26,7 @@ public class BindingFactory {
             URI uri = this
                     .getClass()
                     .getClassLoader()
-                    .getResource("shadow/" + i + ".png")
+                    .getResource("bindings/shadow/" + i + ".png")
                     .toURI();
             bindings.add(new Binding(uri));
         }
