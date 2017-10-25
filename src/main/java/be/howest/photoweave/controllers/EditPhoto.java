@@ -4,6 +4,7 @@ import be.howest.photoweave.model.imaging.MonochromeImage;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -12,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -40,7 +42,7 @@ public class EditPhoto {
     @FXML
     TextField heightinputtextfield;
     @FXML
-    ScrollPane scrollPane;
+    Label amountColorsLabel;
 
     //Image parameters
     private String path;
@@ -70,27 +72,37 @@ public class EditPhoto {
         this.stage = (Stage) window.getScene().getWindow();
 
         //set properties
-        updateTopText();
-        widthinputtextfield.setText(String.valueOf(imageWidth));
-        heightinputtextfield.setText(String.valueOf(imageHeight));
-
+        updateTexts();
 
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             public void changed(ObservableValue<? extends Number> ov,
                                 Number old_val, Number new_val) {
                 System.out.println("slider.valueProperty()");
                 posterizeScale = new_val.intValue();
+                amountColorsLabel.setText("Amount of colors: " + posterizeScale);
                 updateImage();
             }
         });
         widthinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("widthinputtextfield.textProperty()");
-            imageWidth = Integer.parseInt(newValue);
+            if (!newValue.matches("\\d*")) {
+                widthinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!widthinputtextfield.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    imageWidth = Integer.parseInt(newValue);
+                }
+            }
             resizeImage();
         });
         heightinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("heightinputtextfield.textProperty()");
-            imageHeight = Integer.parseInt(newValue);
+            if (!newValue.matches("\\d*")) {
+                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!heightinputtextfield.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    imageHeight = Integer.parseInt(newValue);
+                }
+            }
             resizeImage();
         });
 
@@ -102,17 +114,6 @@ public class EditPhoto {
             System.out.println("window.widthProperty()");
             imagevbox.setMinWidth((Double) newVal - 200);
         });
-
-        updateImage();
-    }
-
-    private void zoomPhoto(Image img) {
-        System.out.println("zoomPhoto()");
-        if (img.getHeight() <= img.getWidth()) {
-            photoview.setFitWidth(anchorpane.getWidth());
-        } else {
-            photoview.setFitHeight(anchorpane.getHeight());
-        }
     }
 
     public void zoomin() {
@@ -137,19 +138,9 @@ public class EditPhoto {
         monochromeImg.setLevels(posterizeScale);
         monochromeImg.redraw();
         endImage = SwingFXUtils.toFXImage(monochromeImg.getModifiedImage(), null);
-        updateImageView(endImage);
-    }
+        photoview.setImage(endImage);
 
-    public void updateImageView(Image image) {
-        System.out.println("updateImageView(Image image)");
-        photoview.setImage(image);
-        zoomPhoto(image);
-    }
-
-    private void updateTopText() {
-        System.out.println("updateTopText()");
-        fileNameId.setText("File: " + filename);
-        imageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
+        updateTexts();
     }
 
     public void resizeImage() {
@@ -163,7 +154,43 @@ public class EditPhoto {
         img = newImage;
         imgChanged = true;
 
-        updateTopText();
         updateImage();
+    }
+
+    public void zoomPhoto() {
+        System.out.println("zoomPhoto()");
+        if (img.getHeight() <= img.getWidth()) {
+            photoview.setFitWidth(anchorpane.getWidth());
+        } else {
+            photoview.setFitHeight(anchorpane.getHeight());
+        }
+    }
+
+    public void export(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("PNG", ".png"),
+                new FileChooser.ExtensionFilter("JPG", ".jpg"),
+                new FileChooser.ExtensionFilter("JPEG", ".jpeg")
+        );
+        fileChooser.setTitle("PhotoWeave | Save Image");
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                ImageIO.write(monochromeImg.getModifiedImage(), "png", file);
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+    }
+
+    private void updateTexts() {
+        System.out.println("updateTexts()");
+        fileNameId.setText("File: " + filename);
+        imageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
+        widthinputtextfield.setText(String.valueOf(imageWidth));
+        heightinputtextfield.setText(String.valueOf(imageHeight));
+        amountColorsLabel.setText("Amount of colors: " + posterizeScale);
     }
 }

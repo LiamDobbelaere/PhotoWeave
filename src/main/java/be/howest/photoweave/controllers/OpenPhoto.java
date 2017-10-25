@@ -65,6 +65,8 @@ public class OpenPhoto {
             controller.initData(image);
 
             stage.show();
+            controller.zoomPhoto();
+            controller.updateImage();
             this.stage.close();
         }
     }

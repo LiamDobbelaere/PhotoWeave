@@ -76,6 +76,7 @@
                                     </font>
                                 </Label>
                                 <Slider fx:id="slider" max="24.0" min="1.0" value="10.0"/>
+                                <Label fx:id="amountColorsLabel" text="Amount colors:"/>
                                 <Label fx:id="widthinputlabel" text="Width in pixels:">
                                     <font>
                                         <Font size="14.0"/>
@@ -88,6 +89,8 @@
                                     </font>
                                 </Label>
                                 <TextField fx:id="heightinputtextfield"/>
+                                <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
+                                        textAlignment="CENTER"/>
                             </children>
                             <padding>
                                 <Insets left="20.0" right="5.0" top="10.0"/>
