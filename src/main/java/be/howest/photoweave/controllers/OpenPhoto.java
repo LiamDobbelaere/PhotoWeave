@@ -3,9 +3,10 @@ package be.howest.photoweave.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -31,9 +32,8 @@ public class OpenPhoto {
 
         // Set extension filter
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("JPG", "*.jpg", "*.jpeg"),
-                new FileChooser.ExtensionFilter("PNG", "*.png"),
-                new FileChooser.ExtensionFilter("All Images", "*.*")
+                new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
         );
 
         // Set initial directory
@@ -45,22 +45,28 @@ public class OpenPhoto {
         }
     }
 
-    public Stage editPicture() throws IOException {
+    public void editPicture() throws IOException {
+        if (image == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Warning!");
+            alert.setHeaderText("Please choose a picture");
+            alert.showAndWait();
+        } else {
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
 
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
+            Stage stage = new Stage(StageStyle.DECORATED);
+            stage.setScene(new Scene(loader.load()));
+            stage.setMinHeight(600.0);
+            stage.setMinWidth(800.0);
+            stage.setTitle("PhotoWeave | Edit Photo");
+            stage.getIcons().add(new Image("logo.png"));
 
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setScene(new Scene((Pane) loader.load()));
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(800.0);
-        stage.setTitle("PhotoWeave: Edit Photo");
+            EditPhoto controller = loader.getController();
+            controller.initData(image);
 
-        EditPhoto controller = loader.<EditPhoto>getController();
-        controller.initData(image);
-
-        stage.show();
-
-        return stage;
+            stage.show();
+            this.stage.close();
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package be.howest.photoweave;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -19,7 +20,9 @@ public class Application extends javafx.application.Application {
         AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/OpenPhoto.fxml"));
 
         Scene scene = new Scene(pane);
-        stage.setTitle("Choose Image");
+        stage.setTitle("PhotoWeave | Choose Image");
+        stage.getIcons().add(new Image("logo.png"));
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
