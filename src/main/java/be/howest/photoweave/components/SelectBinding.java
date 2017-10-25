@@ -44,6 +44,9 @@ public class SelectBinding extends VBox {
         comboBox.setCellFactory(c -> new ImageListCell());
         comboBoxColors.setCellFactory(c -> new ColorListCell());
 
+        comboBox.setButtonCell(new ImageListCell());
+        comboBoxColors.setButtonCell(new ColorListCell());
+
         this.getChildren().add(comboBox);
         this.getChildren().add(comboBoxColors);
 

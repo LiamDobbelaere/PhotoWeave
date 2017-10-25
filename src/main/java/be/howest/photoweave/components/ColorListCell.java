@@ -26,8 +26,10 @@ public class ColorListCell extends ListCell<Integer> {
             Color color = new Color(item);
 
             pane.setStyle("-fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
-            pane.setMaxHeight(40);
-            pane.setMaxWidth(40);
+            pane.setPrefSize(40, 40);
+            pane.setMinSize(40, 40);
+            pane.setMaxSize(40, 40);
+            
             setGraphic(pane);
 
         }
