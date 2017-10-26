@@ -14,6 +14,9 @@ public class WovenImage {
 
     private BindingPalette bindingPalette;
 
+    private Integer markedBinding;
+    private boolean showMarkedBinding;
+
     public WovenImage(BufferedImage sourceImage) {
         this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
 
@@ -63,13 +66,31 @@ public class WovenImage {
 
             int x = (i % this.sourceImage.getWidth()) % pattern.getWidth();
             int y = ((int) Math.floor(i / this.sourceImage.getWidth())) % pattern.getHeight();
+            int color = pattern.getRGB(x, y);
 
-            targetData[i] = pattern.getRGB(x, y); //binding[x + (y * 10)]; //binding.getRGB(x, y); //agh[x + (y * 10)];
+            if (showMarkedBinding && imageData[i] == markedBinding) {
+                if (color == Color.BLACK.getRGB()) color = Color.RED.getRGB();
+                else color = Color.LIGHT_GRAY.getRGB();
+            }
+
+            targetData[i] = color;
         }
     }
 
     /* Getter */
     public BufferedImage getResultImage() {
         return resultImage;
+    }
+
+    public void setMarkedBinding(Integer markedBinding) {
+        this.markedBinding = markedBinding;
+    }
+
+    public void setShowMarkedBinding(boolean showMarkedBinding) {
+        this.showMarkedBinding = showMarkedBinding;
+    }
+
+    public BindingPalette getBindingPalette() {
+        return bindingPalette;
     }
 }
