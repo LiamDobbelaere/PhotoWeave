@@ -1,6 +1,7 @@
 package be.howest.photoweave.components;
 
 import be.howest.photoweave.model.binding.Binding;
+import com.jfoenix.controls.JFXListCell;
 import com.sun.javafx.fxml.builder.JavaFXImageBuilder;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.ListCell;
@@ -11,7 +12,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by tomdo on 25/10/2017.
  */
-public class ImageListCell extends ListCell<Binding> {
+public class ImageListCell extends JFXListCell<Binding> {
     private ImageView iv = new ImageView();
 
 

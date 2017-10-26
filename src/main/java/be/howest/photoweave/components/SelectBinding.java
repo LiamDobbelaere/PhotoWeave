@@ -3,6 +3,7 @@ package be.howest.photoweave.components;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
 import be.howest.photoweave.model.util.ImageUtil;
+import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -27,12 +28,14 @@ public class SelectBinding extends VBox {
     private GridPane gridPane;
     private ObservableList<Binding> items = FXCollections.observableArrayList();
     private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
-    private ComboBox<Binding> comboBox = new ComboBox<>(items);
-    private ComboBox<Integer> comboBoxColors = new ComboBox<>(colorItems);
+    private JFXComboBox<Binding> comboBox = new JFXComboBox<>(items);
+    private JFXComboBox<Integer> comboBoxColors = new JFXComboBox<>(colorItems);
 
     private BindingPalette bindingPalette;
 
     public SelectBinding() throws IOException {
+
+
         //Todo: delete this, bindingPalette should be set to the WovenImage's BindingPalette
         try {
             this.bindingPalette = new BindingPalette(
