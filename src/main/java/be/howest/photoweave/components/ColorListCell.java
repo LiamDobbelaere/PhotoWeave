@@ -1,5 +1,6 @@
 package be.howest.photoweave.components;
 
+import com.jfoenix.controls.JFXListCell;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -10,7 +11,7 @@ import java.awt.*;
 /**
  * Created by tomdo on 25/10/2017.
  */
-public class ColorListCell extends ListCell<Integer> {
+public class ColorListCell extends JFXListCell<Integer> {
     private BorderPane pane = new BorderPane();
 
     @Override
