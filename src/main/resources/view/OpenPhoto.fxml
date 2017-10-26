@@ -42,7 +42,6 @@
                </GridPane.margin>
             </TextField>
             <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#editPicture" prefWidth="90.0" text="Open Image" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <SelectBinding GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>
