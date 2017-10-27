@@ -8,6 +8,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
@@ -34,17 +37,6 @@ public class SelectBinding extends VBox {
     private BindingPalette bindingPalette;
 
     public SelectBinding() throws IOException {
-
-
-        //Todo: delete this, bindingPalette should be set to the WovenImage's BindingPalette
-        try {
-            this.bindingPalette = new BindingPalette(
-                    ImageUtil.convertImageToRGBInt(
-                            ImageIO.read(new File(this.getClass().getClassLoader().getResource("test/polar_24levels.png").toURI()))));
-        } catch (IOException | URISyntaxException e) {
-            e.printStackTrace();
-        }
-
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("components/SelectBinding.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -78,18 +70,25 @@ public class SelectBinding extends VBox {
 
         gridPane.add(comboBox, 1, 0);
         gridPane.add(comboBoxColors, 0, 0);
+    }
+
+    public void setBindingPalette(BindingPalette bindingPalette) {
+        this.bindingPalette = bindingPalette;
+
+        items.clear();
+        colorItems.clear();
 
         items.addAll(this.bindingPalette.getBindingPalette().values());
         colorItems.addAll(this.bindingPalette.getBindingPalette().keySet());
 
         comboBoxColors.getSelectionModel().selectFirst();
-
-        try {
-            fxmlLoader.load();
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
     }
 
+    public JFXComboBox<Integer> getComboBoxColors() {
+        return comboBoxColors;
+    }
 
+    public JFXComboBox<Binding> getComboBox() {
+        return comboBox;
+    }
 }

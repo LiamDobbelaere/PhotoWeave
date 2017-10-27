@@ -1,7 +1,10 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.components.SelectBinding;
+import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
 import be.howest.photoweave.model.weaving.WovenImage;
+import com.jfoenix.controls.JFXCheckBox;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -26,6 +29,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class EditPhoto {
+    @FXML
+    private JFXCheckBox markBindings;
+    @FXML
+    private SelectBinding selectBinding;
     @FXML
     private ImageView photoview;
     @FXML
@@ -74,6 +81,24 @@ public class EditPhoto {
         this.filename = path.substring(path.lastIndexOf("/") + 1);
         this.posterizeScale = 10;
         this.stage = (Stage) window.getScene().getWindow();
+
+        selectBinding.getComboBox().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Binding>() {
+            @Override
+            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
+                wovenImage.redraw();
+                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+            }
+        });
+
+        selectBinding.getComboBoxColors().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+                wovenImage.setMarkedBinding(selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
+                wovenImage.setShowMarkedBinding(markBindings.isSelected());
+                wovenImage.redraw();
+                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+            }
+        });
 
         //set properties
         updateTexts();
@@ -147,9 +172,11 @@ public class EditPhoto {
         */
 
         //NEW TEMP CODE
-        WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
+        wovenImage = new WovenImage(monochromeImg.getModifiedImage());
         wovenImage.redraw();
         photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+
+        selectBinding.setBindingPalette(wovenImage.getBindingPalette());
 
         updateTexts();
     }
