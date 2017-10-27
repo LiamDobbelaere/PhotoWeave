@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import be.howest.photoweave.components.SelectBinding?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="ap" prefHeight="120.0" prefWidth="159.0"
-            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
+
+<AnchorPane fx:id="ap" prefHeight="120.0" prefWidth="159.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
    <children>
        <GridPane prefHeight="120.0" prefWidth="438.0">
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="316.0"/>
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="244.0" minWidth="10.0" prefWidth="122.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="325.0" minWidth="10.0" prefWidth="316.0" />
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="244.0" minWidth="10.0" prefWidth="122.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints maxHeight="62.0" minHeight="10.0" prefHeight="43.0" vgrow="SOMETIMES" />
@@ -31,13 +35,14 @@
                   <Insets left="30.0" />
                </GridPane.margin>
             </Label>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#openFilePicker" prefWidth="90.0" text="Search File" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="imagepath" GridPane.rowIndex="1">
+            <JFXButton alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#openFilePicker" prefHeight="40.0" prefWidth="108.0" styleClass="button-raised" text="Search File" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <JFXTextField fx:id="imagepath" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="30.0" right="30.0" />
                </GridPane.margin>
-            </TextField>
-            <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#editPicture" prefWidth="90.0" text="Open Image" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            </JFXTextField>
+            <JFXButton alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#editPicture" prefHeight="40.0" prefWidth="108.0" styleClass="button-raised" text="Open Image" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <SelectBinding GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>
