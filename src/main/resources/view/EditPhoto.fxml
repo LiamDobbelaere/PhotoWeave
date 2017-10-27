@@ -6,7 +6,10 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0"
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import com.jfoenix.controls.JFXTextField?>
+<AnchorPane stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1" fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0"
             prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <children>
@@ -43,14 +46,14 @@
                                       maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0"
                                       HBox.hgrow="ALWAYS">
                                     <children>
-                                        <Button id="zoomInButton" alignment="CENTER" contentDisplay="CENTER"
+                                        <JFXButton styleClass="button-raised" alignment="CENTER" contentDisplay="CENTER"
                                                 minWidth="30.0" mnemonicParsing="false" onAction="#zoomin" text="+"
                                                 textAlignment="CENTER">
                                             <HBox.margin>
                                                 <Insets right="2.0"/>
                                             </HBox.margin>
-                                        </Button>
-                                        <Button id="zoomOutButton" alignment="CENTER" contentDisplay="CENTER"
+                                        </JFXButton>
+                                        <JFXButton styleClass="button-raised" id="zoomOutButton" alignment="CENTER" contentDisplay="CENTER"
                                                 minWidth="30.0" mnemonicParsing="false" onAction="#zoomout" text="-"
                                                 textAlignment="CENTER"/>
                                     </children>
@@ -75,21 +78,22 @@
                                         <Font size="14.0"/>
                                     </font>
                                 </Label>
-                                <Slider fx:id="slider" max="24.0" min="1.0" value="10.0"/>
+                                <JFXSlider showTickMarks="true" showTickLabels="true"  fx:id="slider" max="24.0" min="1.0" value="10.0"/>
                                 <Label fx:id="amountColorsLabel" text="Amount colors:"/>
+
                                 <Label fx:id="widthinputlabel" text="Width in pixels:">
                                     <font>
                                         <Font size="14.0"/>
                                     </font>
                                 </Label>
-                                <TextField fx:id="widthinputtextfield"/>
+                                <JFXTextField fx:id="widthinputtextfield"/>
                                 <Label fx:id="heightinputlabel" text="Height in pixels:">
                                     <font>
                                         <Font size="14.0"/>
                                     </font>
                                 </Label>
-                                <TextField fx:id="heightinputtextfield"/>
-                                <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
+                                <JFXTextField fx:id="heightinputtextfield"/>
+                                <JFXButton styleClass="button-raised" fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
                                         textAlignment="CENTER"/>
                             </children>
                             <padding>
