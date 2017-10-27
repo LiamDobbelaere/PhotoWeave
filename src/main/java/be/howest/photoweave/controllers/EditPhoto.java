@@ -12,6 +12,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -139,8 +141,15 @@ public class EditPhoto {
 
         monochromeImg.setLevels(posterizeScale);
         monochromeImg.redraw();
+        /* OLD WARD CODE
         endImage = SwingFXUtils.toFXImage(monochromeImg.getModifiedImage(), null);
         photoview.setImage(endImage);
+        */
+
+        //NEW TEMP CODE
+        WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
+        wovenImage.redraw();
+        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
 
         updateTexts();
     }
@@ -179,7 +188,11 @@ public class EditPhoto {
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
             try {
-                ImageIO.write(monochromeImg.getModifiedImage(), "png", file);
+                //Kan hier een confict zijn.
+                WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
+                wovenImage.redraw();
+
+                ImageIO.write(wovenImage.getResultImage(), "png", file);
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -194,4 +207,20 @@ public class EditPhoto {
         heightinputtextfield.setText(String.valueOf(imageHeight));
         amountColorsLabel.setText("Amount of colors: " + posterizeScale);
     }
+
+
+    /* TEMP EVENTS
+    public void applyBindings(MouseDragEvent mouseDragEvent) {
+        System.out.println("Apply BINDING");
+        WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
+        wovenImage.redraw();
+
+
+        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+    }
+
+    public void applyBindings2(DragEvent dragEvent) {
+        System.out.println("APPLY BINDING");
+
+    }*/
 }

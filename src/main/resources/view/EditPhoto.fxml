@@ -103,7 +103,7 @@
                         <VBox fx:id="imagevbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                               style="-fx-background-color: #336699;">
                             <children>
-                                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true"
+                                <ScrollPane fx:id="scrollpane" pannable="true" fitToHeight="true" fitToWidth="true"
                                             AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
                                     <content>
                                         <AnchorPane id="anchorpane" fx:id="anchorpane">
