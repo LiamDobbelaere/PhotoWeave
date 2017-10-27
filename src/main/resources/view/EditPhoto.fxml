@@ -93,7 +93,7 @@
                                     </font>
                                 </Label>
                                 <JFXTextField fx:id="heightinputtextfield"/>
-                                <Button fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
+                                <JFXButton styleClass="button-raised" fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
                                         textAlignment="CENTER"/>
                             </children>
                             <padding>
