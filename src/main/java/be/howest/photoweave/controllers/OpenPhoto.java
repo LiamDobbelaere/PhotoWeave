@@ -63,12 +63,7 @@ public class OpenPhoto {
             stage.getIcons().add(new Image("logo.png"));
 
             BindingMaker controller = loader.getController();
-            try {
-                controller.initialize(stage);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
+            controller.init();
             stage.show();
             //controller.zoomPhoto();
             //controller.updateImage();
