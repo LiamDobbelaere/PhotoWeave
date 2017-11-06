@@ -1,6 +1,7 @@
 package be.howest.photoweave.components;
 
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXListCell;
 import com.sun.javafx.fxml.builder.JavaFXImageBuilder;
 import javafx.embed.swing.SwingFXUtils;
@@ -24,41 +25,12 @@ public class ImageListCell extends JFXListCell<Binding> {
         setText(null);
 
         if (item != null) {
-            iv.setImage(resample(SwingFXUtils.toFXImage(item.getBindingImage(), null), 4));
+            iv.setImage(ImageUtil.resample(SwingFXUtils.toFXImage(item.getBindingImage(), null), 4));
 
             setGraphic(iv);
 
             //setText("Binding name goes here");
 
         }
-    }
-
-
-
-    private Image resample(Image input, int scaleFactor) {
-        final int W = (int) input.getWidth();
-        final int H = (int) input.getHeight();
-        final int S = scaleFactor;
-
-        WritableImage output = new WritableImage(
-                W * S,
-                H * S
-        );
-
-        PixelReader reader = input.getPixelReader();
-        PixelWriter writer = output.getPixelWriter();
-
-        for (int y = 0; y < H; y++) {
-            for (int x = 0; x < W; x++) {
-                final int argb = reader.getArgb(x, y);
-                for (int dy = 0; dy < S; dy++) {
-                    for (int dx = 0; dx < S; dx++) {
-                        writer.setArgb(x * S + dx, y * S + dy, argb);
-                    }
-                }
-            }
-        }
-
-        return output;
     }
 }

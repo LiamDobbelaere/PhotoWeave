@@ -3,6 +3,7 @@ package be.howest.photoweave.controllers;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
+import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
 import javafx.beans.value.ChangeListener;
@@ -71,6 +72,7 @@ public class EditPhoto {
     //Edit parameters
     private int posterizeScale = 10;
     private boolean imgChanged = true;
+    private int zoomFactor = 1;
 
     public void initData(String path) throws IOException {
         //init parameters
@@ -88,7 +90,7 @@ public class EditPhoto {
             @Override
             public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
                 wovenImage.redraw();
-                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+                redrawPhotoView();
             }
         });
 
@@ -98,17 +100,21 @@ public class EditPhoto {
                 wovenImage.setMarkedBinding(selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
                 wovenImage.setShowMarkedBinding(markBindings.isSelected());
                 wovenImage.redraw();
-                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+                redrawPhotoView();
             }
         });
 
         markBindings.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                wovenImage.setMarkedBinding(selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
+                Integer selectedBinding = selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem();
+
+                if (selectedBinding == null) selectedBinding = selectBinding.getComboBoxColors().getItems().get(0);
+
+                wovenImage.setMarkedBinding(selectedBinding);
                 wovenImage.setShowMarkedBinding(markBindings.isSelected());
                 wovenImage.redraw();
-                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+                redrawPhotoView();
             }
         });
 
@@ -156,14 +162,18 @@ public class EditPhoto {
 
     public void zoomin() {
         System.out.println("zoomin()");
-        photoview.setFitWidth(photoview.getFitWidth() * 1.3);
-        photoview.setFitHeight(photoview.getFitHeight() * 1.3);
+
+        if (zoomFactor < 8) zoomFactor++;
+
+        redrawPhotoView();
     }
 
     public void zoomout() {
         System.out.println("zoomout()");
-        photoview.setFitWidth(photoview.getFitWidth() / 1.3);
-        photoview.setFitHeight(photoview.getFitHeight() / 1.3);
+
+        if (zoomFactor > 1) zoomFactor--;
+
+        redrawPhotoView();
     }
 
     public void updateImage() {
@@ -183,7 +193,7 @@ public class EditPhoto {
         //NEW TEMP CODE
         wovenImage = new WovenImage(monochromeImg.getModifiedImage());
         wovenImage.redraw();
-        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+        redrawPhotoView();
 
         selectBinding.setBindingPalette(wovenImage.getBindingPalette());
 
@@ -242,6 +252,13 @@ public class EditPhoto {
         widthinputtextfield.setText(String.valueOf(imageWidth));
         heightinputtextfield.setText(String.valueOf(imageHeight));
         amountColorsLabel.setText("Amount of colors: " + posterizeScale);
+    }
+
+    private void redrawPhotoView() {
+        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+        photoview.setImage(ImageUtil.resample(photoview.getImage(), zoomFactor));
+        photoview.setFitWidth(photoview.getImage().getWidth());
+        photoview.setFitHeight(photoview.getImage().getHeight());
     }
 
 
