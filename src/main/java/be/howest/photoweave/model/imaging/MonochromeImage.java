@@ -1,10 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
-import be.howest.photoweave.model.weaving.WovenImage;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.List;
