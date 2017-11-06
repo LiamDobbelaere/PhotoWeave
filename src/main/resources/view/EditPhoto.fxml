@@ -78,7 +78,7 @@
                                         <Font size="14.0"/>
                                     </font>
                                 </Label>
-                                <JFXSlider showTickMarks="true" showTickLabels="true"  fx:id="slider" max="24.0" min="1.0" value="10.0"/>
+                                <JFXSlider showTickMarks="true" showTickLabels="true" onMouseDragReleased="#functie" fx:id="slider" max="24.0" min="1.0" value="10.0"/>
                                 <Label fx:id="amountColorsLabel" text="Amount colors:"/>
 
                                 <Label fx:id="widthinputlabel" text="Width in pixels:">

@@ -1,5 +1,6 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.components.BindingMaker;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -52,7 +53,7 @@ public class OpenPhoto {
             alert.setHeaderText("Please choose a picture");
             alert.showAndWait();
         } else {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/BindingMaker.fxml"));
 
             Stage stage = new Stage(StageStyle.DECORATED);
             stage.setScene(new Scene(loader.load()));
@@ -61,12 +62,16 @@ public class OpenPhoto {
             stage.setTitle("PhotoWeave | Edit Photo");
             stage.getIcons().add(new Image("logo.png"));
 
-            EditPhoto controller = loader.getController();
-            controller.initData(image);
+            BindingMaker controller = loader.getController();
+            try {
+                controller.initialize(stage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             stage.show();
-            controller.zoomPhoto();
-            controller.updateImage();
+            //controller.zoomPhoto();
+            //controller.updateImage();
             this.stage.close();
         }
     }
