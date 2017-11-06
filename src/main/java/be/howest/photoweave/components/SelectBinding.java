@@ -36,11 +36,22 @@ public class SelectBinding extends VBox {
 
     private BindingPalette bindingPalette;
 
+    private ChangeListener<Binding> bindingChangeListener;
+
     public SelectBinding() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("components/SelectBinding.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         fxmlLoader.load();
+
+        bindingChangeListener = new ChangeListener<Binding>() {
+            @Override
+            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
+                bindingPalette.getBindingPalette().replace(
+                        comboBoxColors.getSelectionModel().getSelectedItem(),
+                        comboBox.getSelectionModel().getSelectedItem());
+            }
+        };
 
         comboBox.setCellFactory(c -> new ImageListCell());
         comboBoxColors.setCellFactory(c -> new ColorListCell());
@@ -59,14 +70,7 @@ public class SelectBinding extends VBox {
             }
         });
 
-        comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Binding>() {
-            @Override
-            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
-                bindingPalette.getBindingPalette().replace(
-                        comboBoxColors.getSelectionModel().getSelectedItem(),
-                        comboBox.getSelectionModel().getSelectedItem());
-            }
-        });
+        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
 
         gridPane.add(comboBox, 1, 0);
         gridPane.add(comboBoxColors, 0, 0);
@@ -75,6 +79,8 @@ public class SelectBinding extends VBox {
     public void setBindingPalette(BindingPalette bindingPalette) {
         this.bindingPalette = bindingPalette;
 
+        comboBox.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
+
         items.clear();
         colorItems.clear();
 
@@ -82,6 +88,8 @@ public class SelectBinding extends VBox {
         colorItems.addAll(this.bindingPalette.getBindingPalette().keySet());
 
         comboBoxColors.getSelectionModel().selectFirst();
+
+        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
     }
 
     public JFXComboBox<Integer> getComboBoxColors() {
