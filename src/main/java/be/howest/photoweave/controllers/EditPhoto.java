@@ -102,6 +102,16 @@ public class EditPhoto {
             }
         });
 
+        markBindings.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                wovenImage.setMarkedBinding(selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
+                wovenImage.setShowMarkedBinding(markBindings.isSelected());
+                wovenImage.redraw();
+                photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+            }
+        });
+
         //set properties
         updateTexts();
 
