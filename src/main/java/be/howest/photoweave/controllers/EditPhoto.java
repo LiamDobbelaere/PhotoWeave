@@ -9,6 +9,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -17,6 +18,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseDragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -103,15 +105,12 @@ public class EditPhoto {
         //set properties
         updateTexts();
 
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
-            public void changed(ObservableValue<? extends Number> ov,
-                                Number old_val, Number new_val) {
-                System.out.println("slider.valueProperty()");
-                posterizeScale = new_val.intValue();
-                amountColorsLabel.setText("Amount of colors: " + posterizeScale);
-                updateImage();
-            }
+        slider.setOnMouseReleased((MouseEvent event) -> {
+            posterizeScale = slider.valueProperty().intValue();
+            amountColorsLabel.setText("Amount of colors: " + posterizeScale);
+            updateImage();
         });
+
         widthinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("widthinputtextfield.textProperty()");
             if (!newValue.matches("\\d*")) {
