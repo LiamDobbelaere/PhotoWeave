@@ -4,24 +4,21 @@ import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXListCell;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventType;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-
-import javax.imageio.ImageIO;
-import java.io.File;
+import java.awt.*;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Created by tomdo on 25/10/2017.
@@ -99,4 +96,51 @@ public class SelectBinding extends VBox {
     public JFXComboBox<Binding> getComboBox() {
         return comboBox;
     }
+
+    class ImageListCell extends JFXListCell<Binding> {
+        private ImageView iv = new ImageView();
+
+
+
+        @Override
+        protected void updateItem(Binding item, boolean empty) {
+            super.updateItem(item, empty);
+            setGraphic(null);
+            setText(null);
+
+            if (item != null) {
+                iv.setImage(ImageUtil.resample(SwingFXUtils.toFXImage(item.getBindingImage(), null), 4));
+
+                setGraphic(iv);
+
+                //setText("Binding name goes here");
+
+            }
+        }
+    }
+
+    class ColorListCell extends JFXListCell<Integer> {
+        private BorderPane pane = new BorderPane();
+
+        @Override
+        protected void updateItem(Integer item, boolean empty) {
+            super.updateItem(item, empty);
+
+            setGraphic(null);
+            setText(null);
+
+            if (item != null) {
+                Color color = new Color(item);
+
+                pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
+                pane.setPrefSize(40, 40);
+                pane.setMinSize(40, 40);
+                pane.setMaxSize(40, 40);
+
+                setGraphic(pane);
+
+            }
+        }
+    }
+
 }
