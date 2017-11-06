@@ -1,5 +1,6 @@
 package be.howest.photoweave.components;
 
+import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,13 +8,19 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class BindingMaker {
 
@@ -34,6 +41,7 @@ public class BindingMaker {
     public JFXComboBox bindingsizes;
     public Pane bindingpane;
     public Pane imageviewpane;
+    public AnchorPane ap;
 
 
     public BindingMaker() {
@@ -85,6 +93,28 @@ public class BindingMaker {
     }
 
     public void export(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("BMP", ".bmp")
+        );
+        fileChooser.setTitle("PhotoWeave | Save Binding");
+        File file = fileChooser.showSaveDialog((Stage) ap.getScene().getWindow());
+        if (file != null) {
+            try {
+                BufferedImage bufferedImage = new BufferedImage(10, 10,
+                        BufferedImage.TYPE_INT_RGB);
+
+                int rgb = 0xFFFFFFFF;
+                for (int index1 = 0; index1 < grid.length; index1++) {
+                    for (int index2 = 0; index2 < grid[0].length; index2++) {
+                        if (grid[index1][index2].isFilled) bufferedImage.setRGB(index1, index2, rgb);
+                    }
+                }
+                ImageIO.write(bufferedImage, "bmp", file);
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
     }
 
     private class Preview extends StackPane {

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="569.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.components.BindingMaker">
+<AnchorPane fx:id="ap" prefHeight="569.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.components.BindingMaker">
    <Label alignment="TOP_LEFT" contentDisplay="BOTTOM" layoutX="35.0" layoutY="28.0" prefHeight="17.0" prefWidth="167.0" text="Teken een binding" underline="true">
       <font>
          <Font size="16.0" />
