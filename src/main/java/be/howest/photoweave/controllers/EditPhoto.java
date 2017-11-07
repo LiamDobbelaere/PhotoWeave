@@ -10,6 +10,7 @@ import be.howest.photoweave.model.imaging.MonochromeImage;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -38,6 +39,12 @@ import java.io.IOException;
 public class EditPhoto {
     @FXML
     public JFXCheckBox invert;
+    @FXML
+    public JFXCheckBox showFloaters;
+    @FXML
+    public JFXTextField xfloaters;
+    @FXML
+    public JFXTextField yfloaters;
     @FXML
     private JFXCheckBox markBindings;
     @FXML
@@ -142,6 +149,7 @@ public class EditPhoto {
                 }
             }
         });
+
         heightinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("heightinputtextfield.textProperty()");
             if (!newValue.matches("\\d*")) {
@@ -149,6 +157,30 @@ public class EditPhoto {
             } else {
                 if (!heightinputtextfield.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
                     imageHeight = Integer.parseInt(newValue);
+                }
+            }
+        });
+
+        xfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!xfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
+                    wovenImage.redraw();
+                    redrawPhotoView();
+                }
+            }
+        });
+
+        yfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!yfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
+                    wovenImage.redraw();
+                    redrawPhotoView();
                 }
             }
         });
@@ -175,6 +207,15 @@ public class EditPhoto {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 wovenImage.setInverted(newValue);
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
+        });
+
+        showFloaters.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                wovenImage.setShowFloaters(newValue);
                 wovenImage.redraw();
                 redrawPhotoView();
             }

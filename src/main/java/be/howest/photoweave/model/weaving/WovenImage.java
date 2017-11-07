@@ -19,6 +19,9 @@ public class WovenImage {
     private boolean inverted;
     private boolean showFloaters;
 
+    private int floaterTresholdX = 5;
+    private int floaterTresholdY = 5;
+
     public WovenImage(BufferedImage sourceImage) {
         this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
 
@@ -38,30 +41,8 @@ public class WovenImage {
         int[] targetData = ImageUtil.getDataBufferIntData(this.resultImage);
 
         tilingAlgorithm(imageData,targetData);
-    }
 
-    public boolean hasFloaters() {
-        DataBufferInt dbb = (DataBufferInt) this.resultImage.getRaster().getDataBuffer();
-        int[] targetData = dbb.getData();
-
-        boolean hasFloaters = false;
-        int colorCount = 0;
-        int lastColor = 0;
-        //Floaters checking
-        for (int i = 0; i < targetData.length; i++) {
-            int color = targetData[i];
-
-            if (color == lastColor) colorCount++;
-            else colorCount = 0;
-
-            if (colorCount > 3) {
-                hasFloaters = true;
-            }
-
-            lastColor = color;
-        }
-
-        return hasFloaters;
+        if (showFloaters) drawFloaters();
     }
 
     public void setInverted(boolean inverted) {
@@ -72,7 +53,18 @@ public class WovenImage {
         this.showFloaters = showFloaters;
     }
 
+    public void setFloaterTresholdX(int floaterTresholdX) {
+        this.floaterTresholdX = floaterTresholdX;
+    }
+
+    public void setFloaterTresholdY(int floaterTresholdY) {
+        this.floaterTresholdY = floaterTresholdY;
+    }
+
     private void tilingAlgorithm(int[] imageData, int[] targetData){
+        int lastColor = 0; //For checking floaters
+        int colorCount = 0;
+
         for (int i = 0; i < imageData.length; i++) {
             Binding binding = bindingPalette.getBindingPalette().get(imageData[i]);
             BufferedImage pattern = binding.getBindingImage();
@@ -87,13 +79,59 @@ public class WovenImage {
             }
 
             if (markedBinding != null && showMarkedBinding && imageData[i] == markedBinding) {
-                if (color == Color.BLACK.getRGB()) color = Color.RED.getRGB();
+                if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
                 else color = Color.LIGHT_GRAY.getRGB();
             }
 
-
-
             targetData[i] = color;
+        }
+    }
+
+    private void drawFloaters() {
+        int lastColor = 0;
+        int colorCount = 0;
+
+        for (int y = 0; y < this.resultImage.getHeight() - 1; y++) {
+            colorCount = 0;
+
+            for (int x = 0; x < this.resultImage.getWidth() -1; x++) {
+                int color = this.resultImage.getRGB(x, y);
+
+                if (color == lastColor) colorCount++;
+                else colorCount = 0;
+
+
+                if (colorCount > floaterTresholdX - 1) {
+                    colorCount = 0;
+
+                    color = Color.RED.getRGB();
+                    this.resultImage.setRGB(x, y, color);
+                }
+
+                lastColor = color;
+            }
+        }
+
+        lastColor = 0;
+
+        for (int x = 0; x < this.resultImage.getWidth() -1; x++) {
+            colorCount = 0;
+
+            for (int y = 0; y < this.resultImage.getHeight() - 1; y++) {
+                int color = this.resultImage.getRGB(x, y);
+
+                if (color == lastColor) colorCount++;
+                else colorCount = 0;
+
+                if (colorCount > floaterTresholdY - 1) {
+                    colorCount = 0;
+
+                    color = Color.orange.getRGB();
+                    this.resultImage.setRGB(x, y, color);
+                }
+
+                lastColor = color;
+            }
         }
     }
 
