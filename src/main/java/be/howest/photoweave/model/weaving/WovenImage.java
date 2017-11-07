@@ -68,7 +68,7 @@ public class WovenImage {
             int y = ((int) Math.floor(i / this.sourceImage.getWidth())) % pattern.getHeight();
             int color = pattern.getRGB(x, y);
 
-            if (showMarkedBinding && imageData[i] == markedBinding) {
+            if (markedBinding != null && showMarkedBinding && imageData[i] == markedBinding) {
                 if (color == Color.BLACK.getRGB()) color = Color.RED.getRGB();
                 else color = Color.LIGHT_GRAY.getRGB();
             }

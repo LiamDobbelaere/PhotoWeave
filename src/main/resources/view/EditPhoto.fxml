@@ -9,6 +9,9 @@
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXSlider?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import be.howest.photoweave.components.SelectBinding?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import be.howest.photoweave.components.PixelatedImageView?>
 <AnchorPane stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1" fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0"
             prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="be.howest.photoweave.controllers.EditPhoto">
@@ -79,6 +82,8 @@
                                     </font>
                                 </Label>
                                 <JFXSlider showTickMarks="true" showTickLabels="true"  fx:id="slider" max="24.0" min="1.0" value="10.0"/>
+                                <Label fx:id="amountColorsLabel" text="Amount colors:"/>
+
                                 <Label fx:id="widthinputlabel" text="Width in pixels:">
                                     <font>
                                         <Font size="14.0"/>
@@ -91,6 +96,10 @@
                                     </font>
                                 </Label>
                                 <JFXTextField fx:id="heightinputtextfield"/>
+                                <SelectBinding fx:id="selectBinding" />
+                                <JFXCheckBox text="Mark selected binding" fx:id="markBindings"/>
+                                <JFXButton styleClass="button-raised" fx:id="buttonExport" mnemonicParsing="false" onAction="#export" text="Export"
+                                        textAlignment="CENTER"/>
                             </children>
                             <padding>
                                 <Insets left="20.0" right="5.0" top="10.0"/>
@@ -99,17 +108,17 @@
                         <VBox fx:id="imagevbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                               style="-fx-background-color: #336699;">
                             <children>
-                                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true"
+                                <ScrollPane fx:id="scrollpane" pannable="true" fitToHeight="true" fitToWidth="true"
                                             AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
                                     <content>
                                         <AnchorPane id="anchorpane" fx:id="anchorpane">
                                             <children>
-                                                <ImageView id="photoview" fx:id="photoview" pickOnBounds="true"
-                                                           preserveRatio="true">
+                                                <PixelatedImageView id="photoview" fx:id="photoview" pickOnBounds="true"
+                                                                    preserveRatio="true">
                                                     <image>
                                                         <Image url="@../logo.png"/>
                                                     </image>
-                                                </ImageView>
+                                                </PixelatedImageView>
                                             </children>
                                         </AnchorPane>
                                     </content>

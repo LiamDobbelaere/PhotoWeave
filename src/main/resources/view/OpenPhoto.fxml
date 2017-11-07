@@ -42,7 +42,6 @@
                </GridPane.margin>
             </JFXTextField>
             <JFXButton alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#editPicture" prefHeight="40.0" prefWidth="108.0" styleClass="button-raised" text="Open Image" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <SelectBinding GridPane.rowIndex="2" />
          </children>
       </GridPane>
    </children>
