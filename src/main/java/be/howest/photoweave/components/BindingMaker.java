@@ -1,7 +1,8 @@
 package be.howest.photoweave.components;
 
-import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXComboBox;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -24,113 +25,121 @@ import java.io.IOException;
 
 public class BindingMaker {
 
-    private static final int PIXEL_SIZE = 40;
-    private static final int X_TILES = 10;
-    private static final int Y_TILES = 10;
+    private int PIXEL_SIZE = 40;
+    private int X_TILES = 10;
+    private int Y_TILES = 10;
+    private int W = X_TILES * PIXEL_SIZE;
+    private int H = Y_TILES * PIXEL_SIZE;
 
-    private static final int W = X_TILES * PIXEL_SIZE;
-    private static final int H = Y_TILES * PIXEL_SIZE;
+    private Pixel[][] grid;
+    private BufferedImage bindingImage;
 
-    //private static final int X_TILES = W / PIXEL_SIZE;
-    //private static final int Y_TILES = H / PIXEL_SIZE;
-
-    private ObservableList<Integer> sizes = FXCollections.observableArrayList();
-
-    private Pixel[][] grid = new Pixel[X_TILES][Y_TILES];
-
-    public JFXComboBox bindingsizes;
-    public Pane bindingpane;
-    public Pane imageviewpane;
-    public AnchorPane ap;
+    //FXML
+    private ObservableList<Integer> bindingSizes = FXCollections.observableArrayList();
+    public JFXComboBox<Integer> ComboBoxBindingsSizes;
+    public Pane paneBindingCreator;
+    public Pane paneImagePreview;
+    public AnchorPane anchorPane;
 
 
     public BindingMaker() {
     }
 
-    public void init() {
-        sizes.addAll(5, 10);
-        bindingsizes.setItems(sizes);
-        bindingsizes.getSelectionModel().selectFirst();
-        createGrid();
+    public void initialize() {
+        System.out.println("initialize Called");
+        initializeComboBox();
+        generateBindingCreator(); // Standard 10 x 10
     }
 
-    private void createGrid() {
-        bindingpane.setPrefSize(W, H);
-        bindingpane.setVisible(true);
+    private void initializeComboBox() {
+        System.out.println("initializeComboBox Called");
+        bindingSizes.addAll(10, 9, 8, 7, 6, 5, 4, 3, 2);
+        ComboBoxBindingsSizes.setItems(bindingSizes);
+        ComboBoxBindingsSizes.getSelectionModel().selectFirst();
+        ComboBoxBindingsSizes.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
+            @Override
+            public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
+                Y_TILES = X_TILES = ComboBoxBindingsSizes.getSelectionModel().getSelectedItem();
+                generateBindingCreator();
+            }
+        });
+    }
+
+    private void generateBindingCreator() {
+        paneBindingCreator.getChildren().clear();
+        paneImagePreview.getChildren().clear();
+        paneBindingCreator.setPrefSize(W, H);
+        grid = new Pixel[X_TILES][Y_TILES];
 
         for (int y = 0; y < Y_TILES; y++) {
             for (int x = 0; x < X_TILES; x++) {
-                Pixel pixel = new Pixel(x, y, false, true);
-
-                grid[x][y] = pixel;
-                bindingpane.getChildren().add(pixel);
+                grid[x][y] = new Pixel(x, y, false, true);;
+                paneBindingCreator.getChildren().add(grid[x][y]);
             }
         }
     }
 
-    @FXML
-    private void preview() {
-        BufferedImage bufferedImage = new BufferedImage(10, 10,
+
+
+    //FXML
+    public void previewBinding() {
+        paneImagePreview.getChildren().clear();
+        bindingImage = new BufferedImage(X_TILES, Y_TILES,
                 BufferedImage.TYPE_INT_RGB);
 
-        int rgb = 0xFFFFFFFF;
+        int white = 0xFF000000;
+        int black = 0xFFFFFFFF;
         for (int index1 = 0; index1 < grid.length; index1++) {
             for (int index2 = 0; index2 < grid[0].length; index2++) {
-                if (grid[index1][index2].isFilled) bufferedImage.setRGB(index1, index2, rgb);
+                if (grid[index1][index2].isFilled) bindingImage.setRGB(index1, index2, white);
+                else bindingImage.setRGB(index1, index2, black);
             }
         }
 
-        Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+        Image image = SwingFXUtils.toFXImage(bindingImage, null);
         ImagePattern imagePattern = new ImagePattern(image);
 
         for (int i = 0; i < 20; i++) {
             for (int j = 0; j < 20; j++) {
-                Preview pr = new Preview(i, j, imagePattern);
+                Preview pr = new Preview(i, j, X_TILES, Y_TILES, imagePattern);
 
-                imageviewpane.getChildren().add(pr);
+                paneImagePreview.getChildren().add(pr);
             }
         }
     }
 
-    public void export(ActionEvent actionEvent) {
+    public void saveBinding(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("BMP", ".bmp")
         );
         fileChooser.setTitle("PhotoWeave | Save Binding");
-        File file = fileChooser.showSaveDialog((Stage) ap.getScene().getWindow());
+        File file = fileChooser.showSaveDialog((Stage) anchorPane.getScene().getWindow());
         if (file != null) {
             try {
-                BufferedImage bufferedImage = new BufferedImage(10, 10,
-                        BufferedImage.TYPE_INT_RGB);
-
-                int rgb = 0xFFFFFFFF;
-                for (int index1 = 0; index1 < grid.length; index1++) {
-                    for (int index2 = 0; index2 < grid[0].length; index2++) {
-                        if (grid[index1][index2].isFilled) bufferedImage.setRGB(index1, index2, rgb);
-                    }
-                }
-                ImageIO.write(bufferedImage, "bmp", file);
+                ImageIO.write(bindingImage, "bmp", file);
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
         }
     }
 
+
+    // Extra classes
     private class Preview extends StackPane {
         private int x, y;
         private Rectangle rectangle;
 
-        public Preview(int x, int y, ImagePattern imagePattern) {
+        public Preview(int x, int y, int h, int w, ImagePattern imagePattern) {
             this.x = x;
             this.y = y;
-            this.rectangle = new Rectangle(10, 10);
+            this.rectangle = new Rectangle(w, h);
             this.rectangle.setFill(imagePattern);
 
             getChildren().addAll(rectangle);
 
-            setTranslateX(x * 10);
-            setTranslateY(y * 10);
+            setTranslateX(x * X_TILES);
+            setTranslateY(y * Y_TILES);
         }
     }
 
@@ -146,7 +155,7 @@ public class BindingMaker {
             this.STROKE_SIZE = (hasStroke) ? 2 : 0;
             this.rectangle = new Rectangle(PIXEL_SIZE - STROKE_SIZE, PIXEL_SIZE - STROKE_SIZE);
 
-            rectangle.setFill(Color.BLACK);
+            rectangle.setFill(Color.WHITE);
 
             getChildren().addAll(rectangle);
 
@@ -158,7 +167,7 @@ public class BindingMaker {
 
         void fill() {
             this.isFilled = !this.isFilled;
-            rectangle.setFill((isFilled) ? Color.WHITE : Color.BLACK);
+            rectangle.setFill((isFilled) ? Color.BLACK : Color.WHITE);
         }
     }
 }

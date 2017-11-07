@@ -1,5 +1,6 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.components.BindingMaker;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
@@ -11,6 +12,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -21,6 +24,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -71,7 +76,7 @@ public class EditPhoto {
     private int zoomFactor = 1;
 
     public void initData(String path) throws IOException {
-        //init parameters
+        //initialize parameters
         this.path = path;
         this.img = ImageIO.read(new File(path));
         this.originalImg = img;
@@ -257,19 +262,20 @@ public class EditPhoto {
         photoview.setFitHeight(photoview.getImage().getHeight());
     }
 
+    public void openBindingCreator(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/BindingMaker.fxml"));
 
-    /* TEMP EVENTS
-    public void applyBindings(MouseDragEvent mouseDragEvent) {
-        System.out.println("Apply BINDING");
-        WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
-        wovenImage.redraw();
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setScene(new Scene(loader.load()));
+        stage.setMinHeight(600.0);
+        stage.setMinWidth(800.0);
+        stage.setTitle("PhotoWeave | Edit Photo");
+        stage.getIcons().add(new Image("logo.png"));
 
-
-        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
+        BindingMaker controller = loader.getController();
+        System.out.println("Controller called");
+        controller.initialize();
+        stage.show();
     }
 
-    public void applyBindings2(DragEvent dragEvent) {
-        System.out.println("APPLY BINDING");
-
-    }*/
 }
