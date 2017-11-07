@@ -16,12 +16,15 @@ public class WovenImage {
 
     private Integer markedBinding;
     private boolean showMarkedBinding;
+    private boolean inverted;
 
     public WovenImage(BufferedImage sourceImage) {
         this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
 
         this.resultImage = ImageUtil.createBlankCopy(this.sourceImage);
         this.bindingPalette = new BindingPalette(this.sourceImage);
+
+        this.inverted = false;
     }
 
     public void redraw() {
@@ -59,6 +62,10 @@ public class WovenImage {
         return hasFloaters;
     }
 
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
+    }
+
     private void tilingAlgorithm(int[] imageData, int[] targetData){
         for (int i = 0; i < imageData.length; i++) {
             Binding binding = bindingPalette.getBindingPalette().get(imageData[i]);
@@ -68,10 +75,17 @@ public class WovenImage {
             int y = ((int) Math.floor(i / this.sourceImage.getWidth())) % pattern.getHeight();
             int color = pattern.getRGB(x, y);
 
+            if (inverted) {
+                if (color == Color.BLACK.getRGB()) color = Color.WHITE.getRGB();
+                else color = Color.BLACK.getRGB();
+            }
+
             if (markedBinding != null && showMarkedBinding && imageData[i] == markedBinding) {
                 if (color == Color.BLACK.getRGB()) color = Color.RED.getRGB();
                 else color = Color.LIGHT_GRAY.getRGB();
             }
+
+
 
             targetData[i] = color;
         }
