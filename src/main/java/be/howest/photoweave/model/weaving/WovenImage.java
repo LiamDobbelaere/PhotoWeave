@@ -17,6 +17,7 @@ public class WovenImage {
     private Integer markedBinding;
     private boolean showMarkedBinding;
     private boolean inverted;
+    private boolean showFloaters;
 
     public WovenImage(BufferedImage sourceImage) {
         this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
@@ -25,6 +26,7 @@ public class WovenImage {
         this.bindingPalette = new BindingPalette(this.sourceImage);
 
         this.inverted = false;
+        this.showFloaters = false;
     }
 
     public void redraw() {
@@ -64,6 +66,10 @@ public class WovenImage {
 
     public void setInverted(boolean inverted) {
         this.inverted = inverted;
+    }
+
+    public void setShowFloaters(boolean showFloaters) {
+        this.showFloaters = showFloaters;
     }
 
     private void tilingAlgorithm(int[] imageData, int[] targetData){

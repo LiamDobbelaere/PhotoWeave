@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import be.howest.photoweave.components.SelectBinding?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXSlider?>
 <?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import be.howest.photoweave.components.SelectBinding?>
 <?import com.jfoenix.controls.JFXCheckBox?>
 <?import be.howest.photoweave.components.PixelatedImageView?>
@@ -122,6 +127,8 @@
                         </Insets>
                     </VBox.margin>
                 </JFXButton>
+                <Label prefHeight="72.0" prefWidth="Infinity" text="Extra" />
+                <JFXButton fx:id="buttonBindingCreator" mnemonicParsing="false" onAction="#openBindingCreator" styleClass="button-raised" text="Binding Creator" textAlignment="CENTER" />
             </VBox>
             <VBox fx:id="imagevbox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                   style="-fx-background-color: #336699;">
