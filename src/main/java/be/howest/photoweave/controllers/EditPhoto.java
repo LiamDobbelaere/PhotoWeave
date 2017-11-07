@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
@@ -38,7 +39,7 @@ public class EditPhoto {
     @FXML
     private SelectBinding selectBinding;
     @FXML
-    private ImageView photoview;
+    private PixelatedImageView photoview;
     @FXML
     private Slider slider;
     @FXML
@@ -73,7 +74,6 @@ public class EditPhoto {
     //Edit parameters
     private int posterizeScale = 10;
     private boolean imgChanged = true;
-    private int zoomFactor = 1;
 
     public void initData(String path) throws IOException {
         //initialize parameters
@@ -162,19 +162,13 @@ public class EditPhoto {
     }
 
     public void zoomin() {
-        System.out.println("zoomin()");
-
-        if (zoomFactor < 8) zoomFactor++;
-
-        redrawPhotoView();
+        photoview.setFitWidth(photoview.getFitWidth() * 1.3);
+        photoview.setFitHeight(photoview.getFitHeight() * 1.3);
     }
 
     public void zoomout() {
-        System.out.println("zoomout()");
-
-        if (zoomFactor > 1) zoomFactor--;
-
-        redrawPhotoView();
+        photoview.setFitWidth(photoview.getFitWidth() / 1.3);
+        photoview.setFitHeight(photoview.getFitHeight() / 1.3);
     }
 
     public void updateImage() {
@@ -236,7 +230,6 @@ public class EditPhoto {
         if (file != null) {
             try {
                 //Kan hier een confict zijn.
-                WovenImage wovenImage = new WovenImage(monochromeImg.getModifiedImage());
                 wovenImage.redraw();
 
                 ImageIO.write(wovenImage.getResultImage(), "png", file);
@@ -257,9 +250,6 @@ public class EditPhoto {
 
     private void redrawPhotoView() {
         photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
-        photoview.setImage(ImageUtil.resample(photoview.getImage(), zoomFactor));
-        photoview.setFitWidth(photoview.getImage().getWidth());
-        photoview.setFitHeight(photoview.getImage().getHeight());
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {

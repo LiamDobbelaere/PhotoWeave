@@ -14,8 +14,12 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
+<?import be.howest.photoweave.components.SelectBinding?>
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import be.howest.photoweave.components.PixelatedImageView?>
+<AnchorPane stylesheets="@style.css" xmlns:fx="http://javafx.com/fxml/1" fx:id="window" minHeight="600.0" minWidth="800.0" prefHeight="600.0"
+            prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121"
+            fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <children>
         <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -98,11 +102,12 @@
                                     <content>
                                         <AnchorPane id="anchorpane" fx:id="anchorpane">
                                             <children>
-                                                <ImageView id="photoview" fx:id="photoview" pickOnBounds="true" preserveRatio="true">
+                                                <PixelatedImageView id="photoview" fx:id="photoview" pickOnBounds="true"
+                                                                    preserveRatio="true">
                                                     <image>
                                                         <Image url="@../logo.png" />
                                                     </image>
-                                                </ImageView>
+                                                </PixelatedImageView>
                                             </children>
                                         </AnchorPane>
                                     </content>
