@@ -5,24 +5,19 @@ import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
-import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
-import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.Observable;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -33,262 +28,124 @@ import javafx.stage.StageStyle;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 
 public class EditPhoto {
-    @FXML
-    public JFXCheckBox invert;
-    @FXML
-    public JFXCheckBox showFloaters;
-    @FXML
-    public JFXTextField xfloaters;
-    @FXML
-    public JFXTextField yfloaters;
-    @FXML
-    private JFXCheckBox markBindings;
-    @FXML
-    private SelectBinding selectBinding;
-    @FXML
-    private PixelatedImageView photoview;
-    @FXML
-    private Slider slider;
-    @FXML
-    private VBox imagevbox;
-    @FXML
-    private AnchorPane anchorpane;
-    @FXML
-    private AnchorPane window;
-    @FXML
-    private Label fileNameId;
-    @FXML
-    private Label imageSizeId;
-    @FXML
-    private TextField widthinputtextfield;
-    @FXML
-    private TextField heightinputtextfield;
-    @FXML
-    private Label amountColorsLabel;
+    /* FXML User Interface */
+    public AnchorPane anchorPaneWindow;
+    public Label labelFileNameId;
+    public Label labelImageSizeId;
 
-    //Image parameters
-    private String path;
+    public Slider sliderPosterizationScale;
+    public Label labelAmountOfColors;
+    public TextField textFieldWidth;
+    public TextField textFieldHeight;
+    public SelectBinding vboxSelectBinding;
+    public JFXCheckBox checkBoxMarkBinding;
+    public JFXCheckBox checkBoxInvert;
+    public JFXCheckBox checkBoxFloaters;
+    public JFXTextField textFieldXFloaters;
+    public JFXTextField textFieldYFloaters;
+
+    public AnchorPane anchorPanePhotoView;
+    public VBox vboxPhotView;
+    public PixelatedImageView photoView;
+
+    /*  */
     private int imageWidth;
     private int imageHeight;
     private String filename;
-    private BufferedImage img;
-    private BufferedImage originalImg;
-    private MonochromeImage monochromeImg;
+    private BufferedImage image;
+    private BufferedImage originalImage;
+    private MonochromeImage monochromeImage;
     private WovenImage wovenImage;
-    private Image endImage;
     private Stage stage;
 
-    //Edit parameters
     private int posterizeScale = 10;
-    private boolean imgChanged = true;
 
-    public void initData(String path) throws IOException {
-        //initialize parameters
-        this.path = path;
-        this.img = ImageIO.read(new File(path));
-        this.originalImg = img;
-        this.monochromeImg = new MonochromeImage(img);
-        this.imageWidth = img.getWidth();
-        this.imageHeight = img.getHeight();
-        this.filename = path.substring(path.lastIndexOf("/") + 1);
+    public void initialize(String path) throws IOException {
+        // Logic
+        this.image = ImageIO.read(new File(path));
+        this.originalImage = image;
+        this.monochromeImage = new MonochromeImage(image);
         this.posterizeScale = 10;
-        this.stage = (Stage) window.getScene().getWindow();
 
-        selectBinding.getComboBox().addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler() {
-            @Override
-            public void onBindingChanged() {
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        });
+        // UI
+        this.imageWidth = image.getWidth();
+        this.imageHeight = image.getHeight();
+        this.filename = path.substring(path.lastIndexOf("/") + 1);
 
-        selectBinding.getComboBoxColors().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
-            @Override
-            public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-                wovenImage.setMarkedBinding(selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
-                wovenImage.setShowMarkedBinding(markBindings.isSelected());
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        });
+        // Global
+        this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
 
-        markBindings.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                Integer selectedBinding = selectBinding.getComboBoxColors().getSelectionModel().getSelectedItem();
-
-                if (selectedBinding == null) selectedBinding = selectBinding.getComboBoxColors().getItems().get(0);
-
-                wovenImage.setMarkedBinding(selectedBinding);
-                wovenImage.setShowMarkedBinding(markBindings.isSelected());
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        });
-
-        //set properties
+        initializeListeners();
+        initializePhotoScale();
         updateTexts();
-
-        slider.setOnMouseReleased((MouseEvent event) -> {
-            posterizeScale = slider.valueProperty().intValue();
-            amountColorsLabel.setText("Amount of colors: " + posterizeScale);
-            updateImage();
-        });
-
-        widthinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("widthinputtextfield.textProperty()");
-            if (!newValue.matches("\\d*")) {
-                widthinputtextfield.setText(newValue.replaceAll("\\D", ""));
-            } else {
-                if (!widthinputtextfield.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                    imageWidth = Integer.parseInt(newValue);
-                }
-            }
-        });
-
-        heightinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("heightinputtextfield.textProperty()");
-            if (!newValue.matches("\\d*")) {
-                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
-            } else {
-                if (!heightinputtextfield.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                    imageHeight = Integer.parseInt(newValue);
-                }
-            }
-        });
-
-        xfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
-            } else {
-                if (!xfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                    wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
-                    wovenImage.redraw();
-                    redrawPhotoView();
-                }
-            }
-        });
-
-        yfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
-            } else {
-                if (!yfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                    wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
-                    wovenImage.redraw();
-                    redrawPhotoView();
-                }
-            }
-        });
-
-        widthinputtextfield.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue && (imageHeight != img.getHeight() || imageWidth != img.getWidth())) {
-                    resizeImage();
-                }
-            }
-        });
-
-        heightinputtextfield.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (!newValue && (imageHeight != img.getHeight() || imageWidth != img.getWidth())) {
-                    resizeImage();
-                }
-            }
-        });
-
-        invert.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                wovenImage.setInverted(newValue);
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        });
-
-        showFloaters.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                wovenImage.setShowFloaters(newValue);
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        });
-
-        window.heightProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("window.heightProperty()");
-            imagevbox.setMinHeight((Double) newVal - 50);
-        });
-        window.widthProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("window.widthProperty()");
-            imagevbox.setMinWidth((Double) newVal - 200);
-        });
     }
 
-    public void zoomin() {
-        photoview.setFitWidth(photoview.getFitWidth() * 1.3);
-        photoview.setFitHeight(photoview.getFitHeight() * 1.3);
-    }
-
-    public void zoomout() {
-        photoview.setFitWidth(photoview.getFitWidth() / 1.3);
-        photoview.setFitHeight(photoview.getFitHeight() / 1.3);
-    }
-
-    public void updateImage() {
-        System.out.println("updateImage()");
-        if (imgChanged) {
-            monochromeImg = new MonochromeImage(img);
-            imgChanged = !imgChanged;
+    /* UI */
+    private void initializePhotoScale() {
+        stage.show();
+        if (image.getHeight() <= image.getWidth()) {
+            photoView.setFitWidth(anchorPanePhotoView.getWidth());
+        } else {
+            photoView.setFitHeight(anchorPanePhotoView.getHeight());
         }
-
-        monochromeImg.setLevels(posterizeScale);
-        monochromeImg.redraw();
-        /* OLD WARD CODE
-        endImage = SwingFXUtils.toFXImage(monochromeImg.getModifiedImage(), null);
-        photoview.setImage(endImage);
-        */
-
-        //NEW TEMP CODE
-        wovenImage = new WovenImage(monochromeImg.getModifiedImage());
-        wovenImage.redraw();
-        redrawPhotoView();
-
-        selectBinding.setBindingPalette(wovenImage.getBindingPalette());
-
-        updateTexts();
+        updateImage();
     }
 
+    private void updateTexts() {
+        labelFileNameId.setText("File: " + filename);
+        labelImageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
+        textFieldWidth.setText(String.valueOf(imageWidth));
+        textFieldHeight.setText(String.valueOf(imageHeight));
+        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+    }
+
+    private void redrawPhotoView() {
+        photoView.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(), null));
+    }
+
+    /* Image Logic */
     private void resizeImage() {
-        System.out.println("resizeImage()");
         BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
         Graphics g = newImage.createGraphics();
-        g.drawImage(originalImg, 0, 0, imageWidth, imageHeight, null);
+        g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
         g.dispose();
 
-        img = newImage;
-        imgChanged = true;
+        image = newImage;
 
         updateImage();
     }
 
-    public void zoomPhoto() {
-        System.out.println("zoomPhoto()");
-        if (img.getHeight() <= img.getWidth()) {
-            photoview.setFitWidth(anchorpane.getWidth());
-        } else {
-            photoview.setFitHeight(anchorpane.getHeight());
-        }
+    private void updateImage() {
+        monochromeImage = new MonochromeImage(image);
+        monochromeImage.setLevels(posterizeScale);
+        monochromeImage.redraw();
+        wovenImage = new WovenImage(monochromeImage.getModifiedImage());
+        wovenImage.redraw();
+        redrawPhotoView();
+
+        vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
+
+        updateTexts();
     }
 
-    public void export(ActionEvent actionEvent) {
+    /* FXML Hooks */
+    public void zoomIn() {
+        photoView.setFitWidth(photoView.getFitWidth() * 1.3);
+        photoView.setFitHeight(photoView.getFitHeight() * 1.3);
+    }
+
+    public void zoomOut() {
+        photoView.setFitWidth(photoView.getFitWidth() / 1.3);
+        photoView.setFitHeight(photoView.getFitHeight() / 1.3);
+    }
+
+    public void saveImage(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PNG", ".png"),
@@ -304,22 +161,8 @@ public class EditPhoto {
 
                 ImageIO.write(wovenImage.getResultImage(), "png", file);
             } catch (IOException ex) {
-                System.out.println(ex.getMessage());
             }
         }
-    }
-
-    private void updateTexts() {
-        System.out.println("updateTexts()");
-        fileNameId.setText("File: " + filename);
-        imageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
-        widthinputtextfield.setText(String.valueOf(imageWidth));
-        heightinputtextfield.setText(String.valueOf(imageHeight));
-        amountColorsLabel.setText("Amount of colors: " + posterizeScale);
-    }
-
-    private void redrawPhotoView() {
-        photoview.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(),null));
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {
@@ -333,9 +176,171 @@ public class EditPhoto {
         stage.getIcons().add(new Image("logo.png"));
 
         BindingMaker controller = loader.getController();
-        System.out.println("Controller called");
         controller.initialize();
         stage.show();
+    }
+
+
+    /* Event Handlers */
+    private void initializeListeners() {
+        /* FXML */
+        sliderPosterizationScale
+                .setOnMouseReleased(this::updatePosterizationLevelOnImage);
+        textFieldWidth
+                .focusedProperty()
+                .addListener(this::ResizeImageHeight);
+        textFieldHeight
+                .focusedProperty()
+                .addListener(this::ResizeImageWidth);
+        textFieldHeight
+                .textProperty()
+                .addListener(this::ChangeImageHeight);
+        textFieldWidth
+                .textProperty()
+                .addListener(this::ChangeImageWidth);
+        checkBoxMarkBinding
+                .selectedProperty()
+                .addListener(this::showMarkingOnImageView);
+        checkBoxInvert
+                .selectedProperty()
+                .addListener(this::InvertColorsInWovenImage);
+        checkBoxFloaters
+                .selectedProperty()
+                .addListener(this::ShowFloatersOnImageView);
+        textFieldXFloaters
+                .textProperty()
+                .addListener(this::ChangeXFloatersThreshold);
+        textFieldYFloaters
+                .textProperty()
+                .addListener(this::ChangeYFloatersThreshold);
+
+        anchorPaneWindow
+                .heightProperty()
+                .addListener(this::ResizeImageViewHeight);
+        anchorPaneWindow
+                .widthProperty()
+                .addListener(this::ResizeImageViewWidth);
+
+        /* CUSTOM */
+        vboxSelectBinding
+                .getComboBox()
+                .addEventHandler(BindingChanged.BINDING_CHANGED, this.changeBindingInWomenImage());
+
+        vboxSelectBinding
+                .getComboBoxColors()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(this::MarkColorOnImageView);
+    }
+
+    private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
+        posterizeScale = sliderPosterizationScale.valueProperty().intValue();
+        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+        updateImage();
+    }
+
+    private void ResizeImageViewHeight(Observable observable, Number oldValue, Number newValue) {
+        vboxPhotView.setMinHeight((Double) newValue - 50);
+    }
+
+    private void ResizeImageViewWidth(Observable observable, Number oldValue, Number newValue) {
+        vboxPhotView.setMinWidth((Double) newValue - 200);
+    }
+
+    private void ChangeImageWidth(Observable observable, String oldValue, String newValue) {
+        if (!newValue.matches("\\d*")) {
+            textFieldWidth.setText(newValue.replaceAll("\\D", ""));
+        } else {
+            if (!textFieldWidth.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                imageWidth = Integer.parseInt(newValue);
+            }
+        }
+    }
+
+    private void ChangeImageHeight(Observable observable, String oldValue, String newValue) {
+        if (!newValue.matches("\\d*")) {
+            textFieldHeight.setText(newValue.replaceAll("\\D", ""));
+        } else {
+            if (!textFieldHeight.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                imageHeight = Integer.parseInt(newValue);
+            }
+        }
+    }
+
+    private void showMarkingOnImageView(Observable observable) {
+        Integer selectedBinding = vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem();
+
+        if (selectedBinding == null) selectedBinding = vboxSelectBinding.getComboBoxColors().getItems().get(0);
+
+        wovenImage.setMarkedBinding(selectedBinding);
+        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        wovenImage.redraw();
+        redrawPhotoView();
+    }
+
+    private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
+        wovenImage.setInverted(newValue);
+        wovenImage.redraw();
+        redrawPhotoView();
+    }
+
+    private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
+        wovenImage.setShowFloaters(newValue);
+        wovenImage.redraw();
+        redrawPhotoView();
+    }
+
+    private void ChangeXFloatersThreshold(Observable observable, String oldValue, String newValue) {
+        if (!newValue.matches("\\d*")) {
+            textFieldHeight.setText(newValue.replaceAll("\\D", ""));
+        } else {
+            if (!textFieldXFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
+        }
+    }
+
+    private void ChangeYFloatersThreshold(Observable observable, String oldValue, String newValue) {
+        if (!newValue.matches("\\d*")) {
+            textFieldHeight.setText(newValue.replaceAll("\\D", ""));
+        } else {
+            if (!textFieldYFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
+        }
+    }
+
+    private void ResizeImageWidth(Observable observable, Boolean oldValue, Boolean newValue) {
+        if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
+            resizeImage();
+        }
+    }
+
+    private void ResizeImageHeight(Observable observable, Boolean oldValue, Boolean newValue) {
+        if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
+            resizeImage();
+        }
+    }
+
+    private BindingChangedEventHandler changeBindingInWomenImage() {
+        return new BindingChangedEventHandler() {
+            @Override
+            public void onBindingChanged() {
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
+        };
+    }
+
+    private void MarkColorOnImageView(Observable observable) {
+        wovenImage.setMarkedBinding(vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
+        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        wovenImage.redraw();
+        redrawPhotoView();
     }
 
 }
