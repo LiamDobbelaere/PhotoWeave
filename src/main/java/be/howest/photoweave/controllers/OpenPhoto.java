@@ -62,11 +62,7 @@ public class OpenPhoto {
             stage.getIcons().add(new Image("logo.png"));
 
             EditPhoto controller = loader.getController();
-            controller.initData(image);
-
-            stage.show();
-            controller.zoomPhoto();
-            controller.updateImage();
+            controller.initialize(image);
             this.stage.close();
         }
     }
