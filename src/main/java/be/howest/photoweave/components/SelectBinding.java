@@ -1,5 +1,6 @@
 package be.howest.photoweave.components;
 
+import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
 import be.howest.photoweave.model.util.ImageUtil;
@@ -47,6 +48,7 @@ public class SelectBinding extends VBox {
                 bindingPalette.getBindingPalette().replace(
                         comboBoxColors.getSelectionModel().getSelectedItem(),
                         comboBox.getSelectionModel().getSelectedItem());
+                comboBox.fireEvent(new BindingChanged());
             }
         };
 
@@ -96,6 +98,7 @@ public class SelectBinding extends VBox {
     public JFXComboBox<Binding> getComboBox() {
         return comboBox;
     }
+
 
     class ImageListCell extends JFXListCell<Binding> {
         private ImageView iv = new ImageView();

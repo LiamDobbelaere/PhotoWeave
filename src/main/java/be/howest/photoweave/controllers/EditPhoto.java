@@ -3,11 +3,14 @@ package be.howest.photoweave.controllers;
 import be.howest.photoweave.components.BindingMaker;
 import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
+import be.howest.photoweave.components.events.BindingChanged;
+import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.MonochromeImage;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
@@ -34,6 +37,14 @@ import java.io.File;
 import java.io.IOException;
 
 public class EditPhoto {
+    @FXML
+    public JFXCheckBox invert;
+    @FXML
+    public JFXCheckBox showFloaters;
+    @FXML
+    public JFXTextField xfloaters;
+    @FXML
+    public JFXTextField yfloaters;
     @FXML
     private JFXCheckBox markBindings;
     @FXML
@@ -87,9 +98,9 @@ public class EditPhoto {
         this.posterizeScale = 10;
         this.stage = (Stage) window.getScene().getWindow();
 
-        selectBinding.getComboBox().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Binding>() {
+        selectBinding.getComboBox().addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler() {
             @Override
-            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
+            public void onBindingChanged() {
                 wovenImage.redraw();
                 redrawPhotoView();
             }
@@ -137,8 +148,8 @@ public class EditPhoto {
                     imageWidth = Integer.parseInt(newValue);
                 }
             }
-            resizeImage();
         });
+
         heightinputtextfield.textProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("heightinputtextfield.textProperty()");
             if (!newValue.matches("\\d*")) {
@@ -148,7 +159,66 @@ public class EditPhoto {
                     imageHeight = Integer.parseInt(newValue);
                 }
             }
-            resizeImage();
+        });
+
+        xfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!xfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
+                    wovenImage.redraw();
+                    redrawPhotoView();
+                }
+            }
+        });
+
+        yfloaters.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                heightinputtextfield.setText(newValue.replaceAll("\\D", ""));
+            } else {
+                if (!yfloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
+                    wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
+                    wovenImage.redraw();
+                    redrawPhotoView();
+                }
+            }
+        });
+
+        widthinputtextfield.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue && (imageHeight != img.getHeight() || imageWidth != img.getWidth())) {
+                    resizeImage();
+                }
+            }
+        });
+
+        heightinputtextfield.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (!newValue && (imageHeight != img.getHeight() || imageWidth != img.getWidth())) {
+                    resizeImage();
+                }
+            }
+        });
+
+        invert.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                wovenImage.setInverted(newValue);
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
+        });
+
+        showFloaters.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                wovenImage.setShowFloaters(newValue);
+                wovenImage.redraw();
+                redrawPhotoView();
+            }
         });
 
         window.heightProperty().addListener((obs, oldVal, newVal) -> {
