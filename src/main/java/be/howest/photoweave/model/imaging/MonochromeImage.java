@@ -1,6 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
 import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -67,8 +68,7 @@ public class MonochromeImage {
     }
     
     private void applyFilters() {
-        DataBufferInt dbi = (DataBufferInt) this.modifiedImage.getRaster().getDataBuffer();
-        int[] imageData = dbi.getData();
+        int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
         int threadCount = 8;
         Thread[] threads = new Thread[threadCount];
@@ -87,10 +87,13 @@ public class MonochromeImage {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
     }
 
     private void applyFilterThreaded(int[] imageData, int start, int end) {
-        for (int i = start; i <= end; i++) {
+        System.out.println("Start: " + String.valueOf(start) + ", End: " + String.valueOf(end));
+
+        for (int i = start; i < end; i++) {
             int rgb = imageData[i];
 
             for (RGBFilter filter : filters) {

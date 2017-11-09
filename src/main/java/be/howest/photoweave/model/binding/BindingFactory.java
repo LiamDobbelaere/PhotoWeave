@@ -11,6 +11,7 @@ public class BindingFactory {
 
     private List<Binding> bindings = new ArrayList<>();
     private final Integer MAX_INTERNAL_BINDINGS = 24;
+    private Binding[] optimizedBindings;
 
     public BindingFactory() {
         try {
@@ -30,6 +31,8 @@ public class BindingFactory {
                     .toURI();
             bindings.add(new Binding(uri));
         }
+
+        optimizedBindings = bindings.toArray(new Binding[bindings.size()]);
     }
 
     private Binding getCustomBinding(String path) throws Exception {
@@ -39,6 +42,10 @@ public class BindingFactory {
                 .getResource(path)
                 .toURI();
         return new Binding(uri);
+    }
+
+    public Binding[] getOptimizedBindings() {
+        return optimizedBindings;
     }
 
     public List<Binding> getSortedBindings() {

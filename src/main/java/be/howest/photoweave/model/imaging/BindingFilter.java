@@ -14,11 +14,10 @@ public class BindingFilter implements RGBFilter {
     private int sourceHeight;
     private PosterizeFilter posterizeFilter;
 
-    private Binding test;
+    private BindingFactory bindingFactory;
 
     public BindingFilter(PosterizeFilter posterizeFilter, int sourceWidth, int sourceHeight) {
-        this.test = new BindingFactory().getSortedBindings().get(0);
-
+        this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
 
         this.sourceWidth = sourceWidth;
@@ -27,11 +26,13 @@ public class BindingFilter implements RGBFilter {
 
     @Override
     public int applyTo(int rgb, int i) {
-        //Binding binding = bindingPalette.getBindingPalette().get(rgb);
-        BufferedImage pattern = this.test.getBindingImage(); //binding.getBindingImage();
+        int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / this.posterizeFilter.getLevelCount()));
+
+        Binding binding = bindingFactory.getOptimizedBindings()[currentLevel];
+        BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
         int x = (i % sourceWidth) % pattern.getWidth();
-        int y = ((int) Math.floor(i / sourceHeight)) % pattern.getHeight();
+        int y = ((int) Math.floor(i / sourceWidth)) % pattern.getHeight();
 
         return pattern.getRGB(x, y);
     }
