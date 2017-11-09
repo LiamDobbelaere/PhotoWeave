@@ -42,7 +42,7 @@ public class WovenImage {
 
         tilingAlgorithm(imageData,targetData);
 
-        if (showFloaters) drawFloaters();
+        //if (showFloaters) drawFloaters();
     }
 
     public void setInverted(boolean inverted) {
@@ -62,10 +62,29 @@ public class WovenImage {
     }
 
     private void tilingAlgorithm(int[] imageData, int[] targetData){
-        int lastColor = 0; //For checking floaters
-        int colorCount = 0;
+        int threadCount = 8;
+        Thread[] threads = new Thread[threadCount];
 
-        for (int i = 0; i < imageData.length; i++) {
+        for (int k = 0; k < threadCount; k++) {
+            int start = ((imageData.length - 1) / threadCount) * k;
+            int end = ((imageData.length - 1) / threadCount) * (k + 1);
+
+            threads[k] = new Thread(() -> apply(imageData, targetData, start, end));
+            threads[k].start();
+        }
+
+        for (int k = 0; k < threadCount; k++)
+            try {
+                threads[k].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        System.out.println("Tiling finished");
+    }
+
+    private void apply(int[] imageData, int[] targetData, int start, int end) {
+        for (int i = start; i <= end; i++) {
             Binding binding = bindingPalette.getBindingPalette().get(imageData[i]);
             BufferedImage pattern = binding.getBindingImage();
 
@@ -73,7 +92,7 @@ public class WovenImage {
             int y = ((int) Math.floor(i / this.sourceImage.getWidth())) % pattern.getHeight();
             int color = pattern.getRGB(x, y);
 
-            if (inverted) {
+            /*if (inverted) {
                 if (color == Color.BLACK.getRGB()) color = Color.WHITE.getRGB();
                 else color = Color.BLACK.getRGB();
             }
@@ -81,11 +100,12 @@ public class WovenImage {
             if (markedBinding != null && showMarkedBinding && imageData[i] == markedBinding) {
                 if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
                 else color = Color.LIGHT_GRAY.getRGB();
-            }
+            }*/
 
             targetData[i] = color;
         }
     }
+
 
     private void drawFloaters() {
         int lastColor = 0;
