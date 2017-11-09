@@ -10,8 +10,10 @@ import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -93,6 +95,11 @@ public class EditPhoto {
         } else {
             photoView.setFitHeight(anchorPanePhotoView.getHeight());
         }
+
+        System.out.println("***");
+        System.out.println(photoView.getFitWidth());
+        System.out.println(photoView.getFitHeight());
+
         updateImage();
     }
 
@@ -231,6 +238,9 @@ public class EditPhoto {
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this::MarkColorOnImageView);
+
+        photoView
+                .setOnMouseClicked(ManipulatePixel());
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
@@ -341,6 +351,23 @@ public class EditPhoto {
         wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
         wovenImage.redraw();
         redrawPhotoView();
+    }
+
+    private EventHandler<MouseEvent> ManipulatePixel() {
+        return event -> {
+            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (bi.getWidth() * xPercent);
+            int pY = (int) (bi.getHeight() * yPercent);
+            int original = bi.getRGB(pX, pY);
+
+            bi.setRGB(pX, pY, original == Color.BLACK.getRGB() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
+
+            photoView.setImage(SwingFXUtils.toFXImage(bi, null));
+        };
     }
 
 }
