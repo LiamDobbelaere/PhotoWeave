@@ -87,7 +87,6 @@ public class EditPhoto {
 
     /* UI */
     private void initializePhotoScale() {
-        stage.show();
         if (image.getHeight() <= image.getWidth()) {
             photoView.setFitWidth(anchorPanePhotoView.getWidth());
         } else {

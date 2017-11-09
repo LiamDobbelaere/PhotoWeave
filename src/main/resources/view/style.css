@@ -1,13 +1,23 @@
 * {
-    -app-color: #009688;
+    -app-color: #008080;
 }
 
 .button-raised {
     -fx-padding: 0.7em 0.57em;
     -fx-font-size: 14px;
-    /*-jfx-button-type: RAISED;*/
     -fx-background-color: -app-color;
     -fx-text-fill: WHITE;
+}
+
+.inverted {
+    -fx-padding: 0.25em 0.25em;
+    -fx-font-size: 16px;
+    -fx-background-color: transparent;
+    -fx-text-fill: -app-color;
+    -fx-border-width: 1px;
+    -fx-border-color: #008080;
+    -jfx-focus-color: transparent;
+    -jfx-faint-focus-color: transparent;
 }
 
 .jfx-slider .thumb {
@@ -16,4 +26,8 @@
 
 .jfx-text-field, .jfx-password-field, .jfx-text-area {
     -jfx-focus-color: -app-color;
+}
+
+.hover{
+    -fx-background-color: #e3e3e3;
 }
