@@ -6,7 +6,10 @@ import be.howest.photoweave.model.util.ImageUtil;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,16 +73,28 @@ public class MonochromeImage {
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
-        int threadCount = 8;
+        int threadCount = Runtime.getRuntime().availableProcessors();
         Thread[] threads = new Thread[threadCount];
+
+        int[][] pieces = new int[threadCount][];
 
         for (int k = 0; k < threadCount; k++) {
             int start = ((imageData.length - 1) / threadCount) * k;
             int end = ((imageData.length - 1) / threadCount) * (k + 1);
 
-            threads[k] = new Thread(() -> applyFilterThreaded(imageData, start, end));
-            threads[k].start();
+            pieces[k] = new int[end - start];
+
+            System.arraycopy(imageData, start, pieces[k], 0, end - start);
+            System.out.println(String.format("New piece: src start %s, len %s", start, end - start));
+
+            int[] ref = pieces[k];
+
+            threads[k] = new Thread(() -> applyFilterThreaded(ref, 0, ref.length, start));
+            //threads[k] = new Thread(() -> applyFilterThreaded(imageData, start, end));
         }
+
+        for (int k = 0; k < threadCount; k++)
+            threads[k].start();
 
         for (int k = 0; k < threadCount; k++)
             try {
@@ -88,16 +103,28 @@ public class MonochromeImage {
                 e.printStackTrace();
             }
 
+        System.out.println("Joining data");
+        //Collect the data back into one
+        int lastLength = 0;
+        for (int k = 0; k < threadCount; k++) {
+            int[] array = pieces[k];
+
+            System.out.println(lastLength);
+            System.arraycopy(array, 0, imageData, lastLength, array.length);
+
+            lastLength += array.length;
+        }
     }
 
-    private void applyFilterThreaded(int[] imageData, int start, int end) {
+    //private void applyFilterThreaded(int[] imageData, int start, int end) {
+    private void applyFilterThreaded(int[] imageData, int start, int end, int actualStart) {
         System.out.println("Start: " + String.valueOf(start) + ", End: " + String.valueOf(end));
 
         for (int i = start; i < end; i++) {
             int rgb = imageData[i];
 
             for (RGBFilter filter : filters) {
-                rgb = filter.applyTo(rgb, i);
+                rgb = filter.applyTo(rgb, actualStart + i);
             }
 
             imageData[i] = rgb;

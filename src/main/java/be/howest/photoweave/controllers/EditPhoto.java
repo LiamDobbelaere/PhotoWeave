@@ -202,6 +202,7 @@ public class EditPhoto {
         /* FXML */
         sliderPosterizationScale
                 .setOnMouseReleased(this::updatePosterizationLevelOnImage);
+
         textFieldWidth
                 .focusedProperty()
                 .addListener(this::ResizeImageHeight);
