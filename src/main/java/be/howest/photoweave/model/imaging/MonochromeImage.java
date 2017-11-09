@@ -1,5 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
+import be.howest.photoweave.model.binding.BindingPalette;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -26,9 +28,12 @@ public class MonochromeImage {
 
         this.posterizeFilter = new PosterizeFilter();
 
+        BindingFilter bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth(), this.modifiedImage.getHeight());
+
         this.filters = new ArrayList<>();
         this.filters.add(new GrayscaleFilter());
         this.filters.add(this.posterizeFilter);
+        this.filters.add(bindingFilter);
 
         this.setLevels(2);
     }
@@ -65,11 +70,31 @@ public class MonochromeImage {
         DataBufferInt dbi = (DataBufferInt) this.modifiedImage.getRaster().getDataBuffer();
         int[] imageData = dbi.getData();
 
-        for (int i = 0; i < imageData.length; i++) {
+        int threadCount = 8;
+        Thread[] threads = new Thread[threadCount];
+
+        for (int k = 0; k < threadCount; k++) {
+            int start = ((imageData.length - 1) / threadCount) * k;
+            int end = ((imageData.length - 1) / threadCount) * (k + 1);
+
+            threads[k] = new Thread(() -> applyFilterThreaded(imageData, start, end));
+            threads[k].start();
+        }
+
+        for (int k = 0; k < threadCount; k++)
+            try {
+                threads[k].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    }
+
+    private void applyFilterThreaded(int[] imageData, int start, int end) {
+        for (int i = start; i <= end; i++) {
             int rgb = imageData[i];
 
             for (RGBFilter filter : filters) {
-                rgb = filter.applyTo(rgb);
+                rgb = filter.applyTo(rgb, i);
             }
 
             imageData[i] = rgb;

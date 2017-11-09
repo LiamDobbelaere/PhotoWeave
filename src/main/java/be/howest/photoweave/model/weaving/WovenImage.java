@@ -104,6 +104,8 @@ public class WovenImage {
 
             targetData[i] = color;
         }
+
+        //System.out.println("Thread " + String.valueOf(start) + "/" + String.valueOf(end));
     }
 
 

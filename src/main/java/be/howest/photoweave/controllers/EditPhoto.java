@@ -105,16 +105,24 @@ public class EditPhoto {
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(), null));
+        System.out.println("Redrawing photoview");
+
+        photoView.setImage(SwingFXUtils.toFXImage(monochromeImage.getModifiedImage(), null));
+
+        System.out.println("Done!");
     }
 
     /* Image Logic */
     private void resizeImage() {
         BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
+        System.out.println("About to copy");
+
         Graphics g = newImage.createGraphics();
         g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
         g.dispose();
+
+        System.out.println("Copied");
 
         image = newImage;
 
@@ -122,14 +130,22 @@ public class EditPhoto {
     }
 
     private void updateImage() {
+        System.out.println("Remaking monochromeimage");
+
         monochromeImage = new MonochromeImage(image);
         monochromeImage.setLevels(posterizeScale);
         monochromeImage.redraw();
-        wovenImage = new WovenImage(monochromeImage.getModifiedImage());
-        wovenImage.redraw();
+
+        System.out.println("Monochromeimage done, now wovenimage");
+
+        //wovenImage = new WovenImage(monochromeImage.getModifiedImage());
+        //wovenImage.redraw();
+
+        System.out.println("Wovenimage done");
+
         redrawPhotoView();
 
-        vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
+        //vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
 
         updateTexts();
     }
@@ -222,7 +238,7 @@ public class EditPhoto {
                 .addListener(this::ResizeImageViewWidth);
 
         /* CUSTOM */
-        vboxSelectBinding
+        /*vboxSelectBinding
                 .getComboBox()
                 .addEventHandler(BindingChanged.BINDING_CHANGED, this.changeBindingInWomenImage());
 
@@ -230,7 +246,7 @@ public class EditPhoto {
                 .getComboBoxColors()
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener(this::MarkColorOnImageView);
+                .addListener(this::MarkColorOnImageView);*/
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {

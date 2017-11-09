@@ -5,20 +5,27 @@ package be.howest.photoweave.model.imaging;
  */
 public class PosterizeFilter implements RGBFilter {
     private int[] levels;
+    private int levelCount;
 
     public PosterizeFilter() {
         this.setLevels(2);
     }
 
     public void setLevels(int levelCount) {
+        this.levelCount = levelCount;
+
         levels = new int[256];
         if (levelCount != 1)
             for (int i = 0; i < 256; i++)
                 levels[i] = 255 * (levelCount*i / 256) / (levelCount-1);
     }
 
+    public int getLevelCount() {
+        return this.levelCount;
+    }
+
     @Override
-    public int applyTo(int rgb) {
+    public int applyTo(int rgb, int i) {
         int a = rgb & 0xff000000;
         int r = (rgb >> 16) & 0xff;
         int g = (rgb >> 8) & 0xff;
