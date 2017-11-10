@@ -6,6 +6,7 @@ import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.imaging.MonochromeImage;
+import be.howest.photoweave.model.imaging.ThreadEventListener;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
@@ -32,7 +33,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 
-public class EditPhoto {
+public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
     public AnchorPane anchorPaneWindow;
     public Label labelFileNameId;
@@ -70,6 +71,7 @@ public class EditPhoto {
         this.image = ImageIO.read(new File(path));
         this.originalImage = image;
         this.monochromeImage = new MonochromeImage(image);
+        monochromeImage.addThreadEventListener(this);
         this.posterizeScale = 10;
 
         // UI
@@ -105,24 +107,16 @@ public class EditPhoto {
     }
 
     private void redrawPhotoView() {
-        System.out.println("Redrawing photoview");
-
         photoView.setImage(SwingFXUtils.toFXImage(monochromeImage.getModifiedImage(), null));
-
-        System.out.println("Done!");
     }
 
     /* Image Logic */
     private void resizeImage() {
         BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
-        System.out.println("About to copy");
-
         Graphics g = newImage.createGraphics();
         g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
         g.dispose();
-
-        System.out.println("Copied");
 
         image = newImage;
 
@@ -130,20 +124,14 @@ public class EditPhoto {
     }
 
     private void updateImage() {
-        System.out.println("Remaking monochromeimage");
-
         monochromeImage = new MonochromeImage(image);
+        monochromeImage.addThreadEventListener(this);
         monochromeImage.setLevels(posterizeScale);
         monochromeImage.redraw();
 
-        System.out.println("Monochromeimage done, now wovenimage");
 
         //wovenImage = new WovenImage(monochromeImage.getModifiedImage());
         //wovenImage.redraw();
-
-        System.out.println("Wovenimage done");
-
-        redrawPhotoView();
 
         //vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
 
@@ -360,4 +348,8 @@ public class EditPhoto {
         redrawPhotoView();
     }
 
+    @Override
+    public void onThreadEvent() {
+        redrawPhotoView();
+    }
 }

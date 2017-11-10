@@ -16,7 +16,6 @@ public class BindingFactory {
     public BindingFactory() {
         try {
             getBindingsFromInternalResources();
-            System.out.println("ok");
         } catch (Exception e) {
             System.out.println("Internal Resources could not be found || e: " + e.getMessage());
         }

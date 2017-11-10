@@ -1,15 +1,14 @@
 package be.howest.photoweave.model.imaging;
 
-import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.imaging.filters.BindingFilter;
+import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.filters.RGBFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,6 +20,9 @@ public class MonochromeImage {
 
     private List<RGBFilter> filters;
     private PosterizeFilter posterizeFilter;
+
+    int threadsDone = 0;
+    private List<ThreadEventListener> threadEventListeners;
 
     /**
      * Creates a grayscale, posterized version of an image from a source image.
@@ -40,6 +42,8 @@ public class MonochromeImage {
         this.filters.add(bindingFilter);
 
         this.setLevels(2);
+
+        this.threadEventListeners = new ArrayList<>();
     }
 
     /**
@@ -73,54 +77,36 @@ public class MonochromeImage {
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
-        int threadCount = Runtime.getRuntime().availableProcessors();
+        int threadCount = Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
         Thread[] threads = new Thread[threadCount];
 
         int[][] pieces = new int[threadCount][];
 
+        threadsDone = 0;
+
         for (int k = 0; k < threadCount; k++) {
             int start = ((imageData.length - 1) / threadCount) * k;
-            int end = ((imageData.length - 1) / threadCount) * (k + 1);
+            int end;
+
+            if (k == threadCount - 1)
+                end = imageData.length;
+            else
+                end = ((imageData.length - 1) / threadCount) * (k + 1);
 
             pieces[k] = new int[end - start];
 
             System.arraycopy(imageData, start, pieces[k], 0, end - start);
-            System.out.println(String.format("New piece: src start %s, len %s", start, end - start));
 
             int[] ref = pieces[k];
 
-            threads[k] = new Thread(() -> applyFilterThreaded(ref, 0, ref.length, start));
-            //threads[k] = new Thread(() -> applyFilterThreaded(imageData, start, end));
-        }
-
-        for (int k = 0; k < threadCount; k++)
+            threads[k] = new Thread(() -> applyFilterThreaded(ref, imageData, start));
             threads[k].start();
-
-        for (int k = 0; k < threadCount; k++)
-            try {
-                threads[k].join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        System.out.println("Joining data");
-        //Collect the data back into one
-        int lastLength = 0;
-        for (int k = 0; k < threadCount; k++) {
-            int[] array = pieces[k];
-
-            System.out.println(lastLength);
-            System.arraycopy(array, 0, imageData, lastLength, array.length);
-
-            lastLength += array.length;
         }
     }
 
     //private void applyFilterThreaded(int[] imageData, int start, int end) {
-    private void applyFilterThreaded(int[] imageData, int start, int end, int actualStart) {
-        System.out.println("Start: " + String.valueOf(start) + ", End: " + String.valueOf(end));
-
-        for (int i = start; i < end; i++) {
+    private void applyFilterThreaded(int[] imageData, int[] fullImageData, int actualStart) {
+        for (int i = 0; i < imageData.length; i++) {
             int rgb = imageData[i];
 
             for (RGBFilter filter : filters) {
@@ -129,5 +115,24 @@ public class MonochromeImage {
 
             imageData[i] = rgb;
         }
+
+        synchronized (this) {
+            System.arraycopy(imageData, 0, fullImageData, actualStart, imageData.length);
+            threadsDone++;
+            notifyThreadEventListeners();
+        }
+    }
+
+    public void addThreadEventListener(ThreadEventListener t) {
+        this.threadEventListeners.add(t);
+    }
+
+    public void removeThreadEventListener(ThreadEventListener t) {
+        this.threadEventListeners.remove(t);
+    }
+
+    private void notifyThreadEventListeners() {
+        System.out.println(threadsDone);
+        this.threadEventListeners.forEach(ThreadEventListener::onThreadEvent);
     }
 }

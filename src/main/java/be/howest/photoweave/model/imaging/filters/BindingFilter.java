@@ -1,8 +1,7 @@
-package be.howest.photoweave.model.imaging;
+package be.howest.photoweave.model.imaging.filters;
 
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
-import be.howest.photoweave.model.binding.BindingPalette;
 
 import java.awt.image.BufferedImage;
 
