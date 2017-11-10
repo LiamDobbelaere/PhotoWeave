@@ -7,6 +7,7 @@
     -fx-font-size: 14px;
     -fx-background-color: -app-color;
     -fx-text-fill: WHITE;
+    -fx-cursor: HAND;
 }
 
 .inverted {
@@ -18,6 +19,46 @@
     -fx-border-color: #008080;
     -jfx-focus-color: transparent;
     -jfx-faint-focus-color: transparent;
+}
+
+.inverted2 {
+    -fx-padding: 0.25em 0.25em;
+    -fx-font-size: 16px;
+    -fx-background-color: white;
+    -fx-text-fill: -app-color;
+    -fx-border-width: 1px;
+    -fx-border-color: white;
+    -jfx-focus-color: transparent;
+    -jfx-faint-focus-color: transparent;
+}
+
+.list-view-recent .list-cell:even {
+    -fx-background-color: teal;
+    -fx-cursor: HAND;
+}
+.list-view-recent .list-cell:odd {
+    -fx-background-color: teal;
+    -fx-cursor: HAND;
+}
+
+.list-view-recent .list-cell:selected {
+    -fx-background-color: white;
+}
+
+.list-view-recent .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+}
+
+.vboxlistview > *{
+    -fx-fill: white;
+}
+
+.list-view-recent .list-cell:selected > .vboxlistview > *{
+    -fx-fill: teal;
+}
+
+.vboxlistview-title{
+    -fx-font-size: 18px;
 }
 
 .jfx-slider .thumb {

@@ -2,15 +2,24 @@ package be.howest.photoweave.controllers;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -29,6 +38,7 @@ public class OpenPhoto {
     public TextField textFieldImagePath;
     public JFXButton buttonEdit;
     public Pane paneLoading;
+    public ListView listViewRecentFiles;
 
     private String imagePath;
     private Stage stage;
@@ -39,6 +49,41 @@ public class OpenPhoto {
         Platform.runLater(() -> {
             stage = (Stage) anchorPane.getScene().getWindow();
             anchorPane.requestFocus();
+        });
+        ObservableList<String> items = FXCollections.observableArrayList (
+                "C:\\Users\\Quinten\\Pictures\\verilin\\formaat anders.png", "C:\\Users\\Quinten\\Pictures\\verilin\\POLAR.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\lionBig.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\logo.bmp");
+        listViewRecentFiles.setItems(items);
+
+        listViewRecentFiles.setCellFactory(listView -> new ListCell<String>() {
+            public void updateItem(String path, boolean empty) {
+                super.updateItem(path, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    String fileName = new File(path).getName();
+                    Text title = new Text(fileName);
+                    Text text = new Text(path.replaceAll(fileName,""));
+                    title.getStyleClass().add("vboxlistview-title");
+
+                    VBox vBox = new VBox(title, text);
+                    vBox.getStyleClass().add("vboxlistview");
+                    setGraphic(vBox);
+
+                }
+            }
+
+        });
+
+        listViewRecentFiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+            @Override
+            public void handle(MouseEvent event) {
+
+                System.out.println("clicked on " + listViewRecentFiles.getSelectionModel().getSelectedItem());
+                setImagePath(new File(listViewRecentFiles.getSelectionModel().getSelectedItem().toString()));
+
+            }
         });
         initializeListeners();
     }

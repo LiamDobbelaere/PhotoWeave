@@ -143,7 +143,7 @@
                                             <Font size="14.0" />
                                         </font>
                                     </Label>
-                                    <JFXSlider fx:id="sliderPosterizationScale" layoutX="14.0" layoutY="34.0" max="24.0" min="2.0" prefHeight="42.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" value="10.0" />
+                                    <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0" layoutX="14.0" layoutY="34.0" max="24.0" min="2.0" minorTickCount="24" prefHeight="42.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
                                     <Label fx:id="labelAmountOfColors" layoutX="14.0" layoutY="72.0" text="Aantal tinten:" />
                                 </children>
                             </AnchorPane>
