@@ -112,7 +112,7 @@ public class EditPhoto implements ThreadEventListener {
 
     /* Image Logic */
     private void resizeImage() {
-        BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+        /*BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
 
         Graphics g = newImage.createGraphics();
         g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
@@ -120,12 +120,14 @@ public class EditPhoto implements ThreadEventListener {
 
         image = newImage;
 
+        updateImage();*/
+
+        monochromeImage.resize(imageWidth, imageHeight);
+
         updateImage();
     }
 
     private void updateImage() {
-        monochromeImage = new MonochromeImage(image);
-        monochromeImage.addThreadEventListener(this);
         monochromeImage.setLevels(posterizeScale);
         monochromeImage.redraw();
 
@@ -134,6 +136,8 @@ public class EditPhoto implements ThreadEventListener {
         //wovenImage.redraw();
 
         //vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
+
+        redrawPhotoView();
 
         updateTexts();
     }
@@ -349,7 +353,12 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     @Override
-    public void onThreadEvent() {
+    public void onThreadComplete() {
+        redrawPhotoView();
+    }
+
+    @Override
+    public void onRedrawComplete() {
         redrawPhotoView();
     }
 }

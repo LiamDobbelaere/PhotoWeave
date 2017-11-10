@@ -23,6 +23,14 @@ public class BindingFilter implements RGBFilter {
         this.sourceHeight = sourceHeight;
     }
 
+    public void setSourceWidth(int sourceWidth) {
+        this.sourceWidth = sourceWidth;
+    }
+
+    public void setSourceHeight(int sourceHeight) {
+        this.sourceHeight = sourceHeight;
+    }
+
     @Override
     public int applyTo(int rgb, int i) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / this.posterizeFilter.getLevelCount()));

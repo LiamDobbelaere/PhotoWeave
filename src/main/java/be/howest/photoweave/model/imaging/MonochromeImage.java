@@ -20,8 +20,15 @@ public class MonochromeImage {
 
     private List<RGBFilter> filters;
     private PosterizeFilter posterizeFilter;
+    private BindingFilter bindingFilter;
 
+    int threadCount = Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
     int threadsDone = 0;
+
+    private Thread[] threads;
+
+    boolean stopWriting = false;
+
     private List<ThreadEventListener> threadEventListeners;
 
     /**
@@ -34,16 +41,22 @@ public class MonochromeImage {
 
         this.posterizeFilter = new PosterizeFilter();
 
-        BindingFilter bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth(), this.modifiedImage.getHeight());
+        bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth(), this.modifiedImage.getHeight());
 
         this.filters = new ArrayList<>();
         this.filters.add(new GrayscaleFilter());
         this.filters.add(this.posterizeFilter);
-        this.filters.add(bindingFilter);
+        //this.filters.add(bindingFilter);
 
         this.setLevels(2);
 
         this.threadEventListeners = new ArrayList<>();
+    }
+
+    public void resize(int newWidth, int newHeight) {
+        this.modifiedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        bindingFilter.setSourceWidth(newWidth);
+        bindingFilter.setSourceHeight(newHeight);
     }
 
     /**
@@ -51,7 +64,7 @@ public class MonochromeImage {
      */
     public void redraw() {
         Graphics graphics = this.modifiedImage.getGraphics();
-        graphics.drawImage(originalImage, 0, 0, this.originalImage.getWidth(), this.originalImage.getHeight(), null);
+        graphics.drawImage(originalImage, 0, 0, this.modifiedImage.getWidth(), this.modifiedImage.getHeight(), null);
         graphics.dispose();
 
         applyFilters();
@@ -77,9 +90,7 @@ public class MonochromeImage {
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
-        int threadCount = Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
-        Thread[] threads = new Thread[threadCount];
-
+        threads = new Thread[threadCount];
         int[][] pieces = new int[threadCount][];
 
         threadsDone = 0;
@@ -132,7 +143,9 @@ public class MonochromeImage {
     }
 
     private void notifyThreadEventListeners() {
-        System.out.println(threadsDone);
-        this.threadEventListeners.forEach(ThreadEventListener::onThreadEvent);
+        this.threadEventListeners.forEach(ThreadEventListener::onThreadComplete);
+
+        if (threadsDone == threadCount)
+            this.threadEventListeners.forEach(ThreadEventListener::onRedrawComplete);
     }
 }

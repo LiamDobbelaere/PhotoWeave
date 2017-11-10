@@ -1,11 +1,14 @@
 package be.howest.photoweave.model.imaging;
 
+import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -18,12 +21,28 @@ public class MonochromeImageTest {
     @Before
     public void setUp() throws Exception {
         this.grayscale16 = new File(this.getClass().getClassLoader().getResource("grayscale16.png").toURI());
+        System.out.println("Created lock!");
     }
 
     @Test
     public void testGrayscale16ToMonochrome2LevelsHasBlackLeftWhiteRight() throws Exception {
+        final Waiter waiter = new Waiter();
+
         MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        mi.addThreadEventListener(new ThreadEventListener() {
+            @Override
+            public void onThreadComplete() {
+
+            }
+
+            @Override
+            public void onRedrawComplete() {
+                waiter.resume();
+            }
+        });
         mi.redraw();
+
+        waiter.await(5000);
 
         assertEquals("Far left pixel of 2-level posterized grayscale16 should be black",
                 Color.black.getRGB(), mi.getModifiedImage().getRGB(0, 0));
@@ -33,9 +52,25 @@ public class MonochromeImageTest {
 
     @Test
     public void testGrayscale16ToMonochrome3LevelsHasGrayCenter() throws Exception {
+        final Waiter waiter = new Waiter();
+
         MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
         mi.setLevels(3);
+
+        mi.addThreadEventListener(new ThreadEventListener() {
+            @Override
+            public void onThreadComplete() {
+
+            }
+
+            @Override
+            public void onRedrawComplete() {
+                waiter.resume();
+            }
+        });
         mi.redraw();
+
+        waiter.await(5000);
 
         assertEquals("Center pixel of 3-level posterized grayscale16 should be 127, 127, 127",
                 new Color(127, 127, 127).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 2, 0));
@@ -43,9 +78,25 @@ public class MonochromeImageTest {
 
     @Test
     public void testGrayscale16ToMonochrome4LevelsHasGrayCenter() throws Exception {
+        final Waiter waiter = new Waiter();
+
         MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
         mi.setLevels(4);
+
+        mi.addThreadEventListener(new ThreadEventListener() {
+            @Override
+            public void onThreadComplete() {
+
+            }
+
+            @Override
+            public void onRedrawComplete() {
+                waiter.resume();
+            }
+        });
         mi.redraw();
+
+        waiter.await(5000);
 
         assertEquals("2nd block of 4-level posterized grayscale16 should be 85, 85, 85",
                 new Color(85, 85, 85).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 4, 0));
