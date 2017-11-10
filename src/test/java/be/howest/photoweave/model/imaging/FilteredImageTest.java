@@ -7,15 +7,13 @@ import org.junit.Test;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
 /**
  * Created by tomdo on 6/10/2017.
  */
-public class MonochromeImageTest {
+public class FilteredImageTest {
     private File grayscale16;
 
     @Before
@@ -28,7 +26,7 @@ public class MonochromeImageTest {
     public void testGrayscale16ToMonochrome2LevelsHasBlackLeftWhiteRight() throws Exception {
         final Waiter waiter = new Waiter();
 
-        MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
         mi.addThreadEventListener(new ThreadEventListener() {
             @Override
             public void onThreadComplete() {
@@ -54,7 +52,7 @@ public class MonochromeImageTest {
     public void testGrayscale16ToMonochrome3LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
         mi.setLevels(3);
 
         mi.addThreadEventListener(new ThreadEventListener() {
@@ -80,7 +78,7 @@ public class MonochromeImageTest {
     public void testGrayscale16ToMonochrome4LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        MonochromeImage mi = new MonochromeImage(ImageIO.read(grayscale16));
+        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
         mi.setLevels(4);
 
         mi.addThreadEventListener(new ThreadEventListener() {

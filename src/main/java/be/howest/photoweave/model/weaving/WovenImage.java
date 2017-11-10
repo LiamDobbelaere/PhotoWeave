@@ -1,18 +1,16 @@
 package be.howest.photoweave.model.weaving;
 
-import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.binding.BindingPalette;
 import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 
+@Deprecated
 public class WovenImage {
     private BufferedImage sourceImage;
     private BufferedImage resultImage;
 
-    private BindingPalette bindingPalette;
+    //private BindingPalette bindingPalette;
 
     private Integer markedBinding;
     private boolean showMarkedBinding;
@@ -26,7 +24,7 @@ public class WovenImage {
         this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
 
         this.resultImage = ImageUtil.createBlankCopy(this.sourceImage);
-        this.bindingPalette = new BindingPalette(this.sourceImage);
+        //this.bindingPalette = new BindingPalette(this.sourceImage);
 
         this.inverted = false;
         this.showFloaters = false;
@@ -69,7 +67,7 @@ public class WovenImage {
             int start = ((imageData.length - 1) / threadCount) * k;
             int end = ((imageData.length - 1) / threadCount) * (k + 1);
 
-            threads[k] = new Thread(() -> apply(imageData, targetData, start, end));
+            //threads[k] = new Thread(() -> apply(imageData, targetData, start, end));
             threads[k].start();
         }
 
@@ -83,7 +81,7 @@ public class WovenImage {
         System.out.println("Tiling finished");
     }
 
-    private void apply(int[] imageData, int[] targetData, int start, int end) {
+    /*private void apply(int[] imageData, int[] targetData, int start, int end) {
         for (int i = start; i <= end; i++) {
             Binding binding = bindingPalette.getBindingPalette().get(imageData[i]);
             BufferedImage pattern = binding.getBindingImage();
@@ -100,13 +98,13 @@ public class WovenImage {
             if (markedBinding != null && showMarkedBinding && imageData[i] == markedBinding) {
                 if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
                 else color = Color.LIGHT_GRAY.getRGB();
-            }*/
+            }
 
             targetData[i] = color;
         }
 
         //System.out.println("Thread " + String.valueOf(start) + "/" + String.valueOf(end));
-    }
+    }*/
 
 
     private void drawFloaters() {
@@ -170,7 +168,7 @@ public class WovenImage {
         this.showMarkedBinding = showMarkedBinding;
     }
 
-    public BindingPalette getBindingPalette() {
+    /*public BindingPalette getBindingPalette() {
         return bindingPalette;
-    }
+    }*/
 }

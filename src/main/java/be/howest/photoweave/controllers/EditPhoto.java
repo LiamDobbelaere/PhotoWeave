@@ -3,11 +3,9 @@ package be.howest.photoweave.controllers;
 import be.howest.photoweave.components.BindingMaker;
 import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
-import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
-import be.howest.photoweave.model.imaging.MonochromeImage;
+import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
-import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.Observable;
@@ -27,9 +25,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -60,8 +56,7 @@ public class EditPhoto implements ThreadEventListener {
     private String filename;
     private BufferedImage image;
     private BufferedImage originalImage;
-    private MonochromeImage monochromeImage;
-    private WovenImage wovenImage;
+    private FilteredImage filteredImage;
     private Stage stage;
 
     private int posterizeScale = 10;
@@ -70,8 +65,8 @@ public class EditPhoto implements ThreadEventListener {
         // Logic
         this.image = ImageIO.read(new File(path));
         this.originalImage = image;
-        this.monochromeImage = new MonochromeImage(image);
-        monochromeImage.addThreadEventListener(this);
+        this.filteredImage = new FilteredImage(image);
+        filteredImage.addThreadEventListener(this);
         this.posterizeScale = 10;
 
         // UI
@@ -107,7 +102,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(monochromeImage.getModifiedImage(), null));
+        photoView.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
     }
 
     /* Image Logic */
@@ -122,17 +117,17 @@ public class EditPhoto implements ThreadEventListener {
 
         updateImage();*/
 
-        monochromeImage.resize(imageWidth, imageHeight);
+        filteredImage.resize(imageWidth, imageHeight);
 
         updateImage();
     }
 
     private void updateImage() {
-        monochromeImage.setLevels(posterizeScale);
-        monochromeImage.redraw();
+        filteredImage.setLevels(posterizeScale);
+        filteredImage.redraw();
 
 
-        //wovenImage = new WovenImage(monochromeImage.getModifiedImage());
+        //wovenImage = new WovenImage(filteredImage.getModifiedImage());
         //wovenImage.redraw();
 
         //vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
@@ -165,9 +160,9 @@ public class EditPhoto implements ThreadEventListener {
         if (file != null) {
             try {
                 //Kan hier een confict zijn.
-                wovenImage.redraw();
+                filteredImage.redraw();
 
-                ImageIO.write(wovenImage.getResultImage(), "png", file);
+                ImageIO.write(filteredImage.getModifiedImage(), "png", file);
             } catch (IOException ex) {
             }
         }
@@ -281,21 +276,24 @@ public class EditPhoto implements ThreadEventListener {
 
         if (selectedBinding == null) selectedBinding = vboxSelectBinding.getComboBoxColors().getItems().get(0);
 
-        wovenImage.setMarkedBinding(selectedBinding);
+        //todo: Change to filter
+        /*wovenImage.setMarkedBinding(selectedBinding);
         wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
+        wovenImage.redraw();*/
         redrawPhotoView();
     }
 
     private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setInverted(newValue);
-        wovenImage.redraw();
+        //todo: change to filter
+        //wovenImage.setInverted(newValue);
+        //wovenImage.redraw();
         redrawPhotoView();
     }
 
     private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setShowFloaters(newValue);
-        wovenImage.redraw();
+        //todo: change to filter
+        //wovenImage.setShowFloaters(newValue);
+        //wovenImage.redraw();
         redrawPhotoView();
     }
 
@@ -304,8 +302,9 @@ public class EditPhoto implements ThreadEventListener {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldXFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
-                wovenImage.redraw();
+                //todo: change to filter
+                //wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
+                //wovenImage.redraw();
                 redrawPhotoView();
             }
         }
@@ -316,8 +315,9 @@ public class EditPhoto implements ThreadEventListener {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldYFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
-                wovenImage.redraw();
+                //todo: change to filter
+                //wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
+                //wovenImage.redraw();
                 redrawPhotoView();
             }
         }
@@ -339,16 +339,18 @@ public class EditPhoto implements ThreadEventListener {
         return new BindingChangedEventHandler() {
             @Override
             public void onBindingChanged() {
-                wovenImage.redraw();
+                //todo: change to filter
+                //wovenImage.redraw();
                 redrawPhotoView();
             }
         };
     }
 
     private void MarkColorOnImageView(Observable observable) {
-        wovenImage.setMarkedBinding(vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
-        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
+        //todo: change to filter
+        //wovenImage.setMarkedBinding(vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
+        //wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        //wovenImage.redraw();
         redrawPhotoView();
     }
 

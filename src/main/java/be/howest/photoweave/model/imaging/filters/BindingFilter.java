@@ -10,25 +10,19 @@ import java.awt.image.BufferedImage;
  */
 public class BindingFilter implements RGBFilter {
     private int sourceWidth;
-    private int sourceHeight;
     private PosterizeFilter posterizeFilter;
 
     private BindingFactory bindingFactory;
 
-    public BindingFilter(PosterizeFilter posterizeFilter, int sourceWidth, int sourceHeight) {
+    public BindingFilter(PosterizeFilter posterizeFilter, int sourceWidth) {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
 
         this.sourceWidth = sourceWidth;
-        this.sourceHeight = sourceHeight;
     }
 
     public void setSourceWidth(int sourceWidth) {
         this.sourceWidth = sourceWidth;
-    }
-
-    public void setSourceHeight(int sourceHeight) {
-        this.sourceHeight = sourceHeight;
     }
 
     @Override

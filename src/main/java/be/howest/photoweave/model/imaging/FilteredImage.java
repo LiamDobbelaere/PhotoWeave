@@ -11,10 +11,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by tomdo on 5/10/2017.
- */
-public class MonochromeImage {
+public class FilteredImage {
     private BufferedImage originalImage;
     private BufferedImage modifiedImage;
 
@@ -35,13 +32,13 @@ public class MonochromeImage {
      * Creates a grayscale, posterized version of an image from a source image.
      * @param originalImage The source image to use.
      */
-    public MonochromeImage(BufferedImage originalImage) {
+    public FilteredImage(BufferedImage originalImage) {
         this.originalImage = originalImage;
         this.modifiedImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         this.posterizeFilter = new PosterizeFilter();
 
-        bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth(), this.modifiedImage.getHeight());
+        bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth());
 
         this.filters = new ArrayList<>();
         this.filters.add(new GrayscaleFilter());
@@ -56,7 +53,6 @@ public class MonochromeImage {
     public void resize(int newWidth, int newHeight) {
         this.modifiedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
         bindingFilter.setSourceWidth(newWidth);
-        bindingFilter.setSourceHeight(newHeight);
     }
 
     /**
@@ -72,7 +68,7 @@ public class MonochromeImage {
 
     /**
      * Returns the modified image, which is the original image with the filters applied.
-     * Call redraw() to update the modified image. You have to call redraw() at least once after creating a MonochromeImage.
+     * Call redraw() to update the modified image. You have to call redraw() at least once after creating a FilteredImage.
      * @return The modified source image.
      */
     public BufferedImage getModifiedImage() {
