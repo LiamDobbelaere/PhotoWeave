@@ -67,7 +67,7 @@
             <Font size="13.0" />
         </font>
     </JFXTextField>
-    <JFXButton fx:id="buttonEdit" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" disable="true" layoutX="635.0" layoutY="493.0" mnemonicParsing="false" onAction="#editPicture" prefHeight="82.0" prefWidth="135.0" styleClass="button-raised" text="Bewerk" textAlignment="CENTER">
+    <JFXButton fx:id="buttonEdit" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" disable="true" layoutX="635.0" layoutY="493.0" mnemonicParsing="false" onAction="#editPicture" prefHeight="82.0" prefWidth="135.0" styleClass="button-raised" text="Bewerken" textAlignment="CENTER">
         <cursor>
             <Cursor fx:constant="HAND" />
         </cursor>

@@ -147,21 +147,21 @@ public class OpenPhoto {
             Stage stage = new Stage(StageStyle.DECORATED);
             stage.setMinHeight(600.0);
             stage.setMinWidth(800.0);
-            stage.setTitle("PhotoWeave | Edit Photo");
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.setTitle("Verilin | PhotoWeave");
             stage.getIcons().add(new Image("logo.png"));
+            stage.setScene(scene);
+            stage.show();
 
+            this.stage.close();
+            
             EditPhoto controller = task.getValue().getController();
             try {
                 controller.initialize(imagePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            stage.initOwner(buttonEdit.getScene().getWindow());
-            stage.setScene(scene);
-
-
-            this.stage.close();
-            stage.show();
         });
         task.setOnFailed(event -> task.getException().printStackTrace());
 
