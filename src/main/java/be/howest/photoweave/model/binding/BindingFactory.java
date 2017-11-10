@@ -31,7 +31,14 @@ public class BindingFactory {
             bindings.add(new Binding(uri));
         }
 
-        optimizedBindings = bindings.toArray(new Binding[bindings.size()]);
+        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
+
+        for (int j = 0; j < this.bindings.size(); j++) {
+            convertToRBGIntImages(bindings.get(j));
+            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
+        }
+
+        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
     }
 
     private Binding getCustomBinding(String path) throws Exception {

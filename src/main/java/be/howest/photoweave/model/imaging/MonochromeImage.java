@@ -46,7 +46,7 @@ public class MonochromeImage {
         this.filters = new ArrayList<>();
         this.filters.add(new GrayscaleFilter());
         this.filters.add(this.posterizeFilter);
-        //this.filters.add(bindingFilter);
+        this.filters.add(bindingFilter);
 
         this.setLevels(2);
 

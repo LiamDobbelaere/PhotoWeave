@@ -33,9 +33,14 @@ public class BindingFilter implements RGBFilter {
 
     @Override
     public int applyTo(int rgb, int i) {
-        int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / this.posterizeFilter.getLevelCount()));
+        int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
 
-        Binding binding = bindingFactory.getOptimizedBindings()[currentLevel];
+        int assignedBinding = (int) Math.round(
+                (double) currentLevel *
+                (((double) bindingFactory.getOptimizedBindings().length - 1) / ((double) this.posterizeFilter.getLevelCount() - 1))
+        );
+
+        Binding binding = bindingFactory.getOptimizedBindings()[assignedBinding];
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
         int x = (i % sourceWidth) % pattern.getWidth();
