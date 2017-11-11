@@ -1,5 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
+import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,19 +17,23 @@ import static org.junit.Assert.*;
  */
 public class FilteredImageTest {
     private File grayscale16;
+    private FilteredImage filteredImage;
 
     @Before
     public void setUp() throws Exception {
         this.grayscale16 = new File(this.getClass().getClassLoader().getResource("grayscale16.png").toURI());
-        System.out.println("Created lock!");
+        this.filteredImage = new FilteredImage(ImageIO.read(grayscale16));
+        filteredImage.getFilters().add(new GrayscaleFilter());
+        filteredImage.getFilters().add(new PosterizeFilter());
     }
 
     @Test
     public void testGrayscale16ToMonochrome2LevelsHasBlackLeftWhiteRight() throws Exception {
         final Waiter waiter = new Waiter();
 
-        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
-        mi.addThreadEventListener(new ThreadEventListener() {
+        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(2);
+
+        filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
             public void onThreadComplete() {
 
@@ -38,24 +44,26 @@ public class FilteredImageTest {
                 waiter.resume();
             }
         });
-        mi.redraw();
+        filteredImage.redraw();
 
         waiter.await(5000);
 
         assertEquals("Far left pixel of 2-level posterized grayscale16 should be black",
-                Color.black.getRGB(), mi.getModifiedImage().getRGB(0, 0));
+                new SimplifiedColor(Color.black.getRGB()).toString(),
+                new SimplifiedColor(filteredImage.getModifiedImage().getRGB(0, 0)).toString());
         assertEquals("Far right pixel of 2-level posterized grayscale16 should be white",
-                Color.white.getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() - 1, 0));
+                new SimplifiedColor(Color.white.getRGB()).toString(),
+                new SimplifiedColor(filteredImage.getModifiedImage().getRGB(filteredImage.getModifiedImage().getWidth() - 1, 0)).toString());
     }
 
     @Test
     public void testGrayscale16ToMonochrome3LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
-        mi.setLevels(3);
+        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(3);
+        System.out.println(((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).getLevelCount());
 
-        mi.addThreadEventListener(new ThreadEventListener() {
+        filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
             public void onThreadComplete() {
 
@@ -66,22 +74,22 @@ public class FilteredImageTest {
                 waiter.resume();
             }
         });
-        mi.redraw();
+        filteredImage.redraw();
 
         waiter.await(5000);
 
         assertEquals("Center pixel of 3-level posterized grayscale16 should be 127, 127, 127",
-                new Color(127, 127, 127).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 2, 0));
+                new SimplifiedColor(new Color(127, 127, 127).getRGB()).toString(),
+                new SimplifiedColor(filteredImage.getModifiedImage().getRGB(filteredImage.getModifiedImage().getWidth() / 2, 0)).toString());
     }
 
     @Test
     public void testGrayscale16ToMonochrome4LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        FilteredImage mi = new FilteredImage(ImageIO.read(grayscale16));
-        mi.setLevels(4);
+        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(4);
 
-        mi.addThreadEventListener(new ThreadEventListener() {
+        filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
             public void onThreadComplete() {
 
@@ -92,15 +100,17 @@ public class FilteredImageTest {
                 waiter.resume();
             }
         });
-        mi.redraw();
+        filteredImage.redraw();
 
         waiter.await(5000);
 
         assertEquals("2nd block of 4-level posterized grayscale16 should be 85, 85, 85",
-                new Color(85, 85, 85).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 4, 0));
+                new SimplifiedColor(new Color(85, 85, 85).getRGB()).toString(),
+                new SimplifiedColor(filteredImage.getModifiedImage().getRGB(filteredImage.getModifiedImage().getWidth() / 4, 0)).toString());
 
         assertEquals("3rd block of 4-level posterized grayscale16 should be 170, 170, 170",
-                new Color(170, 170, 170).getRGB(), mi.getModifiedImage().getRGB(mi.getModifiedImage().getWidth() / 4 * 2, 0));
+                new SimplifiedColor(new Color(170, 170, 170).getRGB()).toString(),
+                new SimplifiedColor(filteredImage.getModifiedImage().getRGB(filteredImage.getModifiedImage().getWidth() / 4 * 2, 0)).toString());
     }
 
 }

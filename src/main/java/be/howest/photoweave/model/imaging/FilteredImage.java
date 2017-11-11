@@ -9,15 +9,15 @@ import be.howest.photoweave.model.util.ImageUtil;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class FilteredImage {
     private BufferedImage originalImage;
     private BufferedImage modifiedImage;
 
-    private List<RGBFilter> filters;
-    private PosterizeFilter posterizeFilter;
-    private BindingFilter bindingFilter;
+    private FilterList filters = new FilterList();
 
     int threadCount = Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
     int threadsDone = 0;
@@ -36,23 +36,13 @@ public class FilteredImage {
         this.originalImage = originalImage;
         this.modifiedImage = new BufferedImage(originalImage.getWidth(), originalImage.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-        this.posterizeFilter = new PosterizeFilter();
-
-        bindingFilter = new BindingFilter(this.posterizeFilter, this.modifiedImage.getWidth());
-
-        this.filters = new ArrayList<>();
-        this.filters.add(new GrayscaleFilter());
-        this.filters.add(this.posterizeFilter);
-        this.filters.add(bindingFilter);
-
-        this.setLevels(2);
+        this.filters = new FilterList();
 
         this.threadEventListeners = new ArrayList<>();
     }
 
     public void resize(int newWidth, int newHeight) {
         this.modifiedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-        bindingFilter.setSourceWidth(newWidth);
     }
 
     /**
@@ -75,14 +65,6 @@ public class FilteredImage {
         return modifiedImage;
     }
 
-    /***
-     * Sets the amount of levels for the posterize filter.
-     * @param levels The amount of levels to set.
-     */
-    public void setLevels(int levels) {
-        this.posterizeFilter.setLevels(levels);
-    }
-    
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
@@ -116,7 +98,10 @@ public class FilteredImage {
         for (int i = 0; i < imageData.length; i++) {
             int rgb = imageData[i];
 
-            for (RGBFilter filter : filters) {
+            Iterator<RGBFilter> filterIterator = filters.getAll();
+
+            while (filterIterator.hasNext()) {
+                RGBFilter filter = filterIterator.next();
                 rgb = filter.applyTo(rgb, actualStart + i);
             }
 
@@ -143,5 +128,9 @@ public class FilteredImage {
 
         if (threadsDone == threadCount)
             this.threadEventListeners.forEach(ThreadEventListener::onRedrawComplete);
+    }
+
+    public FilterList getFilters() {
+        return filters;
     }
 }

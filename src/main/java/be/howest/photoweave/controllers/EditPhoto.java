@@ -6,6 +6,9 @@ import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
+import be.howest.photoweave.model.imaging.filters.BindingFilter;
+import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.beans.Observable;
@@ -67,6 +70,11 @@ public class EditPhoto implements ThreadEventListener {
         this.originalImage = image;
         this.filteredImage = new FilteredImage(image);
         filteredImage.addThreadEventListener(this);
+        filteredImage.getFilters().add(new GrayscaleFilter());
+        filteredImage.getFilters().add(new PosterizeFilter());
+        filteredImage.getFilters().add(new BindingFilter(
+                (PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class), filteredImage));
+
         this.posterizeScale = 10;
 
         // UI
@@ -105,35 +113,14 @@ public class EditPhoto implements ThreadEventListener {
         photoView.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
     }
 
-    /* Image Logic */
     private void resizeImage() {
-        /*BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-
-        Graphics g = newImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
-        g.dispose();
-
-        image = newImage;
-
-        updateImage();*/
-
         filteredImage.resize(imageWidth, imageHeight);
 
         updateImage();
     }
 
     private void updateImage() {
-        filteredImage.setLevels(posterizeScale);
         filteredImage.redraw();
-
-
-        //wovenImage = new WovenImage(filteredImage.getModifiedImage());
-        //wovenImage.redraw();
-
-        //vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
-
-        redrawPhotoView();
-
         updateTexts();
     }
 
@@ -240,6 +227,10 @@ public class EditPhoto implements ThreadEventListener {
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
         posterizeScale = sliderPosterizationScale.valueProperty().intValue();
         labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+
+        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class);
+        posterizeFilter.setLevels(posterizeScale);
+
         updateImage();
     }
 
@@ -280,21 +271,20 @@ public class EditPhoto implements ThreadEventListener {
         /*wovenImage.setMarkedBinding(selectedBinding);
         wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
         wovenImage.redraw();*/
-        redrawPhotoView();
     }
 
     private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
         //todo: change to filter
-        //wovenImage.setInverted(newValue);
-        //wovenImage.redraw();
-        redrawPhotoView();
+
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().find(BindingFilter.class);
+        bindingFilter.setInverted(newValue);
+        filteredImage.redraw();
     }
 
     private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
         //todo: change to filter
         //wovenImage.setShowFloaters(newValue);
         //wovenImage.redraw();
-        redrawPhotoView();
     }
 
     private void ChangeXFloatersThreshold(Observable observable, String oldValue, String newValue) {
