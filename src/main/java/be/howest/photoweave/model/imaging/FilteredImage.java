@@ -49,6 +49,8 @@ public class FilteredImage {
      * Redraws the modified image and applies the filters to it.
      */
     public void redraw() {
+        this.threadEventListeners.forEach(ThreadEventListener::OnRedrawBegin);
+
         Graphics graphics = this.modifiedImage.getGraphics();
         graphics.drawImage(originalImage, 0, 0, this.modifiedImage.getWidth(), this.modifiedImage.getHeight(), null);
         graphics.dispose();
@@ -68,7 +70,15 @@ public class FilteredImage {
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
 
+        //Interrupt all existing jobs
+        if (threads != null) {
+            for (Thread thread : threads) {
+                thread.interrupt();
+            }
+        }
+
         threads = new Thread[threadCount];
+
         int[][] pieces = new int[threadCount][];
 
         threadsDone = 0;
@@ -91,6 +101,8 @@ public class FilteredImage {
             threads[k] = new Thread(() -> applyFilterThreaded(ref, imageData, start));
             threads[k].start();
         }
+
+        System.out.println("Redraw happening");
     }
 
     //private void applyFilterThreaded(int[] imageData, int start, int end) {
@@ -106,12 +118,16 @@ public class FilteredImage {
             }
 
             imageData[i] = rgb;
+
+            if (Thread.currentThread().isInterrupted()) i = imageData.length;
         }
 
         synchronized (this) {
-            System.arraycopy(imageData, 0, fullImageData, actualStart, imageData.length);
-            threadsDone++;
-            notifyThreadEventListeners();
+            if (!Thread.currentThread().isInterrupted()) {
+                System.arraycopy(imageData, 0, fullImageData, actualStart, imageData.length);
+                threadsDone++;
+                notifyThreadEventListeners();
+            }
         }
     }
 
@@ -126,7 +142,7 @@ public class FilteredImage {
     private void notifyThreadEventListeners() {
         this.threadEventListeners.forEach(ThreadEventListener::onThreadComplete);
 
-        if (threadsDone == threadCount)
+        if (threadsDone >= threadCount)
             this.threadEventListeners.forEach(ThreadEventListener::onRedrawComplete);
     }
 

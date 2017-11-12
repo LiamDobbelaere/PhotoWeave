@@ -15,7 +15,7 @@ import java.util.Map;
 public class BindingFilter implements RGBFilter {
     private PosterizeFilter posterizeFilter;
     private BindingFactory bindingFactory;
-    private Map<Integer, Binding> bindings;
+    private Map<Integer, Binding> bindingsMap;
 
     private boolean inverted;
     private boolean showMarkedBinding;
@@ -27,11 +27,11 @@ public class BindingFilter implements RGBFilter {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
-        this.bindings = new HashMap<>();
+        this.bindingsMap = new HashMap<>();
     }
 
-    public Map<Integer, Binding> getBindings() {
-        return bindings;
+    public Map<Integer, Binding> getBindingsMap() {
+        return bindingsMap;
     }
 
     private int findBestBindingForLevel(int level) {
@@ -54,7 +54,7 @@ public class BindingFilter implements RGBFilter {
     public int applyTo(int rgb, int i) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
 
-        Binding binding = this.bindings.computeIfAbsent(
+        Binding binding = this.bindingsMap.computeIfAbsent(
                 currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
 
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
