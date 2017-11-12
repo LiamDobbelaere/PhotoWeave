@@ -35,6 +35,11 @@ public class FilteredImageTest {
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
+            public void OnRedrawBegin() {
+
+            }
+
+            @Override
             public void onThreadComplete() {
 
             }
@@ -65,6 +70,11 @@ public class FilteredImageTest {
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
+            public void OnRedrawBegin() {
+                
+            }
+
+            @Override
             public void onThreadComplete() {
 
             }
@@ -90,6 +100,11 @@ public class FilteredImageTest {
         ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(4);
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
+            @Override
+            public void OnRedrawBegin() {
+
+            }
+
             @Override
             public void onThreadComplete() {
 
