@@ -4,12 +4,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class Application extends javafx.application.Application {
-
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -20,9 +20,10 @@ public class Application extends javafx.application.Application {
         AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/OpenPhoto.fxml"));
 
         Scene scene = new Scene(pane);
-        stage.setTitle("PhotoWeave | Choose Image");
+        stage.setTitle("Verilin | PhotoWeave");
         stage.getIcons().add(new Image("logo.png"));
         stage.setResizable(false);
+        stage.sizeToScene();
         stage.setScene(scene);
         stage.show();
     }

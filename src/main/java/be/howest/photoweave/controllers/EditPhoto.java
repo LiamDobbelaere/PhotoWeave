@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -50,8 +51,10 @@ public class EditPhoto implements ThreadEventListener {
     public JFXTextField textFieldYFloaters;
 
     public AnchorPane anchorPanePhotoView;
-    public VBox vboxPhotView;
+    public VBox vboxPhotoView;
     public PixelatedImageView photoView;
+    public TitledPane paneDefault;
+    public Label filePath;
 
     /*  */
     private int imageWidth;
@@ -88,25 +91,26 @@ public class EditPhoto implements ThreadEventListener {
         initializeListeners();
         initializePhotoScale();
         updateTexts();
+
+        paneDefault.setExpanded(true);
     }
 
     /* UI */
     private void initializePhotoScale() {
-        stage.show();
-        if (image.getHeight() <= image.getWidth()) {
-            photoView.setFitWidth(anchorPanePhotoView.getWidth());
-        } else {
-            photoView.setFitHeight(anchorPanePhotoView.getHeight());
-        }
+        if (image.getHeight() <= image.getWidth())
+            photoView.setFitWidth(vboxPhotoView.getWidth()-2);
+        else
+            photoView.setFitHeight(vboxPhotoView.getHeight()-2);
+
         updateImage();
     }
 
     private void updateTexts() {
-        labelFileNameId.setText("File: " + filename);
-        labelImageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
+        labelFileNameId.setText(new File(filename).getName());
+        filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(imageWidth));
         textFieldHeight.setText(String.valueOf(imageHeight));
-        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+        labelAmountOfColors.setText("Aantal tinten: " + posterizeScale);
     }
 
     private void redrawPhotoView() {
@@ -128,11 +132,19 @@ public class EditPhoto implements ThreadEventListener {
     public void zoomIn() {
         photoView.setFitWidth(photoView.getFitWidth() * 1.3);
         photoView.setFitHeight(photoView.getFitHeight() * 1.3);
+        System.out.println("4; " + photoView.getFitWidth());
     }
 
     public void zoomOut() {
         photoView.setFitWidth(photoView.getFitWidth() / 1.3);
         photoView.setFitHeight(photoView.getFitHeight() / 1.3);
+    }
+
+    public void fitWindow(ActionEvent actionEvent) {
+        if (image.getHeight() <= image.getWidth())
+            photoView.setFitWidth(vboxPhotoView.getWidth()-2);
+        else
+            photoView.setFitHeight(vboxPhotoView.getHeight()-2);
     }
 
     public void saveImage(ActionEvent actionEvent) {
@@ -235,11 +247,11 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void ResizeImageViewHeight(Observable observable, Number oldValue, Number newValue) {
-        vboxPhotView.setMinHeight((Double) newValue - 50);
+        vboxPhotoView.setMinHeight((Double) newValue - 50);
     }
 
     private void ResizeImageViewWidth(Observable observable, Number oldValue, Number newValue) {
-        vboxPhotView.setMinWidth((Double) newValue - 200);
+        vboxPhotoView.setMinWidth((Double) newValue - 200);
     }
 
     private void ChangeImageWidth(Observable observable, String oldValue, String newValue) {
@@ -343,7 +355,7 @@ public class EditPhoto implements ThreadEventListener {
         //wovenImage.redraw();
         redrawPhotoView();
     }
-
+    
     @Override
     public void onThreadComplete() {
         redrawPhotoView();
