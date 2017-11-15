@@ -31,7 +31,7 @@ public class FilteredImageTest {
     public void testGrayscale16ToMonochrome2LevelsHasBlackLeftWhiteRight() throws Exception {
         final Waiter waiter = new Waiter();
 
-        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(2);
+        ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(2);
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
@@ -65,8 +65,8 @@ public class FilteredImageTest {
     public void testGrayscale16ToMonochrome3LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(3);
-        System.out.println(((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).getLevelCount());
+        ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(3);
+        System.out.println(((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount());
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
@@ -97,7 +97,7 @@ public class FilteredImageTest {
     public void testGrayscale16ToMonochrome4LevelsHasGrayCenter() throws Exception {
         final Waiter waiter = new Waiter();
 
-        ((PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class)).setLevels(4);
+        ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(4);
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
