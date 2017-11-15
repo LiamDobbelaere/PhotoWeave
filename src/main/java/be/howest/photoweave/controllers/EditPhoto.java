@@ -5,11 +5,18 @@ import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
-import be.howest.photoweave.model.imaging.MonochromeImage;
-import be.howest.photoweave.model.weaving.WovenImage;
+import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.imaging.FilteredImage;
+import be.howest.photoweave.model.imaging.ThreadEventListener;
+import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -27,12 +34,11 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class EditPhoto {
+public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
     public AnchorPane anchorPaneWindow;
     public Label labelFileNameId;
@@ -61,9 +67,11 @@ public class EditPhoto {
     private String filename;
     private BufferedImage image;
     private BufferedImage originalImage;
-    private MonochromeImage monochromeImage;
-    private WovenImage wovenImage;
+    private FilteredImage filteredImage;
     private Stage stage;
+
+    private BindingChangedEventHandler bindingChangedEventHandler;
+    private ChangeListener<Integer> markedColorChangeListener;
 
     private int posterizeScale = 10;
 
@@ -71,8 +79,30 @@ public class EditPhoto {
         // Logic
         this.image = ImageIO.read(new File(path));
         this.originalImage = image;
-        this.monochromeImage = new MonochromeImage(image);
+        this.filteredImage = new FilteredImage(image);
+        this.filteredImage.addThreadEventListener(this);
+        this.filteredImage.getFilters().add(new GrayscaleFilter());
+        this.filteredImage.getFilters().add(new PosterizeFilter());
+        this.filteredImage.getFilters().add(new BindingFilter(
+                (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
+        this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
+
+        this.vboxSelectBinding.setBindingFilter((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+
         this.posterizeScale = 10;
+
+        this.bindingChangedEventHandler = new BindingChangedEventHandler() {
+            @Override
+            public void onBindingChanged() {
+                System.out.println("BINDING CHANGED");
+
+                filteredImage.redraw();
+            }
+        };
+
+        this.markedColorChangeListener = (observable, oldValue, newValue) -> {
+            this.MarkColorOnImageView(observable);
+        };
 
         // UI
         this.imageWidth = image.getWidth();
@@ -108,32 +138,17 @@ public class EditPhoto {
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(), null));
+        photoView.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
     }
 
-    /* Image Logic */
     private void resizeImage() {
-        BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-
-        Graphics g = newImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
-        g.dispose();
-
-        image = newImage;
+        filteredImage.resize(imageWidth, imageHeight);
 
         updateImage();
     }
 
     private void updateImage() {
-        monochromeImage = new MonochromeImage(image);
-        monochromeImage.setLevels(posterizeScale);
-        monochromeImage.redraw();
-        wovenImage = new WovenImage(monochromeImage.getModifiedImage());
-        wovenImage.redraw();
-        redrawPhotoView();
-
-        vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
-
+        filteredImage.redraw();
         updateTexts();
     }
 
@@ -168,9 +183,9 @@ public class EditPhoto {
         if (file != null) {
             try {
                 //Kan hier een confict zijn.
-                wovenImage.redraw();
+                filteredImage.redraw();
 
-                ImageIO.write(wovenImage.getResultImage(), "png", file);
+                ImageIO.write(filteredImage.getModifiedImage(), "png", file);
             } catch (IOException ex) {
             }
         }
@@ -197,6 +212,7 @@ public class EditPhoto {
         /* FXML */
         sliderPosterizationScale
                 .setOnMouseReleased(this::updatePosterizationLevelOnImage);
+
         textFieldWidth
                 .focusedProperty()
                 .addListener(this::ResizeImageHeight);
@@ -234,19 +250,26 @@ public class EditPhoto {
 
         /* CUSTOM */
         vboxSelectBinding
-                .getComboBox()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.changeBindingInWomenImage());
+                .getComboBoxBindings()
+                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
 
         vboxSelectBinding
-                .getComboBoxColors()
+                .getComboBoxLevels()
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener(this::MarkColorOnImageView);
+                .addListener(this.markedColorChangeListener);
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
         posterizeScale = sliderPosterizationScale.valueProperty().intValue();
         labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+
+        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
+        posterizeFilter.setLevels(posterizeScale);
+
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.getBindingsMap().clear();
+
         updateImage();
     }
 
@@ -279,26 +302,29 @@ public class EditPhoto {
     }
 
     private void showMarkingOnImageView(Observable observable) {
-        Integer selectedBinding = vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
-        if (selectedBinding == null) selectedBinding = vboxSelectBinding.getComboBoxColors().getItems().get(0);
+        if (selectedBinding == null) selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getItems().get(0));
 
-        wovenImage.setMarkedBinding(selectedBinding);
-        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
-        redrawPhotoView();
+        bindingFilter.setMarkedBinding(selectedBinding);
+        bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        filteredImage.redraw();
     }
 
     private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setInverted(newValue);
-        wovenImage.redraw();
-        redrawPhotoView();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bindingFilter.setInverted(newValue);
+        filteredImage.redraw();
     }
 
     private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setShowFloaters(newValue);
-        wovenImage.redraw();
-        redrawPhotoView();
+        FloatersFilter floatersFilter =
+                (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+        floatersFilter.setEnabled(newValue);
+
+        filteredImage.redraw();
     }
 
     private void ChangeXFloatersThreshold(Observable observable, String oldValue, String newValue) {
@@ -306,9 +332,12 @@ public class EditPhoto {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldXFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
-                wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdX(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -318,9 +347,12 @@ public class EditPhoto {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldYFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
-                wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdY(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -337,20 +369,51 @@ public class EditPhoto {
         }
     }
 
-    private BindingChangedEventHandler changeBindingInWomenImage() {
-        return new BindingChangedEventHandler() {
-            @Override
-            public void onBindingChanged() {
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        };
+    private BindingChangedEventHandler changeBindingInWovenImage() {
+        return this.bindingChangedEventHandler;
     }
 
     private void MarkColorOnImageView(Observable observable) {
-        wovenImage.setMarkedBinding(vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
-        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
-        redrawPhotoView();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        bindingFilter.setMarkedBinding(bindingFilter.getBindingsMap().get(
+                vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()));
+        bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        filteredImage.redraw();
+        System.out.println("MARK COLOR ON IMAGE VIEW");
+    }
+
+    @Override
+    public void OnRedrawBegin() {
+        vboxSelectBinding
+                .getComboBoxLevels()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .removeListener(this.markedColorChangeListener);
+        vboxSelectBinding.removeEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+    }
+
+    @Override
+    public void onThreadComplete() {
+        //You could add a waiting symbol here
+        //redrawPhotoView(); //Optional, but shows the thread's progress in realtime
+    }
+
+    @Override
+    public void onRedrawComplete() {
+        Platform.runLater(
+                () -> {
+                    vboxSelectBinding.setBindingFilter(
+                            ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)));
+
+                    vboxSelectBinding
+                            .getComboBoxLevels()
+                            .getSelectionModel()
+                            .selectedItemProperty()
+                            .addListener(this.markedColorChangeListener);
+                    vboxSelectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+
+                    redrawPhotoView();
+                });
     }
 }
