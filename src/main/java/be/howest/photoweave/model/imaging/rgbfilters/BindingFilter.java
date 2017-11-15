@@ -1,4 +1,4 @@
-package be.howest.photoweave.model.imaging.filters;
+package be.howest.photoweave.model.imaging.rgbfilters;
 
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
@@ -50,6 +50,10 @@ public class BindingFilter implements RGBFilter {
         this.markedBinding = markedBinding;
     }
 
+    public PosterizeFilter getPosterizeFilter() {
+        return posterizeFilter;
+    }
+
     @Override
     public int applyTo(int rgb, int i) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
@@ -65,7 +69,7 @@ public class BindingFilter implements RGBFilter {
 
 
         if (inverted) {
-            if (color== Color.BLACK.getRGB()) color = Color.WHITE.getRGB();
+            if (color == Color.BLACK.getRGB()) color = Color.WHITE.getRGB();
             else color = Color.BLACK.getRGB();
         }
 

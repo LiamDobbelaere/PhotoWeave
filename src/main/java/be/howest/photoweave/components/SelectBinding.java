@@ -2,7 +2,7 @@ package be.howest.photoweave.components;
 
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.imaging.filters.BindingFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListCell;
@@ -78,6 +78,8 @@ public class SelectBinding extends VBox {
     public void setBindingFilter(BindingFilter filter) {
         this.bindingFilter = filter;
 
+        Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
+
         comboBoxBindings.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
 
         bindingsList.clear();
@@ -86,7 +88,13 @@ public class SelectBinding extends VBox {
         bindingsList.addAll(this.bindingFilter.getBindingsMap().values());
         levelsList.addAll(this.bindingFilter.getBindingsMap().keySet());
 
-        comboBoxLevels.getSelectionModel().selectFirst();
+        if (levelsList.contains(selectedItem)) {
+            System.out.println("nope");
+            comboBoxLevels.getSelectionModel().select(selectedItem);
+        } else {
+            comboBoxLevels.getSelectionModel().selectFirst();
+        }
+
         comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
     }
 
@@ -129,16 +137,14 @@ public class SelectBinding extends VBox {
         protected void updateItem(Integer item, boolean empty) {
             super.updateItem(item, empty);
 
-            pane.setText(String.valueOf(item));
-
             setGraphic(null);
             setText(null);
 
             if (item != null) {
-                Color color = new Color(item);
+                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                Color color = new Color(colorInt, colorInt, colorInt);
 
-
-                pane.setStyle("-fx-border-color: black; -fx-border-width: 2px;"); //"-fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
+                pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
                 pane.setPrefSize(40, 40);
                 pane.setMinSize(40, 40);
                 pane.setMaxSize(40, 40);

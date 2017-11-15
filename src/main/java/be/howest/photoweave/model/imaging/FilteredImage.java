@@ -1,15 +1,12 @@
 package be.howest.photoweave.model.imaging;
 
-import be.howest.photoweave.model.imaging.filters.BindingFilter;
-import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
-import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
-import be.howest.photoweave.model.imaging.filters.RGBFilter;
+import be.howest.photoweave.model.imaging.imagefilters.ImageFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.RGBFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +43,7 @@ public class FilteredImage {
     }
 
     /**
-     * Redraws the modified image and applies the filters to it.
+     * Redraws the modified image and applies the rgbfilters to it.
      */
     public void redraw() {
         this.threadEventListeners.forEach(ThreadEventListener::OnRedrawBegin);
@@ -59,7 +56,7 @@ public class FilteredImage {
     }
 
     /**
-     * Returns the modified image, which is the original image with the filters applied.
+     * Returns the modified image, which is the original image with the rgbfilters applied.
      * Call redraw() to update the modified image. You have to call redraw() at least once after creating a FilteredImage.
      * @return The modified source image.
      */
@@ -105,12 +102,11 @@ public class FilteredImage {
         System.out.println("Redraw happening");
     }
 
-    //private void applyFilterThreaded(int[] imageData, int start, int end) {
     private void applyFilterThreaded(int[] imageData, int[] fullImageData, int actualStart) {
         for (int i = 0; i < imageData.length; i++) {
             int rgb = imageData[i];
 
-            Iterator<RGBFilter> filterIterator = filters.getAll();
+            Iterator<RGBFilter> filterIterator = filters.getRGBFilters();
 
             while (filterIterator.hasNext()) {
                 RGBFilter filter = filterIterator.next();
@@ -131,6 +127,15 @@ public class FilteredImage {
         }
     }
 
+    private void applyImageFilters() {
+        Iterator<ImageFilter> imageFilterIterator = this.filters.getImageFilters();
+
+        while (imageFilterIterator.hasNext()) {
+            ImageFilter imageFilter = imageFilterIterator.next();
+            imageFilter.applyTo(this.modifiedImage);
+        }
+    }
+
     public void addThreadEventListener(ThreadEventListener t) {
         this.threadEventListeners.add(t);
     }
@@ -142,9 +147,12 @@ public class FilteredImage {
     private void notifyThreadEventListeners() {
         this.threadEventListeners.forEach(ThreadEventListener::onThreadComplete);
 
-        if (threadsDone >= threadCount)
+        if (threadsDone >= threadCount) {
+            applyImageFilters();
             this.threadEventListeners.forEach(ThreadEventListener::onRedrawComplete);
+        }
     }
+
 
     public FilterList getFilters() {
         return filters;

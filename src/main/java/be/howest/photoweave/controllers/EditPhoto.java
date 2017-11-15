@@ -8,9 +8,10 @@ import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
-import be.howest.photoweave.model.imaging.filters.BindingFilter;
-import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
-import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
@@ -83,9 +84,10 @@ public class EditPhoto implements ThreadEventListener {
         this.filteredImage.getFilters().add(new GrayscaleFilter());
         this.filteredImage.getFilters().add(new PosterizeFilter());
         this.filteredImage.getFilters().add(new BindingFilter(
-                (PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class), filteredImage));
+                (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
+        this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
-        this.vboxSelectBinding.setBindingFilter((BindingFilter) filteredImage.getFilters().find(BindingFilter.class));
+        this.vboxSelectBinding.setBindingFilter((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
 
         this.posterizeScale = 10;
 
@@ -262,10 +264,10 @@ public class EditPhoto implements ThreadEventListener {
         posterizeScale = sliderPosterizationScale.valueProperty().intValue();
         labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
 
-        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().find(PosterizeFilter.class);
+        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
         posterizeFilter.setLevels(posterizeScale);
 
-        BindingFilter bf = (BindingFilter) filteredImage.getFilters().find(BindingFilter.class);
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.getBindingsMap().clear();
 
         updateImage();
@@ -300,7 +302,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void showMarkingOnImageView(Observable observable) {
-        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().find(BindingFilter.class);
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
         if (selectedBinding == null) selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getItems().get(0));
@@ -311,17 +313,18 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
-        //todo: change to filter
-
-        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().find(BindingFilter.class);
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bindingFilter.setInverted(newValue);
         filteredImage.redraw();
     }
 
     private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
-        //todo: change to filter
-        //wovenImage.setShowFloaters(newValue);
-        //wovenImage.redraw();
+        FloatersFilter floatersFilter =
+                (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+        floatersFilter.setEnabled(newValue);
+
+        filteredImage.redraw();
     }
 
     private void ChangeXFloatersThreshold(Observable observable, String oldValue, String newValue) {
@@ -329,10 +332,12 @@ public class EditPhoto implements ThreadEventListener {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldXFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                //todo: change to filter
-                //wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
-                //wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdX(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -342,10 +347,12 @@ public class EditPhoto implements ThreadEventListener {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldYFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                //todo: change to filter
-                //wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
-                //wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdY(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -367,7 +374,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void MarkColorOnImageView(Observable observable) {
-        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().find(BindingFilter.class);
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
 
         bindingFilter.setMarkedBinding(bindingFilter.getBindingsMap().get(
                 vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()));
@@ -397,7 +404,7 @@ public class EditPhoto implements ThreadEventListener {
         Platform.runLater(
                 () -> {
                     vboxSelectBinding.setBindingFilter(
-                            ((BindingFilter) filteredImage.getFilters().find(BindingFilter.class)));
+                            ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)));
 
                     vboxSelectBinding
                             .getComboBoxLevels()

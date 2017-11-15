@@ -1,7 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
-import be.howest.photoweave.model.imaging.filters.BindingFilter;
-import be.howest.photoweave.model.imaging.filters.RGBFilter;
+import be.howest.photoweave.model.imaging.imagefilters.ImageFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.RGBFilter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,24 +10,32 @@ import java.util.Iterator;
  * Created by tomdo on 11/11/2017.
  */
 public class FilterList {
-    private ArrayList<RGBFilter> filters;
+    private ArrayList<RGBFilter> rgbFilters;
+    private ArrayList<ImageFilter> imageFilters;
 
     public FilterList() {
-        this.filters = new ArrayList<>();
+        this.rgbFilters = new ArrayList<>();
+        this.imageFilters = new ArrayList<>();
     }
 
     public void add(RGBFilter filter) {
-        this.filters.add(filter);
+        this.rgbFilters.add(filter);
+    }
+    public void add(ImageFilter filter) {
+        this.imageFilters.add(filter);
     }
 
     public void remove(RGBFilter filter) {
-        this.filters.remove(filter);
+        this.rgbFilters.remove(filter);
+    }
+    public void remove(ImageFilter filter) {
+        this.imageFilters.remove(filter);
     }
 
-    public RGBFilter find(Class<? extends RGBFilter> searchedFilter) {
+    public RGBFilter findRGBFilter(Class<? extends RGBFilter> searchedFilter) {
         RGBFilter found = null;
 
-        for (RGBFilter filter : filters) {
+        for (RGBFilter filter : rgbFilters) {
             if (searchedFilter.isInstance(filter)) {
                 found = filter;
             }
@@ -36,7 +44,20 @@ public class FilterList {
         return found;
     }
 
-    public Iterator<RGBFilter> getAll() {
-        return filters.iterator();
+    public ImageFilter findImageFilter(Class<? extends ImageFilter> searchedFilter) {
+        ImageFilter found = null;
+
+        for (ImageFilter filter : imageFilters) {
+            if (searchedFilter.isInstance(filter)) {
+                found = filter;
+            }
+        }
+
+        return found;
     }
+
+    public Iterator<RGBFilter> getRGBFilters() {
+        return rgbFilters.iterator();
+    }
+    public Iterator<ImageFilter> getImageFilters() { return imageFilters.iterator(); }
 }

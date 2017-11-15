@@ -1,4 +1,4 @@
-package be.howest.photoweave.model.imaging.filters;
+package be.howest.photoweave.model.imaging.rgbfilters;
 
 /**
  * Created by tomdo on 6/10/2017.

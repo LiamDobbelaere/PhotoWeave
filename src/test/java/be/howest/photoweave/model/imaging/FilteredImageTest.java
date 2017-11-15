@@ -1,7 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
-import be.howest.photoweave.model.imaging.filters.GrayscaleFilter;
-import be.howest.photoweave.model.imaging.filters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import net.jodah.concurrentunit.Waiter;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class FilteredImageTest {
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
             public void OnRedrawBegin() {
-                
+
             }
 
             @Override

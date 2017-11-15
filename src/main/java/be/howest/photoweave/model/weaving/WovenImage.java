@@ -107,54 +107,6 @@ public class WovenImage {
     }*/
 
 
-    private void drawFloaters() {
-        int lastColor = 0;
-        int colorCount = 0;
-
-        for (int y = 0; y < this.resultImage.getHeight() - 1; y++) {
-            colorCount = 0;
-
-            for (int x = 0; x < this.resultImage.getWidth() -1; x++) {
-                int color = this.resultImage.getRGB(x, y);
-
-                if (color == lastColor) colorCount++;
-                else colorCount = 0;
-
-
-                if (colorCount > floaterTresholdX - 1) {
-                    colorCount = 0;
-
-                    color = Color.RED.getRGB();
-                    this.resultImage.setRGB(x, y, color);
-                }
-
-                lastColor = color;
-            }
-        }
-
-        lastColor = 0;
-
-        for (int x = 0; x < this.resultImage.getWidth() -1; x++) {
-            colorCount = 0;
-
-            for (int y = 0; y < this.resultImage.getHeight() - 1; y++) {
-                int color = this.resultImage.getRGB(x, y);
-
-                if (color == lastColor) colorCount++;
-                else colorCount = 0;
-
-                if (colorCount > floaterTresholdY - 1) {
-                    colorCount = 0;
-
-                    color = Color.orange.getRGB();
-                    this.resultImage.setRGB(x, y, color);
-                }
-
-                lastColor = color;
-            }
-        }
-    }
-
     /* Getter */
     public BufferedImage getResultImage() {
         return resultImage;
