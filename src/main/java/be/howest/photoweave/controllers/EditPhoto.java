@@ -12,7 +12,6 @@ import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
-import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
@@ -175,16 +174,18 @@ public class EditPhoto implements ThreadEventListener {
     public void saveImage(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("BMP", ".bmp")
+                new FileChooser.ExtensionFilter("PNG", ".png"),
+                new FileChooser.ExtensionFilter("JPG", ".jpg"),
+                new FileChooser.ExtensionFilter("JPEG", ".jpeg")
         );
         fileChooser.setTitle("PhotoWeave | Save Image");
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
             try {
                 //Kan hier een confict zijn.
-                //filteredImage.redraw();
+                filteredImage.redraw();
 
-                ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
+                ImageIO.write(filteredImage.getModifiedImage(), "png", file);
             } catch (IOException ex) {
             }
         }
