@@ -141,7 +141,7 @@
                 <JFXButton fx:id="buttonBindingCreator" mnemonicParsing="false" onAction="#openBindingCreator" styleClass="button-raised" text="Binding Creator" textAlignment="CENTER" />
             </VBox>
             <VBox fx:id="vboxPhotView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #336699;">
-                <ScrollPane fitToHeight="true" fitToWidth="true" pannable="true" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
+                <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
                     <AnchorPane id="anchorpane" fx:id="anchorPanePhotoView">
                         <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true" preserveRatio="true">
                             <Image url="@../logo.png" />

@@ -67,6 +67,9 @@ public class EditPhoto {
 
     private int posterizeScale = 10;
 
+    private int pXPrevious = -1;
+    private int pYPrevious = -1;
+
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
@@ -240,7 +243,7 @@ public class EditPhoto {
                 .addListener(this::MarkColorOnImageView);
 
         photoView
-                .setOnMouseClicked(ManipulatePixel());
+                .setOnMouseDragged(ManipulatePixel());
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
@@ -353,6 +356,49 @@ public class EditPhoto {
         redrawPhotoView();
     }
 
+    private void drawLine(BufferedImage bi, int x1, int y1, int x2, int y2) {
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+
+        int x = x1;
+        int y = y1;
+
+        if (dx >= dy) {
+            while (true) {
+                bi.setRGB(x, y, Color.RED.getRGB());
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            while (true) {
+                bi.setRGB(x, y, Color.RED.getRGB());
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
+            }
+        }
+    }
+
     private EventHandler<MouseEvent> ManipulatePixel() {
         return event -> {
             BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
@@ -364,7 +410,16 @@ public class EditPhoto {
             int pY = (int) (bi.getHeight() * yPercent);
             int original = bi.getRGB(pX, pY);
 
-            bi.setRGB(pX, pY, original == Color.BLACK.getRGB() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
+            if (pXPrevious == -1 || pYPrevious == -1) {
+                bi.setRGB(pX, pY, Color.RED.getRGB());
+            } else {
+                drawLine(bi, pXPrevious, pYPrevious, pX, pY);
+            }
+
+            //bi.setRGB(pX, pY, original == Color.BLACK.getRGB() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
+
+            pXPrevious = pX;
+            pYPrevious = pY;
 
             photoView.setImage(SwingFXUtils.toFXImage(bi, null));
         };
