@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<AnchorPane prefHeight="317.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.CalculateFlattening">
+
+    <VBox spacing="24">
+        <padding>
+            <Insets top="32" bottom="16" left="16" right="16"/>
+        </padding>
+        <HBox spacing="24">
+            <Label text="Oorspronkelijke grootte: "/>
+            <Label text="1234 1234"/>
+        </HBox>
+
+        <HBox spacing="24">
+            <JFXTextField fx:id="textFieldWidth" labelFloat="true" promptText="Max. breedte" text="1234 px" />
+            <JFXTextField fx:id="textFieldHeight" labelFloat="true" promptText="Weefbreedte" text="1234 px" />
+        </HBox>
+    </VBox>
+
+</AnchorPane>

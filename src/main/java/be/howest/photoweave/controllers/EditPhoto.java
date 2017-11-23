@@ -14,6 +14,7 @@ import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -31,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -123,9 +125,9 @@ public class EditPhoto implements ThreadEventListener {
     /* UI */
     private void initializePhotoScale() {
         if (image.getHeight() <= image.getWidth())
-            photoView.setFitWidth(vboxPhotoView.getWidth()-2);
+            photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
         else
-            photoView.setFitHeight(vboxPhotoView.getHeight()-2);
+            photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
 
         updateImage();
     }
@@ -167,9 +169,9 @@ public class EditPhoto implements ThreadEventListener {
 
     public void fitWindow(ActionEvent actionEvent) {
         if (image.getHeight() <= image.getWidth())
-            photoView.setFitWidth(vboxPhotoView.getWidth()-2);
+            photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
         else
-            photoView.setFitHeight(vboxPhotoView.getHeight()-2);
+            photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
     }
 
     public void saveImage(ActionEvent actionEvent) {
@@ -303,7 +305,8 @@ public class EditPhoto implements ThreadEventListener {
         BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
-        if (selectedBinding == null) selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getItems().get(0));
+        if (selectedBinding == null)
+            selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getItems().get(0));
 
         bindingFilter.setMarkedBinding(selectedBinding);
         bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
@@ -413,5 +416,28 @@ public class EditPhoto implements ThreadEventListener {
 
                     redrawPhotoView();
                 });
+    }
+
+    public void ShowCalculateWindow(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/CalculateFlattening.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("Verilin | PhotoWeave");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        CalculateFlattening controller = loader.getController();
     }
 }
