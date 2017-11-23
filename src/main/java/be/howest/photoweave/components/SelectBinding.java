@@ -85,7 +85,7 @@ public class SelectBinding extends VBox {
         bindingsList.clear();
         levelsList.clear();
 
-        bindingsList.addAll(this.bindingFilter.getBindingsMap().values());
+        bindingsList.addAll(this.bindingFilter.getBindingFactory().getOptimizedBindings());
         levelsList.addAll(this.bindingFilter.getBindingsMap().keySet());
 
         if (levelsList.contains(selectedItem)) {
