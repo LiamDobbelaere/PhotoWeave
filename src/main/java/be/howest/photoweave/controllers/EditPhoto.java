@@ -429,15 +429,16 @@ public class EditPhoto implements ThreadEventListener {
             e.printStackTrace();
         }
 
+        CalculateFlattening controller = loader.getController();
+        controller.initialize(this.filteredImage);
+
         Stage stage = new Stage(StageStyle.DECORATED);
         stage.setResizable(false);
         stage.sizeToScene();
-        stage.setTitle("Verilin | PhotoWeave");
+        stage.setTitle("Afplatting berekenen");
         stage.setScene(scene);
         stage.initOwner(this.stage.getScene().getWindow());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
-
-        CalculateFlattening controller = loader.getController();
     }
 }
