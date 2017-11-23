@@ -30,6 +30,10 @@ public class BindingFilter implements RGBFilter {
         this.bindingsMap = new HashMap<>();
     }
 
+    public BindingFactory getBindingFactory() {
+        return bindingFactory;
+    }
+
     public Map<Integer, Binding> getBindingsMap() {
         return bindingsMap;
     }
