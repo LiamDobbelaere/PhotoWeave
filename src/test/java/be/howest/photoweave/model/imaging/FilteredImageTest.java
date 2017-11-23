@@ -1,5 +1,7 @@
 package be.howest.photoweave.model.imaging;
 
+//import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
+//import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import net.jodah.concurrentunit.Waiter;
@@ -127,5 +129,4 @@ public class FilteredImageTest {
                 new SimplifiedColor(new Color(170, 170, 170).getRGB()).toString(),
                 new SimplifiedColor(filteredImage.getModifiedImage().getRGB(filteredImage.getModifiedImage().getWidth() / 4 * 2, 0)).toString());
     }
-
 }
