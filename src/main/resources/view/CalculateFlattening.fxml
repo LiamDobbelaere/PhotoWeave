@@ -7,6 +7,7 @@
 
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
+<?import com.jfoenix.controls.JFXButton?>
 <AnchorPane prefHeight="317.0" prefWidth="250.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.CalculateFlattening">
 
@@ -31,6 +32,11 @@
             <Label text="Nieuwe grootte: "/>
             <Label fx:id="lblNieuweGrootte" text="1234px x 1234px"/>
         </HBox>
+        <AnchorPane>
+            <JFXButton AnchorPane.leftAnchor="0" fx:id="buttonConfirm" mnemonicParsing="false" onAction="#confirmChanges" styleClass="button-raised" text="Bevestigen" textAlignment="CENTER" />
+            <JFXButton AnchorPane.rightAnchor="0" fx:id="buttonCancel" mnemonicParsing="false" onAction="#cancelChanges" text="Annuleren" textAlignment="CENTER" />
+
+        </AnchorPane>
     </VBox>
 
 </AnchorPane>

@@ -440,5 +440,10 @@ public class EditPhoto implements ThreadEventListener {
         stage.initOwner(this.stage.getScene().getWindow());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
+
+        textFieldWidth.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getWidth()));
+        textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
+
+        filteredImage.redraw();
     }
 }
