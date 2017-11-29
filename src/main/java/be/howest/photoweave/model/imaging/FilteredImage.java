@@ -153,6 +153,9 @@ public class FilteredImage {
         }
     }
 
+    public BufferedImage getOriginalImage() {
+        return originalImage;
+    }
 
     public FilterList getFilters() {
         return filters;

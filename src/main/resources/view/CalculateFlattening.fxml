@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import com.jfoenix.controls.JFXButton?>
+<AnchorPane prefHeight="317.0" prefWidth="250.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.CalculateFlattening">
+
+    <VBox spacing="24">
+        <padding>
+            <Insets top="32" bottom="16" left="16" right="16"/>
+        </padding>
+        <HBox spacing="24">
+            <Label text="Oorspronkelijke grootte: "/>
+            <Label fx:id="lblOudeGrootte" text="1234px x 1234px"/>
+        </HBox>
+        <Label text="Weefgetouw" style="-fx-font-size: 18px"/>
+        <JFXTextField fx:id="txtMaxBreedte" labelFloat="true" promptText="Max. breedte" text="1234 px"/>
+        <JFXTextField fx:id="txtWeefBreedte" labelFloat="true" promptText="Weefbreedte" text="1234 px"/>
+        <JFXTextField fx:id="txtDradenCm" labelFloat="true" promptText="Draden/cm" text="12,3"/>
+        <JFXTextField fx:id="txtBreedteCm" styleClass="not-editable" labelFloat="true" editable="false" promptText="Breedte cm" text="12,3"/>
+        <JFXTextField fx:id="txtHoogteCm" styleClass="not-editable" labelFloat="true" editable="false" promptText="Hoogte cm" text="12,3"/>
+        <JFXTextField fx:id="txtInslagenCm" labelFloat="true" promptText="Inslagen/cm" text="12,3"/>
+        <JFXTextField fx:id="txtWeefHoogte" styleClass="not-editable" labelFloat="true" editable="false" promptText="Weefhoogte" text="12,3"/>
+        <JFXTextField fx:id="txtWeefverhouding" styleClass="not-editable" labelFloat="true" editable="false" promptText="Weefverhouding B/H" text="12,3"/>
+        <HBox spacing="24">
+            <Label text="Nieuwe grootte: "/>
+            <Label fx:id="lblNieuweGrootte" text="1234px x 1234px"/>
+        </HBox>
+        <AnchorPane>
+            <JFXButton AnchorPane.leftAnchor="0" fx:id="buttonConfirm" mnemonicParsing="false" onAction="#confirmChanges" styleClass="button-raised" text="Bevestigen" textAlignment="CENTER" />
+            <JFXButton AnchorPane.rightAnchor="0" fx:id="buttonCancel" mnemonicParsing="false" onAction="#cancelChanges" text="Annuleren" textAlignment="CENTER" />
+
+        </AnchorPane>
+    </VBox>
+
+</AnchorPane>
