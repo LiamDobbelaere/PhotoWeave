@@ -5,5 +5,5 @@ package be.howest.photoweave.model.imaging.rgbfilters;
  * These filters are fast and can be multithreaded easily, but cannot keep track of state and therefore have less possibilities.
  */
 public interface RGBFilter {
-    int applyTo(int rgb, int i, int[] imageMetaData);
+    int applyTo(int rgb, int i, byte[] imageMetaData);
 }

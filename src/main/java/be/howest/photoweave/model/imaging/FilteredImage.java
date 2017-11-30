@@ -3,6 +3,7 @@ package be.howest.photoweave.model.imaging;
 import be.howest.photoweave.model.imaging.imagefilters.ImageFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.RGBFilter;
 import be.howest.photoweave.model.util.ImageUtil;
+import be.howest.photoweave.model.util.PrimitiveUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -24,6 +25,8 @@ public class FilteredImage {
     boolean stopWriting = false;
 
     private List<ThreadEventListener> threadEventListeners;
+
+    private int[] imageMetaData;
 
     /**
      * Creates a grayscale, posterized version of an image from a source image.
@@ -64,9 +67,13 @@ public class FilteredImage {
         return modifiedImage;
     }
 
+    public int getMetaDataAt(int x, int y) {
+        return imageMetaData[x * y];
+    }
+
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
-        int[] imageMetaData = new int[imageData.length];
+        imageMetaData = new int[imageData.length];
 
         //Interrupt all existing jobs
         if (threads != null) {
@@ -120,8 +127,12 @@ public class FilteredImage {
             Iterator<RGBFilter> filterIterator = filters.getRGBFilters();
 
             while (filterIterator.hasNext()) {
+                byte[] decomposedMetaData = PrimitiveUtil.decomposeInt(imageMetaData[i]);
+
                 RGBFilter filter = filterIterator.next();
-                rgb = filter.applyTo(rgb, actualStart + i, imageMetaData);
+                rgb = filter.applyTo(rgb, actualStart + i, decomposedMetaData);
+
+                imageMetaData[i] = PrimitiveUtil.composeInt(decomposedMetaData);
             }
 
             imageData[i] = rgb;
