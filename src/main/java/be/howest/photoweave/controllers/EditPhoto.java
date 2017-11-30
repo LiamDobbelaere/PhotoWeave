@@ -18,9 +18,14 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+<<<<<<< HEAD
 import javafx.beans.value.ChangeListener;
+=======
+import javafx.beans.value.ObservableValue;
+>>>>>>> origin/PixelManipulation
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -37,6 +42,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -77,6 +83,9 @@ public class EditPhoto implements ThreadEventListener {
     private ChangeListener<Integer> markedColorChangeListener;
 
     private int posterizeScale = 10;
+
+    private int pXPrevious = -1;
+    private int pYPrevious = -1;
 
     public void initialize(String path) throws IOException {
         // Logic
@@ -128,6 +137,7 @@ public class EditPhoto implements ThreadEventListener {
             photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
         else
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
+
 
         updateImage();
     }
@@ -258,6 +268,9 @@ public class EditPhoto implements ThreadEventListener {
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this.markedColorChangeListener);
+
+        photoView
+                .setOnMouseDragged(ManipulatePixel());
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
@@ -445,5 +458,74 @@ public class EditPhoto implements ThreadEventListener {
         textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
 
         filteredImage.redraw();
+    }
+
+    private void drawLine(BufferedImage bi, int x1, int y1, int x2, int y2) {
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+
+        int x = x1;
+        int y = y1;
+
+        if (dx >= dy) {
+            while (true) {
+                bi.setRGB(x, y, Color.RED.getRGB());
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            while (true) {
+                bi.setRGB(x, y, Color.RED.getRGB());
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
+            }
+        }
+    }
+
+    private EventHandler<MouseEvent> ManipulatePixel() {
+        return event -> {
+            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (bi.getWidth() * xPercent);
+            int pY = (int) (bi.getHeight() * yPercent);
+            int original = bi.getRGB(pX, pY);
+
+            if (pXPrevious == -1 || pYPrevious == -1) {
+                bi.setRGB(pX, pY, Color.RED.getRGB());
+            } else {
+                drawLine(bi, pXPrevious, pYPrevious, pX, pY);
+            }
+
+            //bi.setRGB(pX, pY, original == Color.BLACK.getRGB() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
+
+            pXPrevious = pX;
+            pYPrevious = pY;
+
+            photoView.setImage(SwingFXUtils.toFXImage(bi, null));
+        };
     }
 }
