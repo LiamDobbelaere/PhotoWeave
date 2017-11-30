@@ -14,15 +14,10 @@ import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.Observable;
-<<<<<<< HEAD
 import javafx.beans.value.ChangeListener;
-=======
-import javafx.beans.value.ObservableValue;
->>>>>>> origin/PixelManipulation
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
