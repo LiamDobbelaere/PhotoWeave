@@ -66,6 +66,7 @@ public class FilteredImage {
 
     private void applyFilters() {
         int[] imageData = ImageUtil.getDataBufferIntData(this.modifiedImage);
+        int[] imageMetaData = new int[imageData.length];
 
         //Interrupt all existing jobs
         if (threads != null) {
@@ -74,9 +75,16 @@ public class FilteredImage {
             }
         }
 
+        /*
+        The following code will break the array into smaller pieces depending on the number of threads
+        This is to take away the slowdown that happens if two threads try to modify the same array,
+        so now they get their own smaller version to work with instead, and copy it back into the original at the end
+        */
+
         threads = new Thread[threadCount];
 
         int[][] pieces = new int[threadCount][];
+        int[][] piecesMeta = new int[threadCount][];
 
         threadsDone = 0;
 
@@ -90,19 +98,22 @@ public class FilteredImage {
                 end = ((imageData.length - 1) / threadCount) * (k + 1);
 
             pieces[k] = new int[end - start];
+            piecesMeta[k] = new int[end - start];
 
             System.arraycopy(imageData, start, pieces[k], 0, end - start);
+            //We don't copy metadata because it's all 0
 
             int[] ref = pieces[k];
+            int[] refMeta = piecesMeta[k];
 
-            threads[k] = new Thread(() -> applyFilterThreaded(ref, imageData, start));
+            threads[k] = new Thread(() -> applyFilterThreaded(ref, refMeta, imageData, imageMetaData, start));
             threads[k].start();
         }
 
         System.out.println("Redraw happening");
     }
 
-    private void applyFilterThreaded(int[] imageData, int[] fullImageData, int actualStart) {
+    private void applyFilterThreaded(int[] imageData, int[] imageMetaData, int[] fullImageData, int[] fullImageMetaData, int actualStart) {
         for (int i = 0; i < imageData.length; i++) {
             int rgb = imageData[i];
 
@@ -110,7 +121,7 @@ public class FilteredImage {
 
             while (filterIterator.hasNext()) {
                 RGBFilter filter = filterIterator.next();
-                rgb = filter.applyTo(rgb, actualStart + i);
+                rgb = filter.applyTo(rgb, actualStart + i, imageMetaData);
             }
 
             imageData[i] = rgb;
@@ -121,6 +132,7 @@ public class FilteredImage {
         synchronized (this) {
             if (!Thread.currentThread().isInterrupted()) {
                 System.arraycopy(imageData, 0, fullImageData, actualStart, imageData.length);
+                System.arraycopy(imageMetaData, 0, fullImageMetaData, actualStart, imageData.length);
                 threadsDone++;
                 notifyThreadEventListeners();
             }

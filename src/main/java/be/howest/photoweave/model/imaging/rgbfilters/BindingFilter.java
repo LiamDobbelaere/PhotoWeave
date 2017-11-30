@@ -55,7 +55,7 @@ public class BindingFilter implements RGBFilter {
     }
 
     @Override
-    public int applyTo(int rgb, int i) {
+    public int applyTo(int rgb, int i, int[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
 
         Binding binding = this.bindingsMap.computeIfAbsent(

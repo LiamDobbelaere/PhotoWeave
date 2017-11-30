@@ -25,7 +25,7 @@ public class PosterizeFilter implements RGBFilter {
     }
 
     @Override
-    public int applyTo(int rgb, int i) {
+    public int applyTo(int rgb, int i, int[] imageMetaData) {
         int a = rgb & 0xff000000;
         int r = (rgb >> 16) & 0xff;
         int g = (rgb >> 8) & 0xff;
