@@ -3,10 +3,14 @@ package be.howest.photoweave.model.imaging.rgbfilters;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.FilteredImage;
+import be.howest.photoweave.model.util.PrimitiveUtil;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,11 +27,14 @@ public class BindingFilter implements RGBFilter {
 
     private FilteredImage filteredImage;
 
+    private long[] regions;
+
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
+        this.regions = new long[0];
     }
 
     public Map<Integer, Binding> getBindingsMap() {
@@ -54,6 +61,16 @@ public class BindingFilter implements RGBFilter {
         return posterizeFilter;
     }
 
+    public void addRegion(List<Point> selection) {
+        regions = new long[selection.size()];
+
+        for (int i = 0; i < selection.size(); i++) {
+            Point point = selection.get(i);
+
+            regions[i] = PrimitiveUtil.composeLongFromInts(new int[] {point.x, point.y});
+        }
+    }
+
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
@@ -63,8 +80,11 @@ public class BindingFilter implements RGBFilter {
 
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
-        int x = (i % this.filteredImage.getModifiedImage().getWidth()) % pattern.getWidth();
-        int y = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth())) % pattern.getHeight();
+        int fullX = i % this.filteredImage.getModifiedImage().getWidth();
+        int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));
+
+        int x = fullX % pattern.getWidth();
+        int y = fullY % pattern.getHeight();
         int color = pattern.getRGB(x, y);
 
 
@@ -77,6 +97,22 @@ public class BindingFilter implements RGBFilter {
             if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
             else color = Color.LIGHT_GRAY.getRGB();
         }
+
+        for (long region : regions) {
+            int[] coords = PrimitiveUtil.decomposeLongToInts(region);
+
+            if (coords[0] == fullX && coords[1] == fullY)
+                color = Color.GREEN.getRGB();
+        }
+
+        /*for (List<Point> selection : regions) {
+            for (Point point : selection) {
+                if (point.x == fullX && point.y == fullY) {
+                    if (imageMetaData[0] == 0)
+                        color = Color.GREEN.getRGB();
+                }
+            }
+        }*/
 
         return color;
     }

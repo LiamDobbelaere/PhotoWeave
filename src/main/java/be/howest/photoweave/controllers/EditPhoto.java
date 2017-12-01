@@ -13,8 +13,11 @@ import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.util.ImageUtil;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
+import com.jfoenix.svg.SVGGlyph;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -22,15 +25,19 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.*;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -38,9 +45,11 @@ import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -64,6 +73,8 @@ public class EditPhoto implements ThreadEventListener {
     public PixelatedImageView photoView;
     public TitledPane paneDefault;
     public Label filePath;
+    public JFXButton toggleEditButton;
+    public ScrollPane imageScrollPane;
 
     /*  */
     private int imageWidth;
@@ -79,8 +90,13 @@ public class EditPhoto implements ThreadEventListener {
 
     private int posterizeScale = 10;
 
+    private int pXStart = -1;
+    private int pYStart = -1;
     private int pXPrevious = -1;
     private int pYPrevious = -1;
+
+    private boolean editing = false;
+    private java.util.List<Point> selectionPoints;
 
     public void initialize(String path) throws IOException {
         // Logic
@@ -266,6 +282,35 @@ public class EditPhoto implements ThreadEventListener {
 
         photoView
                 .setOnMouseDragged(ManipulatePixel());
+        photoView.setOnMousePressed((event) -> {
+            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (bi.getWidth() * xPercent);
+            int pY = (int) (bi.getHeight() * yPercent);
+
+            pXStart = pX;
+            pYStart = pY;
+
+            selectionPoints = new ArrayList<>();
+        });
+        photoView.setOnMouseReleased((event) -> {
+            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
+
+            drawLine(bi, pXStart, pYStart, pXPrevious, pYPrevious);
+
+            pXPrevious = -1;
+            pYPrevious = -1;
+
+            photoView.setImage(SwingFXUtils.toFXImage(bi, null));
+
+            BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            bf.addRegion(selectionPoints);
+
+            filteredImage.redraw();
+        });
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
@@ -474,6 +519,7 @@ public class EditPhoto implements ThreadEventListener {
         if (dx >= dy) {
             while (true) {
                 bi.setRGB(x, y, Color.RED.getRGB());
+                selectionPoints.add(new Point(x, y));
                 if (x == x2)
                     break;
                 x += ix;
@@ -486,6 +532,7 @@ public class EditPhoto implements ThreadEventListener {
         } else {
             while (true) {
                 bi.setRGB(x, y, Color.RED.getRGB());
+                selectionPoints.add(new Point(x, y));
                 if (y == y2)
                     break;
                 y += iy;
@@ -500,6 +547,8 @@ public class EditPhoto implements ThreadEventListener {
 
     private EventHandler<MouseEvent> ManipulatePixel() {
         return event -> {
+            if (!editing) return;
+
             BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
 
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
@@ -511,6 +560,7 @@ public class EditPhoto implements ThreadEventListener {
 
             if (pXPrevious == -1 || pYPrevious == -1) {
                 bi.setRGB(pX, pY, Color.RED.getRGB());
+                selectionPoints.add(new Point(pX, pY));
             } else {
                 drawLine(bi, pXPrevious, pYPrevious, pX, pY);
             }
@@ -522,5 +572,18 @@ public class EditPhoto implements ThreadEventListener {
 
             photoView.setImage(SwingFXUtils.toFXImage(bi, null));
         };
+    }
+
+    public void toggleEdit(ActionEvent actionEvent) {
+        editing = !editing;
+
+        if (editing) {
+            toggleEditButton.setStyle("-fx-background-color: -app-color-secondary;");
+            imageScrollPane.setPannable(false);
+        } else {
+            toggleEditButton.setStyle("");
+            imageScrollPane.setPannable(true);
+        }
+
     }
 }

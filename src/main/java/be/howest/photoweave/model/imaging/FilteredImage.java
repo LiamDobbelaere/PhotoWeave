@@ -127,12 +127,12 @@ public class FilteredImage {
             Iterator<RGBFilter> filterIterator = filters.getRGBFilters();
 
             while (filterIterator.hasNext()) {
-                byte[] decomposedMetaData = PrimitiveUtil.decomposeInt(imageMetaData[i]);
+                byte[] decomposedMetaData = PrimitiveUtil.decomposeIntToBytes(imageMetaData[i]);
 
                 RGBFilter filter = filterIterator.next();
                 rgb = filter.applyTo(rgb, actualStart + i, decomposedMetaData);
 
-                imageMetaData[i] = PrimitiveUtil.composeInt(decomposedMetaData);
+                imageMetaData[i] = PrimitiveUtil.composeIntFromBytes(decomposedMetaData);
             }
 
             imageData[i] = rgb;

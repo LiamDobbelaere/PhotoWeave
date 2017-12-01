@@ -8,7 +8,21 @@ public class PrimitiveUtil {
 
     }
 
-    public static byte[] decomposeInt(int value) {
+    public static int[] decomposeLongToInts(long value) {
+        int[] result = new int[2];
+
+        result[0] = (int) ((value >> 32) & 0xff);
+        result[1] = (int) (value & 0xff);
+
+        return result;
+    }
+
+    public static long composeLongFromInts(int[] decomposedValue) {
+        return (((long) decomposedValue[0]) << 32)
+                | (((long) decomposedValue[1]));
+    }
+
+    public static byte[] decomposeIntToBytes(int value) {
         byte[] result = new byte[4];
 
         result[0] = (byte) ((value >> 24) & 0xff);
@@ -19,7 +33,7 @@ public class PrimitiveUtil {
         return result;
     }
 
-    public static int composeInt(byte[] decomposedValue) {
+    public static int composeIntFromBytes(byte[] decomposedValue) {
         return (((int) decomposedValue[0]) << 24)
                 | (((int) decomposedValue[1]) << 16)
                 | (((int) decomposedValue[2]) << 8)
