@@ -116,6 +116,26 @@ public class BindingFilter implements RGBFilter {
 
         boolean[][] region = this.region.getRegion();
 
+        if (fullX >= this.region.getMinX() && fullY >= this.region.getMinY() &&
+                fullX <= this.region.getMinX() + this.region.getWidth() &&
+                fullY <= this.region.getMinY() + this.region.getHeight()) {
+
+            for (int cy = 0; cy < this.region.getHeight(); cy++) {
+                for (int cx = 0; cx < this.region.getWidth(); cx++) {
+
+                    if (cx == fullX - this.region.getMinX() && cy == fullY - this.region.getMinY()) {
+                        if (imageMetaData[0] == 0 && region[cy][cx]) {
+                            //Todo: the 0 should actually be whatever level is assigned to the region
+                            //Todo: the 1 should be whatever other binding is assigned to the region
+                            
+                            binding = this.bindingsMap.get(1);
+                        }
+                    }
+                }
+            }
+
+        }
+
 
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
@@ -132,26 +152,6 @@ public class BindingFilter implements RGBFilter {
         if (markedBinding != null && showMarkedBinding && binding == markedBinding) {
             if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
             else color = Color.LIGHT_GRAY.getRGB();
-        }
-
-        if (fullX >= this.region.getMinX() && fullY >= this.region.getMinY() &&
-                fullX <= this.region.getMinX() + this.region.getWidth() &&
-                fullY <= this.region.getMinY() + this.region.getHeight()) {
-
-            for (int cy = 0; cy < this.region.getHeight(); cy++) {
-                for (int cx = 0; cx < this.region.getWidth(); cx++) {
-
-                    if (cx == fullX - this.region.getMinX() && cy == fullY - this.region.getMinY()) {
-                        if (imageMetaData[0] == 0 && region[cy][cx]) {
-
-                            //binding = bindingFactory.getOptimizedBindings()[0];
-
-                            color = Color.GREEN.getRGB();
-                        }
-                    }
-                }
-            }
-
         }
 
         /*for (int j = 0; j < regions.length; j+=2) {
