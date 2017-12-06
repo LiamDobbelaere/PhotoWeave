@@ -37,32 +37,4 @@ public class PrimitiveUtilTest {
 
         assertEquals("Composed integer is not correct", 0x05020308, composed);
     }
-
-    @Test
-    public void testDecomposeLongToInts() throws Exception {
-        int[] decomposed = PrimitiveUtil.decomposeLongToInts(0x0000000100000002L);
-
-        assertEquals("First int of decompose not correct", 1, decomposed[0]);
-        assertEquals("Second int of decompose not correct", 2, decomposed[1]);
-    }
-
-    @Test
-    public void testComposeLongFromInts() throws Exception {
-        int[] decomposedExample = {1, 2};
-
-        long composed = PrimitiveUtil.composeLongFromInts(decomposedExample);
-
-        assertEquals("Composed long is not correct", 0x0000000100000002L, composed);
-    }
-
-    @Test
-    public void testModifyLong() throws Exception {
-        int[] intsTemplate = new int[] {1234567, 6724824};
-
-        long composed = PrimitiveUtil.composeLongFromInts(intsTemplate);
-        int[] decomposed = PrimitiveUtil.decomposeLongToInts(composed);
-
-        //assertEquals("First int of decompose not correct", intsTemplate[0], decomposed[0]);
-        assertEquals("Second int of decompose not correct", intsTemplate[1], decomposed[1]);
-    }
 }

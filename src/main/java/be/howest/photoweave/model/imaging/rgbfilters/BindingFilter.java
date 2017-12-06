@@ -3,6 +3,7 @@ package be.howest.photoweave.model.imaging.rgbfilters;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.FilteredImage;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.PrimitiveUtil;
 
 import java.awt.Point;
@@ -27,14 +28,14 @@ public class BindingFilter implements RGBFilter {
 
     private FilteredImage filteredImage;
 
-    private long[] regions;
+    private Region region;
 
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
-        this.regions = new long[0];
+        this.region = new Region(0, 0, 0, 0, new ArrayList<>());
     }
 
     public Map<Integer, Binding> getBindingsMap() {
@@ -62,26 +63,61 @@ public class BindingFilter implements RGBFilter {
     }
 
     public void addRegion(List<Point> selection) {
-        regions = new long[selection.size()];
+        int minX = Integer.MAX_VALUE;
+        int maxX = 0;
+        int minY = Integer.MAX_VALUE;
+        int maxY = 0;
 
-        for (int i = 0; i < selection.size(); i++) {
-            Point point = selection.get(i);
+        for (Point point : selection) {
+            if (point.x < minX) {
+                minX = point.x;
+            }
 
-            regions[i] = PrimitiveUtil.composeLongFromInts(new int[] {point.x, point.y});
+            if (point.x > maxX) {
+                maxX = point.x;
+            }
+
+            if (point.y < minY) {
+                minY = point.y;
+            }
+
+            if (point.y > maxY) {
+                maxY = point.y;
+            }
         }
+
+        System.out.println(String.format("%s, %s, %s, %s", minX, minY, maxX, maxY));
+
+
+        int width = maxX - minX + 1;
+        int height = maxY - minY + 1;
+
+        this.region = new Region(minX, minY, width, height, selection);
+
+        /*regions = new int[selection.size() * 2];
+
+        for (int i = 0; i < selection.size() * 2; i+=2) {
+            Point point = selection.get(i / 2);
+
+            regions[i] = point.x;
+            regions[i + 1] = point.y;
+        }*/
     }
 
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
 
+        int fullX = i % this.filteredImage.getModifiedImage().getWidth();
+        int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));
+
         Binding binding = this.bindingsMap.computeIfAbsent(
                 currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
 
-        BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
+        boolean[][] region = this.region.getRegion();
 
-        int fullX = i % this.filteredImage.getModifiedImage().getWidth();
-        int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));
+
+        BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
         int x = fullX % pattern.getWidth();
         int y = fullY % pattern.getHeight();
@@ -98,12 +134,31 @@ public class BindingFilter implements RGBFilter {
             else color = Color.LIGHT_GRAY.getRGB();
         }
 
-        for (long region : regions) {
-            int[] coords = PrimitiveUtil.decomposeLongToInts(region);
+        if (fullX >= this.region.getMinX() && fullY >= this.region.getMinY() &&
+                fullX <= this.region.getMinX() + this.region.getWidth() &&
+                fullY <= this.region.getMinY() + this.region.getHeight()) {
 
-            if (coords[0] == fullX && coords[1] == fullY)
-                color = Color.GREEN.getRGB();
+            for (int cy = 0; cy < this.region.getHeight(); cy++) {
+                for (int cx = 0; cx < this.region.getWidth(); cx++) {
+
+                    if (cx == fullX - this.region.getMinX() && cy == fullY - this.region.getMinY()) {
+                        if (imageMetaData[0] == 0 && region[cy][cx]) {
+
+                            //binding = bindingFactory.getOptimizedBindings()[0];
+
+                            color = Color.GREEN.getRGB();
+                        }
+                    }
+                }
+            }
+
         }
+
+        /*for (int j = 0; j < regions.length; j+=2) {
+            if (regions[j] == fullX && regions[j + 1] == fullY)
+                color = Color.GREEN.getRGB();
+
+        }*/
 
         /*for (List<Point> selection : regions) {
             for (Point point : selection) {

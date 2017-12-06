@@ -556,6 +556,12 @@ public class EditPhoto implements ThreadEventListener {
 
             int pX = (int) (bi.getWidth() * xPercent);
             int pY = (int) (bi.getHeight() * yPercent);
+
+            pX = Math.min(Math.max(0, pX), bi.getWidth() - 1);
+            pY = Math.min(Math.max(0, pY), bi.getHeight() - 1);
+
+            //if (pX < 0 || pY < 0 || pX >= bi.getWidth() || pY >= bi.getHeight()) return;
+
             int original = bi.getRGB(pX, pY);
 
             if (pXPrevious == -1 || pYPrevious == -1) {
