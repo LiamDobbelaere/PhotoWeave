@@ -21,9 +21,6 @@ public class FilteredImage {
     int threadsDone = 0;
 
     private Thread[] threads;
-
-    boolean stopWriting = false;
-
     private List<ThreadEventListener> threadEventListeners;
 
     private int[] imageMetaData;

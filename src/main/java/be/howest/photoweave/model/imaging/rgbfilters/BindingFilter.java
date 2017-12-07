@@ -62,37 +62,8 @@ public class BindingFilter implements RGBFilter {
         return posterizeFilter;
     }
 
-    public void addRegion(List<Point> selection) {
-        int minX = Integer.MAX_VALUE;
-        int maxX = 0;
-        int minY = Integer.MAX_VALUE;
-        int maxY = 0;
-
-        for (Point point : selection) {
-            if (point.x < minX) {
-                minX = point.x;
-            }
-
-            if (point.x > maxX) {
-                maxX = point.x;
-            }
-
-            if (point.y < minY) {
-                minY = point.y;
-            }
-
-            if (point.y > maxY) {
-                maxY = point.y;
-            }
-        }
-
-        System.out.println(String.format("%s, %s, %s, %s", minX, minY, maxX, maxY));
-
-
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
-
-        this.regions.add(new Region(minX, minY, width, height, selection));
+    public void addRegion(Region region) {
+        this.regions.add(region);
     }
 
     @Override
@@ -105,6 +76,8 @@ public class BindingFilter implements RGBFilter {
         Binding binding = this.bindingsMap.computeIfAbsent(
                 currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
 
+        boolean markRegion = false;
+
         for (Region regionItem : this.regions) {
             boolean[][] region = regionItem.getRegion();
 
@@ -112,12 +85,15 @@ public class BindingFilter implements RGBFilter {
                     fullX < regionItem.getMinX() + regionItem.getWidth() &&
                     fullY < regionItem.getMinY() + regionItem.getHeight()) {
 
+                if (region[fullY - regionItem.getMinY()][fullX - regionItem.getMinX()]
+                        && imageMetaData[0] == regionItem.getTargetLevel()) {
 
-                if (region[fullY - regionItem.getMinY()][fullX - regionItem.getMinX()] && imageMetaData[0] == 0) {
-                    //Todo: the 0 should actually be whatever level is assigned to the region
+                    markRegion = regionItem.isMarked();
+
                     //Todo: the 1 should be whatever other binding is assigned to the region
-
-                    binding = this.bindingsMap.get(1);
+                    if (regionItem.getTargetBinding() != null) {
+                        binding = regionItem.getTargetBinding();
+                    }
                 }
             }
         }
@@ -134,7 +110,7 @@ public class BindingFilter implements RGBFilter {
             else color = Color.BLACK.getRGB();
         }
 
-        if (markedBinding != null && showMarkedBinding && binding == markedBinding) {
+        if ((markedBinding != null && showMarkedBinding && binding == markedBinding) || markRegion) {
             if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
             else color = Color.LIGHT_GRAY.getRGB();
         }

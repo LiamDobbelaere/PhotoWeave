@@ -12,12 +12,11 @@ import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXToggleButton;
-import com.jfoenix.svg.SVGGlyph;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -25,7 +24,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -35,9 +33,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.*;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.SVGPath;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -110,7 +105,7 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
-        this.vboxSelectBinding.setBindingFilter((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
 
         this.posterizeScale = 10;
 
@@ -283,6 +278,8 @@ public class EditPhoto implements ThreadEventListener {
         photoView
                 .setOnMouseDragged(ManipulatePixel());
         photoView.setOnMousePressed((event) -> {
+            if (!editing) return;
+
             BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
 
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
@@ -297,7 +294,14 @@ public class EditPhoto implements ThreadEventListener {
             selectionPoints = new ArrayList<>();
         });
         photoView.setOnMouseReleased((event) -> {
+            if (!editing) return;
+
             BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
+
+            if (pXPrevious < 0 || pYPrevious < 0) {
+                pXPrevious = pXStart;
+                pYPrevious = pYStart;
+            }
 
             drawLine(bi, pXStart, pYStart, pXPrevious, pYPrevious);
 
@@ -306,10 +310,10 @@ public class EditPhoto implements ThreadEventListener {
 
             photoView.setImage(SwingFXUtils.toFXImage(bi, null));
 
-            BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-            bf.addRegion(selectionPoints);
+            showChangeSelectionBindingWindow(new Region(selectionPoints));
+            //BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            //bf.addRegion(selectionPoints);
 
-            filteredImage.redraw();
         });
     }
 
@@ -457,8 +461,8 @@ public class EditPhoto implements ThreadEventListener {
     public void onRedrawComplete() {
         Platform.runLater(
                 () -> {
-                    vboxSelectBinding.setBindingFilter(
-                            ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)));
+                    vboxSelectBinding.setBindingsMap(
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap());
 
                     vboxSelectBinding
                             .getComboBoxLevels()
@@ -499,6 +503,35 @@ public class EditPhoto implements ThreadEventListener {
 
         filteredImage.redraw();
     }
+
+    public void showChangeSelectionBindingWindow(Region region) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeSelectionBinding.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ChangeSelectionBinding controller = loader.getController();
+        controller.initialize(this.filteredImage, region);
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("Verander specifieke binding in selectie");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        region.setMarked(false);
+
+        filteredImage.redraw();
+    }
+
 
     private void drawLine(BufferedImage bi, int x1, int y1, int x2, int y2) {
         // delta of exact value and rounded value of the dependent variable

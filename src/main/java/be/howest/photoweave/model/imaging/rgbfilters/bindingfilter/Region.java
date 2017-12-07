@@ -1,5 +1,7 @@
 package be.howest.photoweave.model.imaging.rgbfilters.bindingfilter;
 
+import be.howest.photoweave.model.binding.Binding;
+
 import java.awt.Point;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,13 +16,33 @@ public class Region {
     private int height;
     private boolean[][] region;
 
+    private boolean marked;
+    private int targetLevel;
+    private Binding targetBinding;
 
-    public Region(int minX, int minY, int width, int height, List<Point> selection) {
+    public Region(List<Point> selection) {
+        int minX = Integer.MAX_VALUE;
+        int maxX = 0;
+        int minY = Integer.MAX_VALUE;
+        int maxY = 0;
+
+        for (Point point : selection) {
+            if (point.x < minX) minX = point.x;
+            if (point.x > maxX) maxX = point.x;
+            if (point.y < minY) minY = point.y;
+            if (point.y > maxY) maxY = point.y;
+        }
+
+        int width = maxX - minX + 1;
+        int height = maxY - minY + 1;
+
         this.minX = minX;
         this.minY = minY;
         this.width = width;
         this.height = height;
         this.region = new boolean[height][width];
+        this.marked = false;
+        this.targetLevel = 0;
 
         addSelectionToRegion(selection);
         autoFill();
@@ -101,5 +123,29 @@ public class Region {
 
     public boolean[][] getRegion() {
         return region;
+    }
+
+    public boolean isMarked() {
+        return marked;
+    }
+
+    public void setMarked(boolean marked) {
+        this.marked = marked;
+    }
+
+    public int getTargetLevel() {
+        return targetLevel;
+    }
+
+    public void setTargetLevel(int targetLevel) {
+        this.targetLevel = targetLevel;
+    }
+
+    public Binding getTargetBinding() {
+        return targetBinding;
+    }
+
+    public void setTargetBinding(Binding targetBinding) {
+        this.targetBinding = targetBinding;
     }
 }

@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by tomdo on 25/10/2017.
@@ -33,7 +34,7 @@ public class SelectBinding extends VBox {
     private JFXComboBox<Binding> comboBoxBindings = new JFXComboBox<>(bindingsList);
     private JFXComboBox<Integer> comboBoxLevels = new JFXComboBox<>(levelsList);
 
-    private BindingFilter bindingFilter;
+    private Map<Integer, Binding> bindings;
     private ChangeListener<Binding> bindingChangeListener;
 
     public SelectBinding() throws IOException {
@@ -44,7 +45,7 @@ public class SelectBinding extends VBox {
 
         bindingChangeListener = (observable, oldValue, newValue) -> {
             System.out.println("Binding change listener!");
-            bindingFilter.getBindingsMap().replace(
+                bindings.replace(
                     comboBoxLevels.getSelectionModel().getSelectedItem(),
                     comboBoxBindings.getSelectionModel().getSelectedItem());
             comboBoxBindings.fireEvent(new BindingChanged());
@@ -64,7 +65,7 @@ public class SelectBinding extends VBox {
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
                 //comboBoxBindings.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
                 comboBoxBindings.getSelectionModel().select(
-                        bindingFilter.getBindingsMap().get(comboBoxLevels.getSelectionModel().getSelectedItem()));
+                        bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem()));
                 //comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
             }
         });
@@ -75,8 +76,8 @@ public class SelectBinding extends VBox {
         gridPane.add(comboBoxLevels, 0, 0);
     }
 
-    public void setBindingFilter(BindingFilter filter) {
-        this.bindingFilter = filter;
+    public void setBindingsMap(Map<Integer, Binding> bindings) {
+        this.bindings = bindings;
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
@@ -85,8 +86,8 @@ public class SelectBinding extends VBox {
         bindingsList.clear();
         levelsList.clear();
 
-        bindingsList.addAll(this.bindingFilter.getBindingsMap().values());
-        levelsList.addAll(this.bindingFilter.getBindingsMap().keySet());
+        bindingsList.addAll(bindings.values());
+        levelsList.addAll(bindings.keySet());
 
         if (levelsList.contains(selectedItem)) {
             System.out.println("nope");
@@ -141,8 +142,10 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                int colorInt = 128;
+                //int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
                 Color color = new Color(colorInt, colorInt, colorInt);
+
 
                 pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
                 pane.setPrefSize(40, 40);

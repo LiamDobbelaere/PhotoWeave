@@ -24,6 +24,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import com.jfoenix.controls.JFXToggleButton?>
+<?import javafx.scene.control.Tooltip?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <MenuBar prefHeight="25.0" prefWidth="1143.0" style="-fx-background-color: #efefef;">
@@ -67,11 +68,14 @@
                         <Insets />
                     </HBox.margin>
                     <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" onAction="#toggleEdit" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false" textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="Selecteer vrije-vormgebied en verander bepaalde binding"/>
+                        </tooltip>
                         <HBox.margin>
                             <Insets right="5.0" />
                         </HBox.margin>
                         <graphic>
-                            <SVGPath content="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="WHITE" />
+                            <SVGPath content="M4.59 6.89c.7-.71 1.4-1.35 1.71-1.22.5.2 0 1.03-.3 1.52-.25.42-2.86 3.89-2.86 6.31 0 1.28.48 2.34 1.34 2.98.75.56 1.74.73 2.64.46 1.07-.31 1.95-1.4 3.06-2.77 1.21-1.49 2.83-3.44 4.08-3.44 1.63 0 1.65 1.01 1.76 1.79-3.78.64-5.38 3.67-5.38 5.37 0 1.7 1.44 3.09 3.21 3.09 1.63 0 4.29-1.33 4.69-6.1H21v-2.5h-2.47c-.15-1.65-1.09-4.2-4.03-4.2-2.25 0-4.18 1.91-4.94 2.84-.58.73-2.06 2.48-2.29 2.72-.25.3-.68.84-1.11.84-.45 0-.72-.83-.36-1.92.35-1.09 1.4-2.86 1.85-3.52.78-1.14 1.3-1.92 1.3-3.28C8.95 3.69 7.31 3 6.44 3 5.12 3 3.97 4 3.72 4.25c-.36.36-.66.66-.88.93l1.75 1.71zm9.29 11.66c-.31 0-.74-.26-.74-.72 0-.6.73-2.2 2.87-2.76-.3 2.69-1.43 3.48-2.13 3.48z" fill="WHITE" />
                         </graphic>
                     </JFXButton>
                 </HBox>
