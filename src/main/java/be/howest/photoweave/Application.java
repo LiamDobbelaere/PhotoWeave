@@ -17,7 +17,7 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/OpenPhoto.fxml"));
+        AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/BindingLibrary.fxml"));
 
         Scene scene = new Scene(pane);
         stage.setTitle("Verilin | PhotoWeave");
