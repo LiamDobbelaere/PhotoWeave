@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 //import com.google.gson.Gson;
+import be.howest.photoweave.model.CustomFile;
 import com.google.gson.Gson;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
@@ -29,6 +30,8 @@ import javafx.stage.StageStyle;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,10 +56,6 @@ public class OpenPhoto {
             stage = (Stage) anchorPane.getScene().getWindow();
             anchorPane.requestFocus();
         });
-
-        String json = "{\"data\":\"hello\"}";
-        Gson g = new Gson();
-
 
         ObservableList<String> items = FXCollections.observableArrayList (
                 "C:\\Users\\Quinten\\Pictures\\verilin\\formaat anders.png", "C:\\Users\\Quinten\\Pictures\\verilin\\POLAR.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\lionBig.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\logo.bmp");
@@ -220,4 +219,5 @@ public class OpenPhoto {
 
         return task;
     }
+
 }

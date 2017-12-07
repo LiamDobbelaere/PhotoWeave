@@ -5,6 +5,7 @@ import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
+import be.howest.photoweave.model.CustomFile;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
@@ -33,8 +34,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -75,6 +78,15 @@ public class EditPhoto implements ThreadEventListener {
     private ChangeListener<Integer> markedColorChangeListener;
 
     private int posterizeScale = 10;
+
+    public void initialize(File customFile) throws IOException {
+
+        //sliderPosterizationScale.valueProperty().setValue();
+        //scrollPane.X.setValue();
+        //scrollPane.Y.setValue();
+
+        initialize("path");
+    }
 
     public void initialize(String path) throws IOException {
         // Logic
@@ -187,6 +199,11 @@ public class EditPhoto implements ThreadEventListener {
             } catch (IOException ex) {
             }
         }
+        try {
+            saveAsCustomFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {
@@ -202,6 +219,15 @@ public class EditPhoto implements ThreadEventListener {
         BindingMaker controller = loader.getController();
         controller.initialize();
         stage.show();
+    }
+
+    private void saveAsCustomFile() throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(this.originalImage,"bmp",output);
+        String base64 = DatatypeConverter.printBase64Binary(output.toByteArray());
+
+        CustomFile.ImageData image = new CustomFile(null,null,null).new ImageData(base64,this.originalImage.getWidth(),this.originalImage.getHeight());
+        System.out.println(image);
     }
 
 

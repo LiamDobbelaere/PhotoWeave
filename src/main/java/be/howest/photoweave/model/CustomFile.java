@@ -1,22 +1,30 @@
 package be.howest.photoweave.model;
 
 
+import com.google.gson.Gson;
+
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class CustomFile {
+    private ImageData image;
+    private Mutation mutation;
+    private UserInterface userInterface;
 
-    public CustomFile(){
-        //private ImageData image;
-
+    public CustomFile(ImageData image, Mutation mutation, UserInterface userInterface) {
+        this.image = image;
+        this.mutation = mutation;
+        this.userInterface = userInterface;
     }
 
-    private class ImageData{
+    public class ImageData{
         private String base64;
         private int width;
         private int height;
@@ -28,7 +36,7 @@ public class CustomFile {
         }
     }
 
-    private class Mutation{
+    public class Mutation{
         private Scale scale;
         private int posterization;
         private List<BindingData> bindingpalette;
@@ -40,10 +48,10 @@ public class CustomFile {
         }
     }
 
-    private class Scale{
+    public class Scale{
         private int width;
         private int height;
-        private int ratio;
+        private double ratio;
 
         public Scale(int width, int height) {
             this.width = width;
@@ -52,7 +60,7 @@ public class CustomFile {
         }
     }
 
-    private class BindingData{
+    public class BindingData{
         private String cname;
         private String bname;
         private int rgbInt;
@@ -67,7 +75,7 @@ public class CustomFile {
     }
 
 
-    private class UserInterface{
+    public class UserInterface{
         private ImageViewParams imageview;
         private BindingParams binding;
 
@@ -77,7 +85,7 @@ public class CustomFile {
         }
     }
 
-    private class ImageViewParams{
+    public class ImageViewParams{
         private double zoom;
         private int scrollX;
         private int scrollY;
@@ -89,17 +97,17 @@ public class CustomFile {
         }
     }
 
-    private class BindingParams{
+    public class BindingParams{
         private boolean inverted;
-        private selectedBindingsParams selectedBindings;
+        private selectedBindingsParams selectedbinding;
 
-        public BindingParams(boolean inverted, selectedBindingsParams selectedBindings) {
+        public BindingParams(boolean inverted, selectedBindingsParams selectedbinding) {
             this.inverted = inverted;
-            this.selectedBindings = selectedBindings;
+            this.selectedbinding = selectedbinding;
         }
     }
 
-    private class selectedBindingsParams{
+    public class selectedBindingsParams{
         private int index;
         private boolean marked;
         private BindingParams item;
@@ -113,7 +121,7 @@ public class CustomFile {
         }
     }
 
-    private class floatersParams{
+    public class floatersParams{
         private boolean marked;
         private int x;
         private int y;
@@ -143,5 +151,17 @@ public class CustomFile {
         CustomFile cf = new CustomFile();
     }
     */
+    public static void main(String [] args){
+        String json = null;
+        try {
+            json = new String(Files.readAllBytes(Paths.get("C:\\Users\\Quinten\\OneDrive\\Documenten\\verver.json")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Gson g = new Gson();
 
+        CustomFile cf = g.fromJson(json, CustomFile.class);
+
+        System.out.println(cf);
+    }
 }
