@@ -52,27 +52,10 @@ public class Region {
             }
         }
 
-        iterfill(fillX, fillY);
+        fill(fillX, fillY);
     }
 
     private void fill(int x, int y) {
-        if (x < 0 || y < 0 || x > this.width || y > this.height)
-            return;
-
-        boolean value = this.region[y][x];
-
-        if (value)
-            return;
-
-        this.region[y][x] = true;
-
-        fill(x - 1, y);
-        fill(x + 1, y);
-        fill(x, y - 1);
-        fill(x, y + 1);
-    }
-
-    private void iterfill(int x, int y) {
         LinkedList<Point> queue = new LinkedList<>();
 
         queue.push(new Point(x, y));

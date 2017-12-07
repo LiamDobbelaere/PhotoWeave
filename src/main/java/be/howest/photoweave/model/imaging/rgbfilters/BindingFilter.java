@@ -28,14 +28,14 @@ public class BindingFilter implements RGBFilter {
 
     private FilteredImage filteredImage;
 
-    private Region region;
+    private List<Region> regions;
 
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
-        this.region = new Region(0, 0, 0, 0, new ArrayList<>());
+        this.regions = new ArrayList<>();
     }
 
     public Map<Integer, Binding> getBindingsMap() {
@@ -92,16 +92,7 @@ public class BindingFilter implements RGBFilter {
         int width = maxX - minX + 1;
         int height = maxY - minY + 1;
 
-        this.region = new Region(minX, minY, width, height, selection);
-
-        /*regions = new int[selection.size() * 2];
-
-        for (int i = 0; i < selection.size() * 2; i+=2) {
-            Point point = selection.get(i / 2);
-
-            regions[i] = point.x;
-            regions[i + 1] = point.y;
-        }*/
+        this.regions.add(new Region(minX, minY, width, height, selection));
     }
 
     @Override
@@ -114,28 +105,22 @@ public class BindingFilter implements RGBFilter {
         Binding binding = this.bindingsMap.computeIfAbsent(
                 currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
 
-        boolean[][] region = this.region.getRegion();
+        for (Region regionItem : this.regions) {
+            boolean[][] region = regionItem.getRegion();
 
-        if (fullX >= this.region.getMinX() && fullY >= this.region.getMinY() &&
-                fullX <= this.region.getMinX() + this.region.getWidth() &&
-                fullY <= this.region.getMinY() + this.region.getHeight()) {
+            if (fullX >= regionItem.getMinX() && fullY >= regionItem.getMinY() &&
+                    fullX < regionItem.getMinX() + regionItem.getWidth() &&
+                    fullY < regionItem.getMinY() + regionItem.getHeight()) {
 
-            for (int cy = 0; cy < this.region.getHeight(); cy++) {
-                for (int cx = 0; cx < this.region.getWidth(); cx++) {
 
-                    if (cx == fullX - this.region.getMinX() && cy == fullY - this.region.getMinY()) {
-                        if (imageMetaData[0] == 0 && region[cy][cx]) {
-                            //Todo: the 0 should actually be whatever level is assigned to the region
-                            //Todo: the 1 should be whatever other binding is assigned to the region
-                            
-                            binding = this.bindingsMap.get(1);
-                        }
-                    }
+                if (region[fullY - regionItem.getMinY()][fullX - regionItem.getMinX()] && imageMetaData[0] == 0) {
+                    //Todo: the 0 should actually be whatever level is assigned to the region
+                    //Todo: the 1 should be whatever other binding is assigned to the region
+
+                    binding = this.bindingsMap.get(1);
                 }
             }
-
         }
-
 
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
