@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+//TODO add name of file -> in BindingLib this will link the bindings
+//TODO add folder -> in BindingLib this will be the library
 public class Binding {
     private BufferedImage bindingImage;
 

@@ -249,9 +249,9 @@ public class EditPhoto implements ThreadEventListener {
                 .addListener(this::ResizeImageViewWidth);
 
         /* CUSTOM */
-        vboxSelectBinding
+        /*vboxSelectBinding
                 .getComboBoxBindings()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);*/
 
         vboxSelectBinding
                 .getComboBoxLevels()
@@ -406,6 +406,7 @@ public class EditPhoto implements ThreadEventListener {
                 () -> {
                     vboxSelectBinding.setBindingFilter(
                             ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)));
+                    System.out.println("BF: " + (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
 
                     vboxSelectBinding
                             .getComboBoxLevels()

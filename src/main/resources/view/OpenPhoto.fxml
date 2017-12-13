@@ -13,8 +13,12 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane fx:id="anchorPane" prefHeight="600" prefWidth="800" style="-fx-background-color: white;" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
+<?import java.net.URL?>
+<AnchorPane fx:id="anchorPane" prefHeight="600" prefWidth="800" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
+    <stylesheets>
+        <URL value="@../style/style.css" />
+        <URL value="@../style/listview.css" />
+    </stylesheets>
     <Pane prefHeight="600.0" prefWidth="256.0" style="-fx-background-color: teal;">
         <children>
             <ImageView fitHeight="105.0" fitWidth="236.0" layoutX="8.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false">

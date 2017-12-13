@@ -59,7 +59,6 @@ public class BindingLibrary {
     private class BindingRepresentation extends VBox {
         private int x, y;
         private boolean isFilled;
-        private Rectangle rectangle;
         private Binding binding;
 
         BindingRepresentation(int x, int y, boolean isFilled, boolean hasStroke, Binding binding) {
