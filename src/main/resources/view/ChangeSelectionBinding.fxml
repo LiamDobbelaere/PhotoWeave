@@ -8,9 +8,10 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import be.howest.photoweave.components.SelectBinding?>
-<AnchorPane prefHeight="400.0" prefWidth="239.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.ChangeSelectionBinding">
+<?import com.jfoenix.controls.JFXButton?>
+<AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.ChangeSelectionBinding">
 
-    <VBox>
+    <VBox spacing="24">
         <padding>
             <Insets bottom="16" left="16" right="16" top="32" />
         </padding>
@@ -18,9 +19,12 @@
             <Label text="Kies niveau:" />
         </HBox>
         <HBox>
-            <!--<JFXSlider fx:id="sliderPosterizationLevel" blockIncrement="1.0" max="24.0" min="2.0" minorTickCount="24" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-            -->
             <SelectBinding fx:id="selectBinding" />
         </HBox>
+
+        <AnchorPane>
+                <JFXButton AnchorPane.leftAnchor="0" fx:id="buttonConfirm" onAction="#confirmChanges" mnemonicParsing="false" styleClass="button-raised" text="Bevestigen" textAlignment="CENTER" />
+                <JFXButton AnchorPane.rightAnchor="0" fx:id="buttonCancel" onAction="#cancelChanges" mnemonicParsing="false" text="Annuleren" textAlignment="CENTER" />
+        </AnchorPane>
     </VBox>
 </AnchorPane>

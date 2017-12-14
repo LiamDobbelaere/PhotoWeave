@@ -66,6 +66,14 @@ public class BindingFilter implements RGBFilter {
         this.regions.add(region);
     }
 
+    public void removeRegion(Region region) {
+        this.regions.remove(region);
+    }
+
+    public List<Region> getRegions() {
+        return regions;
+    }
+
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));

@@ -6,7 +6,13 @@ import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.PrimitiveUtil;
+import com.jfoenix.controls.JFXButton;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +24,7 @@ import java.util.Map;
  */
 public class ChangeSelectionBinding {
     public SelectBinding selectBinding;
+    public JFXButton buttonConfirm;
 
     private FilteredImage filteredImage;
     private BindingFilter bindingFilter;
@@ -85,4 +92,23 @@ public class ChangeSelectionBinding {
         this.filteredImage.redraw();
 
     }
+
+    public void confirmChanges(ActionEvent actionEvent) {
+        Stage stage = (Stage) buttonConfirm.getScene().getWindow();
+        stage.close();
+    }
+
+    public void cancelChanges(ActionEvent actionEvent) {
+        bindingFilter.removeRegion(region);
+
+        Stage stage = (Stage) buttonConfirm.getScene().getWindow();
+        stage.close();
+    }
+
+    EventHandler<WindowEvent> getCloseEventHandler() {
+        return event -> {
+            cancelChanges(null);
+        };
+    }
+
 }

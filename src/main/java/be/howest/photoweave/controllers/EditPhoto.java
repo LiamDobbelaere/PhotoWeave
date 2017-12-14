@@ -525,6 +525,7 @@ public class EditPhoto implements ThreadEventListener {
         stage.setScene(scene);
         stage.initOwner(this.stage.getScene().getWindow());
         stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setOnCloseRequest(controller.getCloseEventHandler());
         stage.showAndWait();
 
         region.setMarked(false);
