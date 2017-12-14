@@ -31,6 +31,20 @@ public class ImageUtil {
         return image;
     }
 
+    public static BufferedImage convertImageToByteBinary(BufferedImage image){
+        if (image.getType() != BufferedImage.TYPE_BYTE_BINARY)
+        {
+            BufferedImage convertedImg = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            Graphics graphics = convertedImg.getGraphics();
+            graphics.drawImage(image, 0, 0, null);
+            graphics.dispose();
+
+            image = convertedImg;
+        }
+
+        return image;
+    }
+
     public static BufferedImage createBlankCopy(BufferedImage image){
         return new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
     }

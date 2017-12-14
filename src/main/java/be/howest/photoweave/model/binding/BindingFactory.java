@@ -8,14 +8,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BindingFactory {
-
     private List<Binding> bindings = new ArrayList<>();
     private final Integer MAX_INTERNAL_BINDINGS = 24;
+    private Binding[] optimizedBindings;
 
+    /**
+     * Responsible for loading the bindings and keeping an array of all the bindings
+     */
     public BindingFactory() {
         try {
             getBindingsFromInternalResources();
-            System.out.println("ok");
         } catch (Exception e) {
             System.out.println("Internal Resources could not be found || e: " + e.getMessage());
         }
@@ -30,6 +32,15 @@ public class BindingFactory {
                     .toURI();
             bindings.add(new Binding(uri));
         }
+
+        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
+
+        for (int j = 0; j < this.bindings.size(); j++) {
+            convertToRBGIntImages(bindings.get(j));
+            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
+        }
+
+        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
     }
 
     private Binding getCustomBinding(String path) throws Exception {
@@ -41,15 +52,8 @@ public class BindingFactory {
         return new Binding(uri);
     }
 
-    public List<Binding> getSortedBindings() {
-        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
-
-        for (int j = 0; j < this.bindings.size(); j++) {
-            convertToRBGIntImages(bindings.get(j));
-            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
-        }
-
-        return new ArrayList<>(getSortedIntensity(bindingIntensityMap));
+    public Binding[] getOptimizedBindings() {
+        return optimizedBindings;
     }
 
     //TODO change?

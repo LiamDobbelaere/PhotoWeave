@@ -1,11 +1,11 @@
-package be.howest.photoweave.model.imaging;
+package be.howest.photoweave.model.imaging.rgbfilters;
 
 /**
  * Created by tomdo on 6/10/2017.
  */
 public class GrayscaleFilter implements RGBFilter {
     @Override
-    public int applyTo(int rgb) {
+    public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int a = rgb & 0xff000000;
         int r = (rgb >> 16) & 0xff;
         int g = (rgb >> 8) & 0xff;

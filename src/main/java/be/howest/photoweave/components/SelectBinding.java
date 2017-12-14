@@ -2,7 +2,7 @@ package be.howest.photoweave.components;
 
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListCell;
@@ -13,13 +13,15 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+
 import java.awt.*;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by tomdo on 25/10/2017.
@@ -27,13 +29,12 @@ import java.io.IOException;
 public class SelectBinding extends VBox {
     @FXML
     private GridPane gridPane;
-    private ObservableList<Binding> items = FXCollections.observableArrayList();
-    private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
-    private JFXComboBox<Binding> comboBox = new JFXComboBox<>(items);
-    private JFXComboBox<Integer> comboBoxColors = new JFXComboBox<>(colorItems);
+    private ObservableList<Binding> bindingsList = FXCollections.observableArrayList();
+    private ObservableList<Integer> levelsList = FXCollections.observableArrayList();
+    private JFXComboBox<Binding> comboBoxBindings = new JFXComboBox<>(bindingsList);
+    private JFXComboBox<Integer> comboBoxLevels = new JFXComboBox<>(levelsList);
 
-    private BindingPalette bindingPalette;
-
+    private Map<Integer, Binding> bindings;
     private ChangeListener<Binding> bindingChangeListener;
 
     public SelectBinding() throws IOException {
@@ -42,61 +43,68 @@ public class SelectBinding extends VBox {
         fxmlLoader.setController(this);
         fxmlLoader.load();
 
-        bindingChangeListener = new ChangeListener<Binding>() {
-            @Override
-            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
-                bindingPalette.getBindingPalette().replace(
-                        comboBoxColors.getSelectionModel().getSelectedItem(),
-                        comboBox.getSelectionModel().getSelectedItem());
-                comboBox.fireEvent(new BindingChanged());
-            }
+        bindingChangeListener = (observable, oldValue, newValue) -> {
+            System.out.println("Binding change listener!");
+                bindings.replace(
+                    comboBoxLevels.getSelectionModel().getSelectedItem(),
+                    comboBoxBindings.getSelectionModel().getSelectedItem());
+            comboBoxBindings.fireEvent(new BindingChanged());
         };
 
-        comboBox.setCellFactory(c -> new ImageListCell());
-        comboBoxColors.setCellFactory(c -> new ColorListCell());
+        comboBoxBindings.setCellFactory(c -> new ImageListCell());
+        comboBoxLevels.setCellFactory(c -> new ColorListCell());
 
-        comboBox.setButtonCell(new ImageListCell());
-        comboBoxColors.setButtonCell(new ColorListCell());
+        comboBoxBindings.setButtonCell(new ImageListCell());
+        comboBoxLevels.setButtonCell(new ColorListCell());
 
-        comboBox.setTooltip(new Tooltip("Select the binding for the selected color"));
-        comboBoxColors.setTooltip(new Tooltip("Select color"));
+        comboBoxBindings.setTooltip(new Tooltip("Select the binding for the selected color"));
+        comboBoxLevels.setTooltip(new Tooltip("Select color"));
 
-        comboBoxColors.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
+        comboBoxLevels.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Integer>() {
             @Override
             public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-                comboBox.getSelectionModel().select(
-                        bindingPalette.getBindingPalette().get(comboBoxColors.getSelectionModel().getSelectedItem()));
+                //comboBoxBindings.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
+                comboBoxBindings.getSelectionModel().select(
+                        bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem()));
+                //comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
             }
         });
 
-        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
+        comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
 
-        gridPane.add(comboBox, 1, 0);
-        gridPane.add(comboBoxColors, 0, 0);
+        gridPane.add(comboBoxBindings, 1, 0);
+        gridPane.add(comboBoxLevels, 0, 0);
     }
 
-    public void setBindingPalette(BindingPalette bindingPalette) {
-        this.bindingPalette = bindingPalette;
+    public void setBindingsMap(Map<Integer, Binding> bindings) {
+        this.bindings = bindings;
 
-        comboBox.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
+        Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
-        items.clear();
-        colorItems.clear();
+        comboBoxBindings.getSelectionModel().selectedItemProperty().removeListener(bindingChangeListener);
 
-        items.addAll(this.bindingPalette.getBindingPalette().values());
-        colorItems.addAll(this.bindingPalette.getBindingPalette().keySet());
+        bindingsList.clear();
+        levelsList.clear();
 
-        comboBoxColors.getSelectionModel().selectFirst();
+        bindingsList.addAll(bindings.values());
+        levelsList.addAll(bindings.keySet());
 
-        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
+        if (levelsList.contains(selectedItem)) {
+            System.out.println("nope");
+            comboBoxLevels.getSelectionModel().select(selectedItem);
+        } else {
+            comboBoxLevels.getSelectionModel().selectFirst();
+        }
+
+        comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
     }
 
-    public JFXComboBox<Integer> getComboBoxColors() {
-        return comboBoxColors;
+    public JFXComboBox<Integer> getComboBoxLevels() {
+        return comboBoxLevels;
     }
 
-    public JFXComboBox<Binding> getComboBox() {
-        return comboBox;
+    public JFXComboBox<Binding> getComboBoxBindings() {
+        return comboBoxBindings;
     }
 
 
@@ -123,7 +131,8 @@ public class SelectBinding extends VBox {
     }
 
     class ColorListCell extends JFXListCell<Integer> {
-        private BorderPane pane = new BorderPane();
+        //private BorderPane pane = new BorderPane();
+        private Label pane = new Label("?");
 
         @Override
         protected void updateItem(Integer item, boolean empty) {
@@ -133,7 +142,10 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                Color color = new Color(item);
+                int colorInt = 128;
+                //int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                Color color = new Color(colorInt, colorInt, colorInt);
+
 
                 pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
                 pane.setPrefSize(40, 40);
