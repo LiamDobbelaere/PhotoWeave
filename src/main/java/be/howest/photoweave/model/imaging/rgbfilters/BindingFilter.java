@@ -38,6 +38,10 @@ public class BindingFilter implements RGBFilter {
         this.regions = new ArrayList<>();
     }
 
+    public BindingFactory getBindingFactory() {
+        return bindingFactory;
+    }
+
     public Map<Integer, Binding> getBindingsMap() {
         return bindingsMap;
     }
