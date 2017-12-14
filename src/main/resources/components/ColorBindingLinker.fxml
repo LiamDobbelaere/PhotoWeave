@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import be.howest.photoweave.components.PixelatedImageView?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600.0" prefWidth="800.0" stylesheets="@../view/style.css"
+            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="be.howest.photoweave.components.ColorBindingLinker">
+    <children>
+        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <PixelatedImageView fx:id="imageview" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true"
+                                    preserveRatio="true">
+                    <image>
+                        <Image url="@../logo.png"/>
+                    </image>
+                </PixelatedImageView>
+                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
+                    <children>
+                        <ScrollPane fx:id="scrollpane" fitToHeight="true" prefHeight="600.0" prefWidth="200.0">
+                            <content>
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600.0" prefWidth="200.0">
+                                    <children>
+                                        <ComboBox prefWidth="150.0"/>
+                                    </children>
+                                </AnchorPane>
+                            </content>
+                        </ScrollPane>
+                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
+                                   mnemonicParsing="false" onAction="#saveBindingLibrary" prefWidth="150.0"
+                                   styleClass="button-raised" text="Save Bindings" textAlignment="CENTER"/>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

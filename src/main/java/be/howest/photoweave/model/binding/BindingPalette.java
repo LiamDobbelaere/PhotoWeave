@@ -51,4 +51,16 @@ public class BindingPalette {
     public HashMap<Integer, Binding> getBindingPalette() {
         return bindingPalette;
     }
+
+    public List<Integer> getSortedColors() {
+        return sortedColors;
+    }
+
+    public List<Binding> getSortedBindings() {
+        return sortedBindings;
+    }
+
+    public void setSortedBindings(List<Binding> sortedBindings) {
+        this.sortedBindings = sortedBindings;
+    }
 }

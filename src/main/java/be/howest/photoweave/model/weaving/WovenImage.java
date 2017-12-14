@@ -2,17 +2,20 @@ package be.howest.photoweave.model.weaving;
 
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.imaging.MonochromeImage;
 import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 
 public class WovenImage {
     private BufferedImage sourceImage;
     private BufferedImage resultImage;
 
+    private MonochromeImage monochromeImage;
+
     private BindingPalette bindingPalette;
+    private BindingPalette maxBindingPalette;
 
     private Integer markedBinding;
     private boolean showMarkedBinding;
@@ -30,6 +33,21 @@ public class WovenImage {
 
         this.inverted = false;
         this.showFloaters = false;
+    }
+
+    public WovenImage(BufferedImage sourceImage, BufferedImage maxColorsImage) {
+        this.sourceImage = ImageUtil.convertImageToRGBInt(sourceImage);
+
+        this.resultImage = ImageUtil.createBlankCopy(this.sourceImage);
+        this.bindingPalette = new BindingPalette(this.sourceImage);
+
+        this.inverted = false;
+        this.showFloaters = false;
+
+        this.monochromeImage = new MonochromeImage(maxColorsImage);
+        this.monochromeImage.setLevels(24);
+        this.monochromeImage.redraw();
+        this.maxBindingPalette = new BindingPalette(ImageUtil.convertImageToRGBInt(this.monochromeImage.getModifiedImage()));
     }
 
     public void redraw() {
@@ -150,5 +168,17 @@ public class WovenImage {
 
     public BindingPalette getBindingPalette() {
         return bindingPalette;
+    }
+
+    public void setBindingPalette(BindingPalette palette) {
+        this.bindingPalette = palette;
+    }
+
+    public BindingPalette getMaxBindingPalette() {
+        return maxBindingPalette;
+    }
+
+    public void setMaxBindingPalette(BindingPalette maxBindingPalette) {
+        this.maxBindingPalette = maxBindingPalette;
     }
 }

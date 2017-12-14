@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.components.ColorBindingLinker;
 import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
@@ -28,7 +29,6 @@ import javafx.stage.StageStyle;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -125,7 +125,7 @@ public class EditPhoto {
         monochromeImage = new MonochromeImage(image);
         monochromeImage.setLevels(posterizeScale);
         monochromeImage.redraw();
-        wovenImage = new WovenImage(monochromeImage.getModifiedImage());
+        wovenImage = new WovenImage(monochromeImage.getModifiedImage(), image);
         wovenImage.redraw();
         redrawPhotoView();
 
@@ -341,6 +341,21 @@ public class EditPhoto {
         wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
         wovenImage.redraw();
         redrawPhotoView();
+    }
+
+    public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setScene(new Scene(loader.load()));
+        stage.setMinHeight(600.0);
+        stage.setMinWidth(800.0);
+        stage.setTitle("PhotoWeave | Link colors to bindings");
+        stage.getIcons().add(new Image("logo.png"));
+
+        ColorBindingLinker controller = loader.getController();
+        controller.initialize(wovenImage);
+        stage.show();
     }
 
 }
