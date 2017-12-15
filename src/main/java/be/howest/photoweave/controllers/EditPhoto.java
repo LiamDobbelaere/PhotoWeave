@@ -19,6 +19,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -32,7 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class EditPhoto {
+public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
     public AnchorPane anchorPaneWindow;
     public Label labelFileNameId;
@@ -50,8 +52,12 @@ public class EditPhoto {
     public JFXTextField textFieldYFloaters;
 
     public AnchorPane anchorPanePhotoView;
-    public VBox vboxPhotView;
+    public VBox vboxPhotoView;
     public PixelatedImageView photoView;
+    public TitledPane paneDefault;
+    public Label filePath;
+    public JFXButton toggleEditButton;
+    public ScrollPane imageScrollPane;
 
     /*  */
     private int imageWidth;
@@ -59,18 +65,51 @@ public class EditPhoto {
     private String filename;
     private BufferedImage image;
     private BufferedImage originalImage;
-    private MonochromeImage monochromeImage;
-    private WovenImage wovenImage;
+    private FilteredImage filteredImage;
     private Stage stage;
 
+    private BindingChangedEventHandler bindingChangedEventHandler;
+    private ChangeListener<Integer> markedColorChangeListener;
+
     private int posterizeScale = 10;
+
+    private int pXStart = -1;
+    private int pYStart = -1;
+    private int pXPrevious = -1;
+    private int pYPrevious = -1;
+
+    private boolean editing = false;
+    private java.util.List<Point> selectionPoints;
+    private WritableImage writablePhotoview;
 
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
         this.originalImage = image;
-        this.monochromeImage = new MonochromeImage(image);
+        this.filteredImage = new FilteredImage(image);
+        this.filteredImage.addThreadEventListener(this);
+        this.filteredImage.getFilters().add(new GrayscaleFilter());
+        this.filteredImage.getFilters().add(new PosterizeFilter());
+        this.filteredImage.getFilters().add(new BindingFilter(
+                (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
+        this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
+
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
+
         this.posterizeScale = 10;
+
+        this.bindingChangedEventHandler = new BindingChangedEventHandler() {
+            @Override
+            public void onBindingChanged() {
+                System.out.println("BINDING CHANGED");
+
+                filteredImage.redraw();
+            }
+        };
+
+        this.markedColorChangeListener = (observable, oldValue, newValue) -> {
+            this.MarkColorOnImageView(observable);
+        };
 
         // UI
         this.imageWidth = image.getWidth();
@@ -83,54 +122,42 @@ public class EditPhoto {
         initializeListeners();
         initializePhotoScale();
         updateTexts();
+
+        paneDefault.setExpanded(true);
     }
 
     /* UI */
     private void initializePhotoScale() {
-        stage.show();
-        if (image.getHeight() <= image.getWidth()) {
-            photoView.setFitWidth(anchorPanePhotoView.getWidth());
-        } else {
-            photoView.setFitHeight(anchorPanePhotoView.getHeight());
-        }
+        if (image.getHeight() <= image.getWidth())
+            photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
+        else
+            photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
+
+
         updateImage();
     }
 
     private void updateTexts() {
-        labelFileNameId.setText("File: " + filename);
-        labelImageSizeId.setText("Width: " + imageWidth + "px; Height: " + imageHeight + "px;");
+        labelFileNameId.setText(new File(filename).getName());
+        filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(imageWidth));
         textFieldHeight.setText(String.valueOf(imageHeight));
-        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+        labelAmountOfColors.setText("Aantal tinten: " + posterizeScale);
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(wovenImage.getResultImage(), null));
+        writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
+        photoView.setImage(writablePhotoview);
     }
 
-    /* Image Logic */
     private void resizeImage() {
-        BufferedImage newImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
-
-        Graphics g = newImage.createGraphics();
-        g.drawImage(originalImage, 0, 0, imageWidth, imageHeight, null);
-        g.dispose();
-
-        image = newImage;
+        filteredImage.resize(imageWidth, imageHeight);
 
         updateImage();
     }
 
     private void updateImage() {
-        monochromeImage = new MonochromeImage(image);
-        monochromeImage.setLevels(posterizeScale);
-        monochromeImage.redraw();
-        wovenImage = new WovenImage(monochromeImage.getModifiedImage(), image);
-        wovenImage.redraw();
-        redrawPhotoView();
-
-        vboxSelectBinding.setBindingPalette(wovenImage.getBindingPalette());
-
+        filteredImage.redraw();
         updateTexts();
     }
 
@@ -138,6 +165,7 @@ public class EditPhoto {
     public void zoomIn() {
         photoView.setFitWidth(photoView.getFitWidth() * 1.3);
         photoView.setFitHeight(photoView.getFitHeight() * 1.3);
+        System.out.println("4; " + photoView.getFitWidth());
     }
 
     public void zoomOut() {
@@ -145,21 +173,25 @@ public class EditPhoto {
         photoView.setFitHeight(photoView.getFitHeight() / 1.3);
     }
 
+    public void fitWindow(ActionEvent actionEvent) {
+        if (image.getHeight() <= image.getWidth())
+            photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
+        else
+            photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
+    }
+
     public void saveImage(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("PNG", ".png"),
-                new FileChooser.ExtensionFilter("JPG", ".jpg"),
-                new FileChooser.ExtensionFilter("JPEG", ".jpeg")
+                new FileChooser.ExtensionFilter("BMP", ".bmp")
         );
         fileChooser.setTitle("PhotoWeave | Save Image");
         File file = fileChooser.showSaveDialog(stage);
         if (file != null) {
             try {
                 //Kan hier een confict zijn.
-                wovenImage.redraw();
 
-                ImageIO.write(wovenImage.getResultImage(), "png", file);
+                ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
             } catch (IOException ex) {
             }
         }
@@ -186,6 +218,7 @@ public class EditPhoto {
         /* FXML */
         sliderPosterizationScale
                 .setOnMouseReleased(this::updatePosterizationLevelOnImage);
+
         textFieldWidth
                 .focusedProperty()
                 .addListener(this::ResizeImageHeight);
@@ -223,28 +256,70 @@ public class EditPhoto {
 
         /* CUSTOM */
         vboxSelectBinding
-                .getComboBox()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.changeBindingInWomenImage());
+                .getComboBoxBindings()
+                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
 
         vboxSelectBinding
-                .getComboBoxColors()
+                .getComboBoxLevels()
                 .getSelectionModel()
                 .selectedItemProperty()
-                .addListener(this::MarkColorOnImageView);
+                .addListener(this.markedColorChangeListener);
+
+        photoView
+                .setOnMouseDragged(ManipulatePixel());
+        photoView.setOnMousePressed((event) -> {
+            if (!editing) return;
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
+
+            pXStart = pX;
+            pYStart = pY;
+
+            selectionPoints = new ArrayList<>();
+        });
+        photoView.setOnMouseReleased((event) -> {
+            if (!editing) return;
+
+            if (pXPrevious < 0 || pYPrevious < 0) {
+                pXPrevious = pXStart;
+                pYPrevious = pYStart;
+            }
+
+            drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious);
+
+            pXPrevious = -1;
+            pYPrevious = -1;
+
+            showChangeSelectionBindingWindow(new Region(selectionPoints));
+            //BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            //bf.addRegion(selectionPoints);
+
+        });
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
         posterizeScale = sliderPosterizationScale.valueProperty().intValue();
         labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+
+        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
+        posterizeFilter.setLevels(posterizeScale);
+
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.getBindingsMap().clear();
+
         updateImage();
     }
 
     private void ResizeImageViewHeight(Observable observable, Number oldValue, Number newValue) {
-        vboxPhotView.setMinHeight((Double) newValue - 50);
+        vboxPhotoView.setMinHeight((Double) newValue - 50);
     }
 
     private void ResizeImageViewWidth(Observable observable, Number oldValue, Number newValue) {
-        vboxPhotView.setMinWidth((Double) newValue - 200);
+        vboxPhotoView.setMinWidth((Double) newValue - 200);
     }
 
     private void ChangeImageWidth(Observable observable, String oldValue, String newValue) {
@@ -268,26 +343,30 @@ public class EditPhoto {
     }
 
     private void showMarkingOnImageView(Observable observable) {
-        Integer selectedBinding = vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
-        if (selectedBinding == null) selectedBinding = vboxSelectBinding.getComboBoxColors().getItems().get(0);
+        if (selectedBinding == null)
+            selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getItems().get(0));
 
-        wovenImage.setMarkedBinding(selectedBinding);
-        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
-        redrawPhotoView();
+        bindingFilter.setMarkedBinding(selectedBinding);
+        bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        filteredImage.redraw();
     }
 
     private void InvertColorsInWovenImage(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setInverted(newValue);
-        wovenImage.redraw();
-        redrawPhotoView();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bindingFilter.setInverted(newValue);
+        filteredImage.redraw();
     }
 
     private void ShowFloatersOnImageView(Observable observable, Boolean oldValue, Boolean newValue) {
-        wovenImage.setShowFloaters(newValue);
-        wovenImage.redraw();
-        redrawPhotoView();
+        FloatersFilter floatersFilter =
+                (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+        floatersFilter.setEnabled(newValue);
+
+        filteredImage.redraw();
     }
 
     private void ChangeXFloatersThreshold(Observable observable, String oldValue, String newValue) {
@@ -295,9 +374,12 @@ public class EditPhoto {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldXFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdX(Integer.parseInt(newValue));
-                wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdX(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -307,9 +389,12 @@ public class EditPhoto {
             textFieldHeight.setText(newValue.replaceAll("\\D", ""));
         } else {
             if (!textFieldYFloaters.getText().trim().isEmpty() && Integer.parseInt(newValue) != 0) {
-                wovenImage.setFloaterTresholdY(Integer.parseInt(newValue));
-                wovenImage.redraw();
-                redrawPhotoView();
+                FloatersFilter floatersFilter =
+                        (FloatersFilter) filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+
+                floatersFilter.setFloaterTresholdY(Integer.parseInt(newValue));
+
+                filteredImage.redraw();
             }
         }
     }
@@ -326,21 +411,81 @@ public class EditPhoto {
         }
     }
 
-    private BindingChangedEventHandler changeBindingInWomenImage() {
-        return new BindingChangedEventHandler() {
-            @Override
-            public void onBindingChanged() {
-                wovenImage.redraw();
-                redrawPhotoView();
-            }
-        };
+    private BindingChangedEventHandler changeBindingInWovenImage() {
+        return this.bindingChangedEventHandler;
     }
 
     private void MarkColorOnImageView(Observable observable) {
-        wovenImage.setMarkedBinding(vboxSelectBinding.getComboBoxColors().getSelectionModel().getSelectedItem());
-        wovenImage.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
-        wovenImage.redraw();
-        redrawPhotoView();
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        bindingFilter.setMarkedBinding(bindingFilter.getBindingsMap().get(
+                vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()));
+        bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
+        filteredImage.redraw();
+        System.out.println("MARK COLOR ON IMAGE VIEW");
+    }
+
+    @Override
+    public void OnRedrawBegin() {
+        vboxSelectBinding
+                .getComboBoxLevels()
+                .getSelectionModel()
+                .selectedItemProperty()
+                .removeListener(this.markedColorChangeListener);
+        vboxSelectBinding.removeEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+    }
+
+    @Override
+    public void onThreadComplete() {
+        //You could add a waiting symbol here
+        //redrawPhotoView(); //Optional, but shows the thread's progress in realtime
+    }
+
+    @Override
+    public void onRedrawComplete() {
+        Platform.runLater(
+                () -> {
+                    vboxSelectBinding.setBindingsMap(
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap());
+
+                    vboxSelectBinding
+                            .getComboBoxLevels()
+                            .getSelectionModel()
+                            .selectedItemProperty()
+                            .addListener(this.markedColorChangeListener);
+                    vboxSelectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+
+                    redrawPhotoView();
+                });
+    }
+
+    public void ShowCalculateWindow(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/CalculateFlattening.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        CalculateFlattening controller = loader.getController();
+        controller.initialize(this.filteredImage);
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("Afplatting berekenen");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        textFieldWidth.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getWidth()));
+        textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
+
+        filteredImage.redraw();
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
@@ -358,4 +503,123 @@ public class EditPhoto {
         stage.show();
     }
 
+    public void showChangeSelectionBindingWindow(Region region) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeSelectionBinding.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ChangeSelectionBinding controller = loader.getController();
+        controller.initialize(this.filteredImage, region);
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("Verander specifieke binding in selectie");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setOnCloseRequest(controller.getCloseEventHandler());
+        stage.showAndWait();
+
+        region.setMarked(false);
+
+        filteredImage.redraw();
+    }
+
+
+    private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2) {
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+
+        int x = x1;
+        int y = y1;
+
+        if (dx >= dy) {
+            while (true) {
+
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            while (true) {
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
+            }
+        }
+    }
+
+    private EventHandler<MouseEvent> ManipulatePixel() {
+        return event -> {
+            if (!editing) return;
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
+
+            pX = Math.min(Math.max(0, pX), (int) writablePhotoview.getWidth() - 1);
+            pY = Math.min(Math.max(0, pY), (int) writablePhotoview.getHeight() - 1);
+
+            if (pXPrevious == -1 || pYPrevious == -1) {
+                writablePhotoview.getPixelWriter().setColor(pX, pY, javafx.scene.paint.Color.RED);
+                selectionPoints.add(new Point(pX, pY));
+            } else {
+                drawLine(writablePhotoview.getPixelWriter(), pXPrevious, pYPrevious, pX, pY);
+            }
+
+            pXPrevious = pX;
+            pYPrevious = pY;
+        };
+    }
+
+    public void toggleEdit(ActionEvent actionEvent) {
+        editing = !editing;
+
+        if (editing) {
+            toggleEditButton.setStyle("-fx-background-color: -app-color-secondary;");
+            imageScrollPane.setPannable(false);
+        } else {
+            toggleEditButton.setStyle("");
+            imageScrollPane.setPannable(true);
+        }
+
+    }
 }
