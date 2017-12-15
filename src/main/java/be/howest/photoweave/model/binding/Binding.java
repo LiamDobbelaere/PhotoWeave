@@ -6,13 +6,14 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 public class Binding {
     private BufferedImage bindingImage;
 
-    public Binding(URI uri) throws IOException {
-        bindingImage = ImageIO.read(new File(uri));
+    public Binding(InputStream is) throws IOException {
+        bindingImage = ImageIO.read(is);
     }
 
     //A copy of the original bindingImage will be returned with the given color
