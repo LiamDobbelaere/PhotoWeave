@@ -2,6 +2,7 @@ package be.howest.photoweave.components;
 
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
@@ -76,7 +77,7 @@ public class SelectBinding extends VBox {
         gridPane.add(comboBoxLevels, 0, 0);
     }
 
-    public void setBindingsMap(Map<Integer, Binding> bindings) {
+    public void setBindingsMap(Map<Integer, Binding> bindings, BindingFactory bindingFactory) {
         this.bindings = bindings;
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
@@ -86,7 +87,7 @@ public class SelectBinding extends VBox {
         bindingsList.clear();
         levelsList.clear();
 
-        bindingsList.addAll(bindings.values());
+        bindingsList.addAll(bindingFactory.getOptimizedBindings());
         levelsList.addAll(bindings.keySet());
 
         if (levelsList.contains(selectedItem)) {

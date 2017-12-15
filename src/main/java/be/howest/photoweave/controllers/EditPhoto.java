@@ -108,7 +108,8 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
-        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
+                (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingFactory());
 
         this.posterizeScale = 10;
 
@@ -460,7 +461,8 @@ public class EditPhoto implements ThreadEventListener {
         Platform.runLater(
                 () -> {
                     vboxSelectBinding.setBindingsMap(
-                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap());
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap(),
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingFactory());
 
                     vboxSelectBinding
                             .getComboBoxLevels()
