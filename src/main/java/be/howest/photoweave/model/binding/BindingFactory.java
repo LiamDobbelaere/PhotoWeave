@@ -17,6 +17,7 @@ public class BindingFactory {
 
     private List<Binding> bindings = new ArrayList<>();
     private final Integer MAX_INTERNAL_BINDINGS = 24;
+    private Binding[] optimizedBindings;
 
     public BindingFactory() {
         try {
@@ -45,6 +46,29 @@ public class BindingFactory {
 
             bindings.add(new Binding(is));
         }
+
+        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
+
+        for (int j = 0; j < this.bindings.size(); j++) {
+            convertToRBGIntImages(bindings.get(j));
+            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
+        }
+
+        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
+
+    }
+
+    private Binding getCustomBinding(String path) throws Exception {
+        URI uri = this
+                .getClass()
+                .getClassLoader()
+                .getResource(path)
+                .toURI();
+        return null;
+    }
+
+    public Binding[] getOptimizedBindings() {
+        return optimizedBindings;
     }
 
     public List<Binding> getSortedBindings() {
@@ -54,7 +78,6 @@ public class BindingFactory {
             convertToRBGIntImages(bindings.get(j));
             setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
         }
-
         return new ArrayList<>(getSortedIntensity(bindingIntensityMap));
     }
 
