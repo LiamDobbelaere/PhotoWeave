@@ -1,38 +1,53 @@
 package be.howest.photoweave.model.binding;
 
 import be.howest.photoweave.model.util.ImageUtil;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.io.FileUtils.listFiles;
+
 public class BindingFactory {
+
     private List<Binding> bindings = new ArrayList<>();
     private final Integer MAX_INTERNAL_BINDINGS = 24;
-    private Binding[] optimizedBindings;
 
-    /**
-     * Responsible for loading the bindings and keeping an array of all the bindings
-     */
     public BindingFactory() {
         try {
             getBindingsFromInternalResources();
+            System.out.println("ok");
         } catch (Exception e) {
             System.out.println("Internal Resources could not be found || e: " + e.getMessage());
         }
     }
 
     private void getBindingsFromInternalResources() throws Exception {
-        for (int i = 0; i <= MAX_INTERNAL_BINDINGS; i++) {
-            URI uri = this
-                    .getClass()
-                    .getClassLoader()
-                    .getResource("bindings/shadow/" + i + ".png")
-                    .toURI();
-            bindings.add(new Binding(uri));
+        System.out.println();
+
+        Collection<File> files = FileUtils.listFiles(
+                new File(Paths.get("./bindings").toAbsolutePath().normalize().toString()), new String[] {"png"}, true);
+
+        for (File file : files) {
+            System.out.println(file.getAbsolutePath());
         }
 
+        for (int i = 0; i <= MAX_INTERNAL_BINDINGS; i++) {
+            InputStream is = this
+                    .getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("bindings/shadow/" + i + ".png");
+
+            bindings.add(new Binding(is));
+        }
+    }
+
+    public List<Binding> getSortedBindings() {
         HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
 
         for (int j = 0; j < this.bindings.size(); j++) {
@@ -40,20 +55,7 @@ public class BindingFactory {
             setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
         }
 
-        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
-    }
-
-    private Binding getCustomBinding(String path) throws Exception {
-        URI uri = this
-                .getClass()
-                .getClassLoader()
-                .getResource(path)
-                .toURI();
-        return new Binding(uri);
-    }
-
-    public Binding[] getOptimizedBindings() {
-        return optimizedBindings;
+        return new ArrayList<>(getSortedIntensity(bindingIntensityMap));
     }
 
     //TODO change?
