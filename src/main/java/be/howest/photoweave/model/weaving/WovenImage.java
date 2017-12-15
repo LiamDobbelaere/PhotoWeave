@@ -1,7 +1,6 @@
 package be.howest.photoweave.model.weaving;
 
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.binding.BindingPalette;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.util.ImageUtil;
 

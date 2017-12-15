@@ -6,17 +6,29 @@ import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
-import be.howest.photoweave.model.imaging.MonochromeImage;
-import be.howest.photoweave.model.weaving.WovenImage;
+import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.imaging.FilteredImage;
+import be.howest.photoweave.model.imaging.ThreadEventListener;
+import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
+import be.howest.photoweave.model.util.ImageUtil;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -25,6 +37,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -33,6 +46,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -64,7 +78,6 @@ public class EditPhoto implements ThreadEventListener {
     private int imageHeight;
     private String filename;
     private BufferedImage image;
-    private BufferedImage originalImage;
     private FilteredImage filteredImage;
     private Stage stage;
 
@@ -85,7 +98,6 @@ public class EditPhoto implements ThreadEventListener {
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
-        this.originalImage = image;
         this.filteredImage = new FilteredImage(image);
         this.filteredImage.addThreadEventListener(this);
         this.filteredImage.getFilters().add(new GrayscaleFilter());
@@ -499,7 +511,7 @@ public class EditPhoto implements ThreadEventListener {
         stage.getIcons().add(new Image("logo.png"));
 
         ColorBindingLinker controller = loader.getController();
-        controller.initialize(wovenImage);
+        controller.initialize(filteredImage);
         stage.show();
     }
 

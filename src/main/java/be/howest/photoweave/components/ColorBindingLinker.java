@@ -1,7 +1,7 @@
 package be.howest.photoweave.components;
 
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.binding.BindingPalette;
+import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXComboBox;
@@ -37,7 +37,7 @@ public class ColorBindingLinker {
     private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
     private ChangeListener<Binding> bindingChangeListener;
 
-    public void initialize(WovenImage wovenImage) {
+    public void initialize(FilteredImage wovenImage) {
         this.wovenimage = wovenImage;
         this.maxBindingPalette = wovenImage.getMaxBindingPalette();
         this.bindingPalette = wovenImage.getBindingPalette();
