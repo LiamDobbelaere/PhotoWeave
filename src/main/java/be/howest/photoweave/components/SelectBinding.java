@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 
 import java.awt.*;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Map;
 
 /**
@@ -37,6 +38,8 @@ public class SelectBinding extends VBox {
 
     private Map<Integer, Binding> bindings;
     private ChangeListener<Binding> bindingChangeListener;
+
+    private BindingFilter bindingFilter;
 
     public SelectBinding() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("components/SelectBinding.fxml"));
@@ -73,12 +76,13 @@ public class SelectBinding extends VBox {
 
         comboBoxBindings.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
 
-        gridPane.add(comboBoxBindings, 1, 0);
+        gridPane.add(comboBoxBindings, 0, 1);
         gridPane.add(comboBoxLevels, 0, 0);
     }
 
-    public void setBindingsMap(Map<Integer, Binding> bindings, BindingFactory bindingFactory) {
+    public void setBindingsMap(Map<Integer, Binding> bindings, BindingFactory bindingFactory, BindingFilter bindingFilter) {
         this.bindings = bindings;
+        this.bindingFilter = bindingFilter;
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
@@ -133,7 +137,6 @@ public class SelectBinding extends VBox {
 
     class ColorListCell extends JFXListCell<Integer> {
         //private BorderPane pane = new BorderPane();
-        private Label pane = new Label("?");
 
         @Override
         protected void updateItem(Integer item, boolean empty) {
@@ -143,15 +146,16 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                int colorInt = 128;
-                //int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
                 Color color = new Color(colorInt, colorInt, colorInt);
 
+                String colorString = MessageFormat.format("rgb({0}, {1}, {2})", color.getRed(), color.getGreen(), color.getBlue());
+                Label pane = new Label(colorString);
 
                 pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
-                pane.setPrefSize(40, 40);
-                pane.setMinSize(40, 40);
-                pane.setMaxSize(40, 40);
+                pane.setPrefSize(140, 40);
+                pane.setMinSize(140, 40);
+                pane.setMaxSize(140, 40);
 
                 setGraphic(pane);
 

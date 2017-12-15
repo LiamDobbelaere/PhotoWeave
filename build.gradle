@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 group 'be.howest.photoweave'
-version '0.6-SNAPSHOT'
+version '0.6.5-SNAPSHOT'
 
 mainClassName = 'be.howest.photoweave.Application'
 
