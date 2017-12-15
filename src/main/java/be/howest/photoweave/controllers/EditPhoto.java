@@ -30,6 +30,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -92,6 +94,7 @@ public class EditPhoto implements ThreadEventListener {
 
     private boolean editing = false;
     private java.util.List<Point> selectionPoints;
+    private WritableImage writablePhotoview;
 
     public void initialize(String path) throws IOException {
         // Logic
@@ -157,7 +160,8 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
+        writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
+        photoView.setImage(writablePhotoview);
     }
 
     private void resizeImage() {
@@ -280,13 +284,11 @@ public class EditPhoto implements ThreadEventListener {
         photoView.setOnMousePressed((event) -> {
             if (!editing) return;
 
-            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
-
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
             double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
 
-            int pX = (int) (bi.getWidth() * xPercent);
-            int pY = (int) (bi.getHeight() * yPercent);
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
 
             pXStart = pX;
             pYStart = pY;
@@ -296,19 +298,15 @@ public class EditPhoto implements ThreadEventListener {
         photoView.setOnMouseReleased((event) -> {
             if (!editing) return;
 
-            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
-
             if (pXPrevious < 0 || pYPrevious < 0) {
                 pXPrevious = pXStart;
                 pYPrevious = pYStart;
             }
 
-            drawLine(bi, pXStart, pYStart, pXPrevious, pYPrevious);
+            drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious);
 
             pXPrevious = -1;
             pYPrevious = -1;
-
-            photoView.setImage(SwingFXUtils.toFXImage(bi, null));
 
             showChangeSelectionBindingWindow(new Region(selectionPoints));
             //BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
@@ -534,7 +532,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
 
-    private void drawLine(BufferedImage bi, int x1, int y1, int x2, int y2) {
+    private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2) {
         // delta of exact value and rounded value of the dependent variable
         int d = 0;
 
@@ -552,8 +550,12 @@ public class EditPhoto implements ThreadEventListener {
 
         if (dx >= dy) {
             while (true) {
-                bi.setRGB(x, y, Color.RED.getRGB());
-                selectionPoints.add(new Point(x, y));
+
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
                 if (x == x2)
                     break;
                 x += ix;
@@ -565,8 +567,11 @@ public class EditPhoto implements ThreadEventListener {
             }
         } else {
             while (true) {
-                bi.setRGB(x, y, Color.RED.getRGB());
-                selectionPoints.add(new Point(x, y));
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
                 if (y == y2)
                     break;
                 y += iy;
@@ -583,34 +588,24 @@ public class EditPhoto implements ThreadEventListener {
         return event -> {
             if (!editing) return;
 
-            BufferedImage bi = SwingFXUtils.fromFXImage(photoView.getImage(), null);
-
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
             double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
 
-            int pX = (int) (bi.getWidth() * xPercent);
-            int pY = (int) (bi.getHeight() * yPercent);
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
 
-            pX = Math.min(Math.max(0, pX), bi.getWidth() - 1);
-            pY = Math.min(Math.max(0, pY), bi.getHeight() - 1);
-
-            //if (pX < 0 || pY < 0 || pX >= bi.getWidth() || pY >= bi.getHeight()) return;
-
-            int original = bi.getRGB(pX, pY);
-
+            pX = Math.min(Math.max(0, pX), (int) writablePhotoview.getWidth() - 1);
+            pY = Math.min(Math.max(0, pY), (int) writablePhotoview.getHeight() - 1);
+            
             if (pXPrevious == -1 || pYPrevious == -1) {
-                bi.setRGB(pX, pY, Color.RED.getRGB());
+                writablePhotoview.getPixelWriter().setColor(pX, pY, javafx.scene.paint.Color.RED);
                 selectionPoints.add(new Point(pX, pY));
             } else {
-                drawLine(bi, pXPrevious, pYPrevious, pX, pY);
+                drawLine(writablePhotoview.getPixelWriter(), pXPrevious, pYPrevious, pX, pY);
             }
-
-            //bi.setRGB(pX, pY, original == Color.BLACK.getRGB() ? Color.WHITE.getRGB() : Color.BLACK.getRGB());
 
             pXPrevious = pX;
             pYPrevious = pY;
-
-            photoView.setImage(SwingFXUtils.toFXImage(bi, null));
         };
     }
 
