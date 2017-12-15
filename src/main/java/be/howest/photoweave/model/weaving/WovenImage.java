@@ -2,7 +2,7 @@ package be.howest.photoweave.model.weaving;
 
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
-import be.howest.photoweave.model.imaging.MonochromeImage;
+import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.util.ImageUtil;
 
 import java.awt.*;
@@ -12,7 +12,7 @@ public class WovenImage {
     private BufferedImage sourceImage;
     private BufferedImage resultImage;
 
-    private MonochromeImage monochromeImage;
+    private FilteredImage filteredImage;
 
     private BindingPalette bindingPalette;
     private BindingPalette maxBindingPalette;
@@ -44,10 +44,10 @@ public class WovenImage {
         this.inverted = false;
         this.showFloaters = false;
 
-        this.monochromeImage = new MonochromeImage(maxColorsImage);
-        this.monochromeImage.setLevels(24);
-        this.monochromeImage.redraw();
-        this.maxBindingPalette = new BindingPalette(ImageUtil.convertImageToRGBInt(this.monochromeImage.getModifiedImage()));
+        this.filteredImage = new FilteredImage(maxColorsImage);
+        this.filteredImage.setLevels(24);
+        this.filteredImage.redraw();
+        this.maxBindingPalette = new BindingPalette(ImageUtil.convertImageToRGBInt(this.filteredImage.getModifiedImage()));
     }
 
     public void redraw() {

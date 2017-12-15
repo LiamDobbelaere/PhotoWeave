@@ -2,7 +2,6 @@ package be.howest.photoweave.components;
 
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingPalette;
-import be.howest.photoweave.model.imaging.MonochromeImage;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.weaving.WovenImage;
 import com.jfoenix.controls.JFXComboBox;
@@ -30,7 +29,6 @@ public class ColorBindingLinker {
     public PixelatedImageView imageview;
     public VBox vbox;
     private WovenImage wovenimage;
-    private MonochromeImage monochromeImage;
     private BindingPalette maxBindingPalette;
     private BindingPalette bindingPalette;
     private List<Integer> sortedColors = new ArrayList<>();
