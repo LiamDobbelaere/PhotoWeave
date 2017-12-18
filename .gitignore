@@ -25,3 +25,5 @@ build/
 bin/
 
 test*.png
+
+config.properties

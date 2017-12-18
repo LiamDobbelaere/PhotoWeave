@@ -54,6 +54,7 @@ public class ChangeSelectionBinding {
         Map<Integer, Binding> filteredMap = new HashMap<>();
 
         for (int level : levels) {
+            //System.out.println(level);
             filteredMap.put(level, bindingFilter.getBindingsMap().get(level));
         }
 
