@@ -1,5 +1,6 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.model.util.ConfigUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -26,12 +27,21 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,8 +67,11 @@ public class OpenPhoto {
             stage = (Stage) anchorPane.getScene().getWindow();
             anchorPane.requestFocus();
         });
-        ObservableList<String> items = FXCollections.observableArrayList (
-                "C:\\Users\\Quinten\\Pictures\\verilin\\formaat anders.png", "C:\\Users\\Quinten\\Pictures\\verilin\\POLAR.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\lionBig.bmp", "C:\\Users\\Quinten\\Pictures\\verilin\\Results\\logo.bmp");
+
+        ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
+        Collections.reverse(recentFiles);
+
+        ObservableList<String> items = FXCollections.observableArrayList(recentFiles);
         listViewRecentFiles.setItems(items);
 
         listViewRecentFiles.setCellFactory(listView -> new ListCell<String>() {
@@ -86,10 +99,19 @@ public class OpenPhoto {
 
             @Override
             public void handle(MouseEvent event) {
+                Object selectedItem = listViewRecentFiles.getSelectionModel().getSelectedItem();
+                if (selectedItem == null) return;
+
+                File file = new File(selectedItem.toString());
 
                 System.out.println("clicked on " + listViewRecentFiles.getSelectionModel().getSelectedItem());
-                setImagePath(new File(listViewRecentFiles.getSelectionModel().getSelectedItem().toString()));
+                setImagePath(file);
 
+                try {
+                    setImagePreview(ImageIO.read(file));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         initializeListeners();
@@ -138,6 +160,16 @@ public class OpenPhoto {
     }
 
     public void editPicture() {
+        ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
+
+        if (recentFiles.contains(imagePath)) {
+            recentFiles.remove(imagePath);
+        }
+
+        recentFiles.add(imagePath);
+
+        ConfigUtil.getPropertiesConfig().setProperty("recentfiles", recentFiles);
+
         showLoading(true);
         Task<FXMLLoader> loadEditPhotoTask = getLoadEditPhotoTask();
 
