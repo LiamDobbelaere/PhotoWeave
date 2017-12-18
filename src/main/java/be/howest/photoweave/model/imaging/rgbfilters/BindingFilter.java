@@ -3,10 +3,15 @@ package be.howest.photoweave.model.imaging.rgbfilters;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.FilteredImage;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
+import be.howest.photoweave.model.util.PrimitiveUtil;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,11 +28,14 @@ public class BindingFilter implements RGBFilter {
 
     private FilteredImage filteredImage;
 
+    private List<Region> regions;
+
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
         this.bindingFactory = new BindingFactory();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
+        this.regions = new ArrayList<>();
     }
 
     public BindingFactory getBindingFactory() {
@@ -58,17 +66,54 @@ public class BindingFilter implements RGBFilter {
         return posterizeFilter;
     }
 
+    public void addRegion(Region region) {
+        this.regions.add(region);
+    }
+
+    public void removeRegion(Region region) {
+        this.regions.remove(region);
+    }
+
+    public List<Region> getRegions() {
+        return regions;
+    }
+
     @Override
-    public int applyTo(int rgb, int i) {
+    public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
+
+        int fullX = i % this.filteredImage.getModifiedImage().getWidth();
+        int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));
 
         Binding binding = this.bindingsMap.computeIfAbsent(
                 currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
 
+        boolean markRegion = false;
+
+        for (Region regionItem : this.regions) {
+            boolean[][] region = regionItem.getRegion();
+
+            if (fullX >= regionItem.getMinX() && fullY >= regionItem.getMinY() &&
+                    fullX < regionItem.getMinX() + regionItem.getWidth() &&
+                    fullY < regionItem.getMinY() + regionItem.getHeight()) {
+
+                if (region[fullY - regionItem.getMinY()][fullX - regionItem.getMinX()]
+                        && imageMetaData[0] == regionItem.getTargetLevel()) {
+
+                    markRegion = regionItem.isMarked();
+
+                    //Todo: the 1 should be whatever other binding is assigned to the region
+                    if (regionItem.getTargetBinding() != null) {
+                        binding = regionItem.getTargetBinding();
+                    }
+                }
+            }
+        }
+
         BufferedImage pattern = binding.getBindingImage(); //binding.getBindingImage();
 
-        int x = (i % this.filteredImage.getModifiedImage().getWidth()) % pattern.getWidth();
-        int y = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth())) % pattern.getHeight();
+        int x = fullX % pattern.getWidth();
+        int y = fullY % pattern.getHeight();
         int color = pattern.getRGB(x, y);
 
 
@@ -77,10 +122,25 @@ public class BindingFilter implements RGBFilter {
             else color = Color.BLACK.getRGB();
         }
 
-        if (markedBinding != null && showMarkedBinding && binding == markedBinding) {
+        if ((markedBinding != null && showMarkedBinding && binding == markedBinding) || markRegion) {
             if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
             else color = Color.LIGHT_GRAY.getRGB();
         }
+
+        /*for (int j = 0; j < regions.length; j+=2) {
+            if (regions[j] == fullX && regions[j + 1] == fullY)
+                color = Color.GREEN.getRGB();
+
+        }*/
+
+        /*for (List<Point> selection : regions) {
+            for (Point point : selection) {
+                if (point.x == fullX && point.y == fullY) {
+                    if (imageMetaData[0] == 0)
+                        color = Color.GREEN.getRGB();
+                }
+            }
+        }*/
 
         return color;
     }

@@ -31,6 +31,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Map;
 
 /**
  * Created by tomdo on 25/10/2017.
@@ -41,11 +42,14 @@ public class SelectBinding extends VBox {
     private ObservableList<Binding> bindingsList = FXCollections.observableArrayList();
     private ObservableList<Integer> levelsList = FXCollections.observableArrayList();
     private JFXComboBox<Integer> comboBoxLevels = new JFXComboBox<>(levelsList);
+
+    private Map<Integer, Binding> bindings;
+
     //new code
     private BindingPicker bindingPicker = new BindingPicker(0,0,false,false,new BindingFactory().getOptimizedBindings()[0]);
     private BindingFilter bindingFilter;
-
     private ChangeListener levelsChangeListener;
+
 
     public SelectBinding() throws IOException {
         loadMe();
@@ -110,8 +114,8 @@ public class SelectBinding extends VBox {
     }
 
 
-    public void setBindingFilter(BindingFilter filter) {
-        this.bindingFilter = filter;
+    public void setBindingsMap(Map<Integer, Binding> bindings) {
+        this.bindings = bindings;
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
@@ -120,8 +124,8 @@ public class SelectBinding extends VBox {
         bindingsList.clear();
         levelsList.clear();
 
-        bindingsList.addAll(this.bindingFilter.getBindingFactory().getOptimizedBindings());
-        levelsList.addAll(this.bindingFilter.getBindingsMap().keySet());
+        bindingsList.addAll(bindings.values());
+        levelsList.addAll(bindings.keySet());
 
         if (levelsList.contains(selectedItem))
             comboBoxLevels.getSelectionModel().select(selectedItem);
@@ -144,8 +148,8 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
-                Color color = new Color(colorInt, colorInt, colorInt);
+                //int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                Color color = new Color(123, 123, 123);
 
                 VBox colorInfo = new VBox();
                 String colorString = MessageFormat.format("rgb({0} {1} {2})", color.getRed(), color.getGreen(), color.getBlue());

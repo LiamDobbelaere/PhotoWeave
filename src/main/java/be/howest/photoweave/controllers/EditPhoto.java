@@ -12,22 +12,26 @@ import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.ImageUtil;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -37,9 +41,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -63,6 +70,8 @@ public class EditPhoto implements ThreadEventListener {
     public PixelatedImageView photoView;
     public TitledPane paneDefault;
     public Label filePath;
+    public JFXButton toggleEditButton;
+    public ScrollPane imageScrollPane;
 
     /*  */
     private int imageWidth;
@@ -78,6 +87,15 @@ public class EditPhoto implements ThreadEventListener {
 
     private int posterizeScale = 10;
 
+    private int pXStart = -1;
+    private int pYStart = -1;
+    private int pXPrevious = -1;
+    private int pYPrevious = -1;
+
+    private boolean editing = false;
+    private java.util.List<Point> selectionPoints;
+    private WritableImage writablePhotoview;
+
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
@@ -90,7 +108,7 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
-        this.vboxSelectBinding.setBindingFilter((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
 
         this.posterizeScale = 10;
 
@@ -129,6 +147,7 @@ public class EditPhoto implements ThreadEventListener {
         else
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
 
+
         updateImage();
     }
 
@@ -141,7 +160,8 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void redrawPhotoView() {
-        photoView.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
+        writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
+        photoView.setImage(writablePhotoview);
     }
 
     private void resizeImage() {
@@ -258,6 +278,41 @@ public class EditPhoto implements ThreadEventListener {
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this.markedColorChangeListener);
+
+        photoView
+                .setOnMouseDragged(ManipulatePixel());
+        photoView.setOnMousePressed((event) -> {
+            if (!editing) return;
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
+
+            pXStart = pX;
+            pYStart = pY;
+
+            selectionPoints = new ArrayList<>();
+        });
+        photoView.setOnMouseReleased((event) -> {
+            if (!editing) return;
+
+            if (pXPrevious < 0 || pYPrevious < 0) {
+                pXPrevious = pXStart;
+                pYPrevious = pYStart;
+            }
+
+            drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious);
+
+            pXPrevious = -1;
+            pYPrevious = -1;
+
+            showChangeSelectionBindingWindow(new Region(selectionPoints));
+            //BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            //bf.addRegion(selectionPoints);
+
+        });
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
@@ -404,9 +459,9 @@ public class EditPhoto implements ThreadEventListener {
     public void onRedrawComplete() {
         Platform.runLater(
                 () -> {
-                    vboxSelectBinding.setBindingFilter(
-                            ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)));
-                    System.out.println("BF: " + (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+
+                    vboxSelectBinding.setBindingsMap(
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap());
 
                     vboxSelectBinding
                             .getComboBoxLevels()
@@ -446,5 +501,125 @@ public class EditPhoto implements ThreadEventListener {
         textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
 
         filteredImage.redraw();
+    }
+
+    public void showChangeSelectionBindingWindow(Region region) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeSelectionBinding.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ChangeSelectionBinding controller = loader.getController();
+        controller.initialize(this.filteredImage, region);
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("Verander specifieke binding in selectie");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setOnCloseRequest(controller.getCloseEventHandler());
+        stage.showAndWait();
+
+        region.setMarked(false);
+
+        filteredImage.redraw();
+    }
+
+
+    private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2) {
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
+
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
+
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
+
+        int x = x1;
+        int y = y1;
+
+        if (dx >= dy) {
+            while (true) {
+
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            while (true) {
+                if (!selectionPoints.contains(new Point(x, y))) {
+                    pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
+                }
+
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
+            }
+        }
+    }
+
+    private EventHandler<MouseEvent> ManipulatePixel() {
+        return event -> {
+            if (!editing) return;
+
+            double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
+            double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
+
+            int pX = (int) (writablePhotoview.getWidth() * xPercent);
+            int pY = (int) (writablePhotoview.getHeight() * yPercent);
+
+            pX = Math.min(Math.max(0, pX), (int) writablePhotoview.getWidth() - 1);
+            pY = Math.min(Math.max(0, pY), (int) writablePhotoview.getHeight() - 1);
+            
+            if (pXPrevious == -1 || pYPrevious == -1) {
+                writablePhotoview.getPixelWriter().setColor(pX, pY, javafx.scene.paint.Color.RED);
+                selectionPoints.add(new Point(pX, pY));
+            } else {
+                drawLine(writablePhotoview.getPixelWriter(), pXPrevious, pYPrevious, pX, pY);
+            }
+
+            pXPrevious = pX;
+            pYPrevious = pY;
+        };
+    }
+
+    public void toggleEdit(ActionEvent actionEvent) {
+        editing = !editing;
+
+        if (editing) {
+            toggleEditButton.setStyle("-fx-background-color: -app-color-secondary;");
+            imageScrollPane.setPannable(false);
+        } else {
+            toggleEditButton.setStyle("");
+            imageScrollPane.setPannable(true);
+        }
+
     }
 }
