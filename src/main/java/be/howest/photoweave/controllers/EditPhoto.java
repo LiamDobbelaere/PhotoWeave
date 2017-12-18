@@ -108,6 +108,9 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
+        ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
+                .setLevels((int) sliderPosterizationScale.getValue());
+
         this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
 
         this.posterizeScale = 10;
