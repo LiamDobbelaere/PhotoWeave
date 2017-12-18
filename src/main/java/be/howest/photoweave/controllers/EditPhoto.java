@@ -200,7 +200,7 @@ public class EditPhoto implements ThreadEventListener {
     public void saveImage(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("BMP", ".bmp")
+                new FileChooser.ExtensionFilter("Monochrome bitmap", "*.bmp")
         );
         fileChooser.setTitle("PhotoWeave | Save Image");
         File file = fileChooser.showSaveDialog(stage);
