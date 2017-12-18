@@ -57,7 +57,7 @@ public class ChangeSelectionBinding {
             filteredMap.put(level, bindingFilter.getBindingsMap().get(level));
         }
 
-        this.selectBinding.setBindingsMap(filteredMap);
+        this.selectBinding.setBindingsMap(filteredMap, bindingFilter);
 
 
         //

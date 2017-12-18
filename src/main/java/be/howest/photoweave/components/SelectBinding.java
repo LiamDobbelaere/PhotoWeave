@@ -68,7 +68,8 @@ public class SelectBinding extends VBox {
     }
 
     private void initializeLevelsListener() {
-        levelsChangeListener = (observable, oldValue, newValue) -> { bindingPicker.setBinding(bindingFilter.getBindingsMap().get(comboBoxLevels.getSelectionModel().getSelectedItem()).getBindingImage()); };
+        System.out.println("InitList Called");
+        levelsChangeListener = (observable, oldValue, newValue) -> { bindingPicker.setBinding(bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem()).getBindingImage()); };
     }
 
     private void toggleLevelsChangeListener(Boolean state){
@@ -114,8 +115,10 @@ public class SelectBinding extends VBox {
     }
 
 
-    public void setBindingsMap(Map<Integer, Binding> bindings) {
+    public void setBindingsMap(Map<Integer, Binding> bindings, BindingFilter bindingFilter) {
+        System.out.println("Bindings Called");
         this.bindings = bindings;
+        this.bindingFilter = bindingFilter;
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
@@ -148,18 +151,19 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                //int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
-                Color color = new Color(123, 123, 123);
+                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                Color color = new Color(colorInt, colorInt, colorInt);
 
                 VBox colorInfo = new VBox();
-                String colorString = MessageFormat.format("rgb({0} {1} {2})", color.getRed(), color.getGreen(), color.getBlue());
+                String colorString = MessageFormat.format("rgb({0},{1},{2})", color.getRed(), color.getGreen(), color.getBlue());
                 Label pane = new Label(colorString);
 
-                pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
+                System.out.println(String.format("#%02x%02x%02x", 255-colorInt, 255-colorInt, 255-colorInt));
+                int result = (colorInt < 127)? 255:0;
+                pane.setStyle("-fx-border-color: black;-fx-text-fill:"+String.format("#%02x%02x%02x", result, result, result)+"; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
                 pane.setPrefSize(140, 40);
                 pane.setMinSize(140, 40);
                 pane.setMaxSize(140, 40);
-
                 colorInfo.getChildren().add(pane);
                 setGraphic(colorInfo);
             }
