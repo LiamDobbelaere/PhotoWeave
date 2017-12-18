@@ -67,7 +67,7 @@ public class FilteredImage {
     }
 
     public int getMetaDataAt(int x, int y) {
-        return imageMetaData[x * y];
+        return imageMetaData[x + (this.modifiedImage.getWidth() * y)];
     }
 
     private void applyFilters() {

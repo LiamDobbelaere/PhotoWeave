@@ -40,32 +40,30 @@ public class ChangeSelectionBinding {
 
         List<Integer> levels = new ArrayList<>();
 
-        for (int y = 0; y < region.getHeight(); y++) {
-            for (int x = 0; x < region.getWidth(); x++) {
-                int actualX = x + region.getMinX();
-                int actualY = y + region.getMinY();
+        for (int y = region.getMinY(); y < region.getMinY() + region.getHeight(); y++) {
+            for (int x = region.getMinX(); x < region.getMinX() + region.getWidth(); x++) {
+                if (region.getRegion()[y - region.getMinY()][x - region.getMinX()]) {
+                    byte[] metaData = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(x, y));
 
-                byte[] metaData = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(actualX, actualY));
 
-                levels.add((int) metaData[0]);
+
+
+                    if (!levels.contains((int) metaData[0])) {
+                        levels.add((int) metaData[0]);
+                        System.out.println(String.format("%s, %s, %s", x, y, metaData[0]));
+                    }
+                }
             }
         }
+
 
         Map<Integer, Binding> filteredMap = new HashMap<>();
 
         for (int level : levels) {
-            //System.out.println(level);
             filteredMap.put(level, bindingFilter.getBindingsMap().get(level));
         }
 
         this.selectBinding.setBindingsMap(filteredMap);
-
-
-        //
-        /*vboxSelectBinding
-                .getComboBoxBindings()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
-        */
 
         this.selectBinding
                 .getComboBoxLevels()
@@ -83,7 +81,7 @@ public class ChangeSelectionBinding {
                     this.updatePosterizationLevel();
                 });
 
-        this.filteredImage.redraw();
+        updatePosterizationLevel();
     }
 
     private void updatePosterizationLevel() {
