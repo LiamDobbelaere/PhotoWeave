@@ -174,8 +174,8 @@
                                     <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="19.0" layoutY="87.0" text="Markeer geselecteerde binding" />
                                     <JFXCheckBox fx:id="checkBoxInvert" layoutX="19.0" layoutY="113.0" text="Inverteer afbeelding" />
                                     <JFXCheckBox fx:id="checkBoxFloaters" layoutX="19.0" layoutY="139.0" text="Toon floaters" />
-                                    <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" layoutX="18.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="0" />
-                                    <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" layoutX="131.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="0" />
+                                    <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" layoutX="18.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="5" />
+                                    <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" layoutX="131.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="5" />
                                 </children>
                             </AnchorPane>
                         </content>
