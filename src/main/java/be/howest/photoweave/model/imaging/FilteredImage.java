@@ -49,6 +49,8 @@ public class FilteredImage {
         this.threadEventListeners.forEach(ThreadEventListener::OnRedrawBegin);
 
         Graphics graphics = this.modifiedImage.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, this.modifiedImage.getWidth(), this.modifiedImage.getHeight());
         graphics.drawImage(originalImage, 0, 0, this.modifiedImage.getWidth(), this.modifiedImage.getHeight(), null);
         graphics.dispose();
 
