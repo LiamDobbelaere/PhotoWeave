@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -19,11 +21,14 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,6 +44,8 @@ public class OpenPhoto {
     public JFXButton buttonEdit;
     public Pane paneLoading;
     public ListView listViewRecentFiles;
+    public ImageView viewPreviewImage;
+    public SVGPath fileIcon;
 
     private String imagePath;
     private Stage stage;
@@ -94,12 +101,21 @@ public class OpenPhoto {
         updateUserInterface(imagePath);
     }
 
+    private void setImagePreview(BufferedImage bi) {
+        updateUserInterface(bi);
+    }
+
     private void updateUserInterface(String imagePath) {
         stage.requestFocus();
         buttonEdit.setDisable(false);
         textFieldImagePath.setDisable(false);
         textFieldImagePath.setPromptText("Ingeladen afbeelding");
         textFieldImagePath.setText(imagePath);
+    }
+
+    private void updateUserInterface(BufferedImage bi) {
+        viewPreviewImage.setImage(SwingFXUtils.toFXImage(bi, null));
+        fileIcon.setVisible(false);
     }
 
     private void showLoading(boolean bool) {
@@ -165,6 +181,14 @@ public class OpenPhoto {
         boolean success = false;
         if (event.getGestureSource() != paneDropFile && event.getDragboard().hasFiles()) {
             setImagePath(event.getDragboard().getFiles().get(0));
+
+            try {
+                BufferedImage bi = ImageIO.read(event.getDragboard().getFiles().get(0));
+                setImagePreview(bi);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             success = true;
         }
         event.setDropCompleted(success);
