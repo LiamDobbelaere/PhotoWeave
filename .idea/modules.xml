@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GitHub-photoweave_main.iml" filepath="$PROJECT_DIR$/.idea/modules/GitHub-photoweave_main.iml" group="photoweave" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GitHub-photoweave_test.iml" filepath="$PROJECT_DIR$/.idea/modules/GitHub-photoweave_test.iml" group="photoweave" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/photoweave.iml" filepath="$PROJECT_DIR$/.idea/modules/photoweave.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/photoweave_main.iml" filepath="$PROJECT_DIR$/.idea/modules/photoweave_main.iml" group="photoweave" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/photoweave_test.iml" filepath="$PROJECT_DIR$/.idea/modules/photoweave_test.iml" group="photoweave" />
