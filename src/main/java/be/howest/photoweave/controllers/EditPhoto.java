@@ -106,6 +106,13 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
+        ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
+                .setLevels((int) sliderPosterizationScale.getValue());
+
+        FloatersFilter floatersFilter = (FloatersFilter) this.filteredImage.getFilters().findImageFilter(FloatersFilter.class);
+        floatersFilter.setFloaterTresholdX(Integer.parseInt(textFieldXFloaters.textProperty().getValue()));
+        floatersFilter.setFloaterTresholdY(Integer.parseInt(textFieldYFloaters.textProperty().getValue()));
+
         this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
 
         this.posterizeScale = 10;
@@ -195,7 +202,7 @@ public class EditPhoto implements ThreadEventListener {
     public void saveImage(ActionEvent actionEvent) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("BMP", ".bmp")
+                new FileChooser.ExtensionFilter("Monochrome bitmap", "*.bmp")
         );
         fileChooser.setTitle("PhotoWeave | Save Image");
         File file = fileChooser.showSaveDialog(stage);

@@ -127,21 +127,6 @@ public class BindingFilter implements RGBFilter {
             else color = Color.LIGHT_GRAY.getRGB();
         }
 
-        /*for (int j = 0; j < regions.length; j+=2) {
-            if (regions[j] == fullX && regions[j + 1] == fullY)
-                color = Color.GREEN.getRGB();
-
-        }*/
-
-        /*for (List<Point> selection : regions) {
-            for (Point point : selection) {
-                if (point.x == fullX && point.y == fullY) {
-                    if (imageMetaData[0] == 0)
-                        color = Color.GREEN.getRGB();
-                }
-            }
-        }*/
-
         return color;
     }
 }
