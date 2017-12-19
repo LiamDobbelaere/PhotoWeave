@@ -1,0 +1,28 @@
+.list-view-recent .list-cell:even {
+    -fx-background-color: teal;
+    -fx-cursor: HAND;
+}
+.list-view-recent .list-cell:odd {
+    -fx-background-color: teal;
+    -fx-cursor: HAND;
+}
+
+.list-view-recent .list-cell:selected {
+    -fx-background-color: white;
+}
+
+.list-view-recent .scroll-bar:horizontal {
+    -fx-scale-x: 0;
+}
+
+.vboxlistview > *{
+    -fx-fill: white;
+}
+
+.list-view-recent .list-cell:selected > .vboxlistview > *{
+    -fx-fill: teal;
+}
+
+.vboxlistview-title{
+    -fx-font-size: 18px;
+}

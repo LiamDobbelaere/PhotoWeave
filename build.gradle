@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     compile 'com.jfoenix:jfoenix:1.9.0'
+    compile 'commons-io:commons-io:2.6'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
     compile group: 'org.apache.commons', name: 'commons-configuration2', version: '2.2'
     testCompile group: 'net.jodah', name: 'concurrentunit', version: '0.4.3'

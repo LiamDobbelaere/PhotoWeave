@@ -27,9 +27,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -45,11 +45,10 @@ import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -123,6 +122,10 @@ public class EditPhoto implements ThreadEventListener {
                 (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
         this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
 
+        /* nodig ?
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
+                (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));*/
+
         ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
                 .setLevels((int) sliderPosterizationScale.getValue());
 
@@ -130,7 +133,8 @@ public class EditPhoto implements ThreadEventListener {
         floatersFilter.setFloaterTresholdX(Integer.parseInt(textFieldXFloaters.textProperty().getValue()));
         floatersFilter.setFloaterTresholdY(Integer.parseInt(textFieldYFloaters.textProperty().getValue()));
 
-        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap());
+        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
+                (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));
 
         this.posterizeScale = 10;
 
@@ -213,14 +217,14 @@ public class EditPhoto implements ThreadEventListener {
 
     /* FXML Hooks */
     public void zoomIn() {
-        photoView.setFitWidth(photoView.getFitWidth() * 1.3);
-        photoView.setFitHeight(photoView.getFitHeight() * 1.3);
+        photoView.setFitWidth(Math.floor(photoView.getFitWidth() * 2));
+        //photoView.setFitHeight(photoView.getFitHeight() * 1.2);
         System.out.println("4; " + photoView.getFitWidth());
     }
 
     public void zoomOut() {
-        photoView.setFitWidth(photoView.getFitWidth() / 1.3);
-        photoView.setFitHeight(photoView.getFitHeight() / 1.3);
+        photoView.setFitWidth(Math.floor(photoView.getFitWidth() / 2));
+        //photoView.setFitHeight(photoView.getFitHeight() / 1.2);
     }
 
     public void fitWindow(ActionEvent actionEvent) {
@@ -305,9 +309,9 @@ public class EditPhoto implements ThreadEventListener {
                 .addListener(this::ResizeImageViewWidth);
 
         /* CUSTOM */
-        vboxSelectBinding
+        /*vboxSelectBinding
                 .getComboBoxBindings()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
+                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);*/
 
         vboxSelectBinding
                 .getComboBoxLevels()
@@ -344,7 +348,7 @@ public class EditPhoto implements ThreadEventListener {
                 BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
 
                 if (posterizeLevel == vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()) {
-                    bf.setMarkedBinding(vboxSelectBinding.getComboBoxBindings().getSelectionModel().getSelectedItem());
+                    bf.setMarkedBinding(vboxSelectBinding.getSelectedBinding());
                     checkBoxMarkBinding.setSelected(true);
                 } else {
                     checkBoxMarkBinding
@@ -554,8 +558,10 @@ public class EditPhoto implements ThreadEventListener {
     public void onRedrawComplete() {
         Platform.runLater(
                 () -> {
-                    vboxSelectBinding.setBindingsMap(
-                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))).getBindingsMap());
+
+                    this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
+                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));
+
 
                     vboxSelectBinding
                             .getComboBoxLevels()

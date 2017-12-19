@@ -4,15 +4,18 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStream;
 
+//TODO add name of file -> in BindingLib this will link the bindings
+//TODO add folder -> in BindingLib this will be the library
 public class Binding {
     private BufferedImage bindingImage;
+    private String name;
 
-    public Binding(URI uri) throws IOException {
-        bindingImage = ImageIO.read(new File(uri));
+    public Binding(InputStream is, String name) throws IOException {
+        this.bindingImage = ImageIO.read(is);
+        this.name = name;
     }
 
     //A copy of the original bindingImage will be returned with the given color
@@ -44,5 +47,9 @@ public class Binding {
 
     public void setBindingImage(BufferedImage bindingImage) {
         this.bindingImage = bindingImage;
+    }
+
+    public String getName() {
+        return name;
     }
 }
