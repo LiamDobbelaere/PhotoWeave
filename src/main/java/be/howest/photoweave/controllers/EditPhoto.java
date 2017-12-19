@@ -14,6 +14,7 @@ import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.ImageUtil;
+import be.howest.photoweave.model.util.PrimitiveUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXTextField;
@@ -76,6 +77,7 @@ public class EditPhoto implements ThreadEventListener {
     public ScrollPane imageScrollPane;
     public StackPane contentStackpane;
     public Canvas selectionCanvas;
+    public JFXButton togglePickerButton;
 
     /*  */
     private int imageWidth;
@@ -88,6 +90,7 @@ public class EditPhoto implements ThreadEventListener {
 
     private BindingChangedEventHandler bindingChangedEventHandler;
     private ChangeListener<Integer> markedColorChangeListener;
+    private ChangeListener<Boolean> showMarkingChangeListener;
 
     private int posterizeScale = 10;
 
@@ -102,6 +105,8 @@ public class EditPhoto implements ThreadEventListener {
     private double pYPreviousSelection = -1;
 
     private boolean editing = false;
+    private boolean picking = false;
+
     private java.util.List<Point> selectionPoints;
     private WritableImage writablePhotoview;
     private WritableImage writableSelection;
@@ -140,6 +145,10 @@ public class EditPhoto implements ThreadEventListener {
 
         this.markedColorChangeListener = (observable, oldValue, newValue) -> {
             this.MarkColorOnImageView(observable);
+        };
+
+        this.showMarkingChangeListener = (observable, oldValue, newValue) -> {
+            showMarkingOnImageView();
         };
 
         // UI
@@ -274,7 +283,7 @@ public class EditPhoto implements ThreadEventListener {
                 .addListener(this::ChangeImageWidth);
         checkBoxMarkBinding
                 .selectedProperty()
-                .addListener(this::showMarkingOnImageView);
+                .addListener(this.showMarkingChangeListener);
         checkBoxInvert
                 .selectedProperty()
                 .addListener(this::InvertColorsInWovenImage);
@@ -309,26 +318,50 @@ public class EditPhoto implements ThreadEventListener {
         photoView
                 .setOnMouseDragged(ManipulatePixel());
         photoView.setOnMousePressed((event) -> {
-            if (!editing) return;
-
-            int overlayX = (int) (event.getSceneX() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinX());
-            int overlayY = (int) (event.getSceneY() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinY());
-
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
             double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
 
             int pX = (int) (writablePhotoview.getWidth() * xPercent);
             int pY = (int) (writablePhotoview.getHeight() * yPercent);
 
-            pXStart = pX;
-            pYStart = pY;
+            if (editing) {
+                int overlayX = (int) (event.getSceneX() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinX());
+                int overlayY = (int) (event.getSceneY() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinY());
 
-            pXStartSelection = overlayX;
-            pYStartSelection = overlayY;
+                pXStart = pX;
+                pYStart = pY;
 
-            selectionPoints = new ArrayList<>();
+                pXStartSelection = overlayX;
+                pYStartSelection = overlayY;
 
-            selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
+                selectionPoints = new ArrayList<>();
+
+                selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
+            }
+
+            if (picking) {
+                int posterizeLevel = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(pX, pY))[0];
+                BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+                if (posterizeLevel == vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()) {
+                    bf.setMarkedBinding(vboxSelectBinding.getComboBoxBindings().getSelectionModel().getSelectedItem());
+                    checkBoxMarkBinding.setSelected(true);
+                } else {
+                    checkBoxMarkBinding
+                            .selectedProperty()
+                            .removeListener(this.showMarkingChangeListener);
+
+                    checkBoxMarkBinding.setSelected(true);
+
+                    checkBoxMarkBinding
+                            .selectedProperty()
+                            .addListener(this.showMarkingChangeListener);
+
+                    vboxSelectBinding.getComboBoxLevels().getSelectionModel().select((Integer) posterizeLevel);
+                }
+
+                togglePicker(null);
+            }
         });
         photoView.setOnMouseReleased((event) -> {
             if (!editing) return;
@@ -416,7 +449,9 @@ public class EditPhoto implements ThreadEventListener {
         }
     }
 
-    private void showMarkingOnImageView(Observable observable) {
+    public void showMarkingOnImageView() {
+        System.out.println("Showmarkingonimageview");
+
         BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
@@ -688,15 +723,33 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void toggleEdit(ActionEvent actionEvent) {
+        if (picking) togglePicker(null);
+
         editing = !editing;
 
-        if (editing) {
-            toggleEditButton.setStyle("-fx-background-color: -app-color-secondary;");
+        updateModeVisual(editing, toggleEditButton);
+    }
+
+    public void togglePicker(ActionEvent actionEvent) {
+        if (editing) toggleEdit(null);
+
+        picking = !picking;
+
+        /*if (picking) {
+            checkBoxMarkBinding.setSelected(true);
+            //MarkColorOnImageView(null);
+        }*/
+
+        updateModeVisual(picking, togglePickerButton);
+    }
+
+    private void updateModeVisual(boolean flag, JFXButton button) {
+        if (flag) {
+            button.setStyle("-fx-background-color: -app-color-secondary;");
             imageScrollPane.setPannable(false);
         } else {
-            toggleEditButton.setStyle("");
+            button.setStyle("");
             imageScrollPane.setPannable(true);
         }
-
     }
 }
