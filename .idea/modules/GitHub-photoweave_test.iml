@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="photoweave_main" />
+    <orderEntry type="module" module-name="GitHub-photoweave_main" />
     <orderEntry type="library" name="Gradle: com.jfoenix:jfoenix:1.9.0" level="project" />
     <orderEntry type="library" name="Gradle: commons-io:commons-io:2.6" level="project" />
     <orderEntry type="library" name="Gradle: commons-beanutils:commons-beanutils:1.9.3" level="project" />

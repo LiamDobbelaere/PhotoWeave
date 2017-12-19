@@ -26,6 +26,8 @@
 <?import com.jfoenix.controls.JFXToggleButton?>
 <?import javafx.scene.control.Tooltip?>
 <?import java.net.URL?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.canvas.Canvas?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css" />
@@ -180,8 +182,15 @@
                                 <children>
                            <Label text="Selecteer kleur dat je wilt aanpassen:" />
                                     <SelectBinding fx:id="vboxSelectBinding" layoutX="19.0" layoutY="14.0" />
-                                    <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="17.0" layoutY="158.0" text="Markeer geselecteerde binding" />
-                                    <JFXCheckBox fx:id="checkBoxInvert" layoutX="17.0" layoutY="184.0" text="Inverteer bindings" />
+                                    <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="17.0" layoutY="208.0" text="Markeer geselecteerde binding" />
+                                    <JFXCheckBox fx:id="checkBoxInvert" layoutX="17.0" layoutY="234.0" text="Inverteer bindings" />
+                                    <!--
+                                    <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="19.0" layoutY="87.0" text="Markeer geselecteerde binding" />
+                                    <JFXCheckBox fx:id="checkBoxInvert" layoutX="19.0" layoutY="113.0" text="Inverteer afbeelding" />
+                                    <JFXCheckBox fx:id="checkBoxFloaters" layoutX="19.0" layoutY="139.0" text="Toon floaters" />
+                                    <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" layoutX="18.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="5" />
+                                    <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" layoutX="131.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="5" />
+                                    -->
                                 </children>
                             </AnchorPane>
                         </content>
@@ -207,13 +216,18 @@
                 </panes>
             </Accordion>
             <VBox fx:id="vboxPhotoView" prefHeight="560.0" prefWidth="906.0">
-                <ScrollPane fx:id="imageScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" style="-fx-background-color: white;" styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
-                    <AnchorPane id="anchorpane" fx:id="anchorPanePhotoView" style="-fx-background-color: white;">
-                        <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: white;">
-                            <Image url="@../logo-verilin-black.png" />
-                        </PixelatedImageView>
-                    </AnchorPane>
-                </ScrollPane>
+                <StackPane fx:id="contentStackpane">
+                    <ScrollPane StackPane.alignment="TOP_LEFT" fx:id="imageScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" style="-fx-background-color: white;" styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
+                        <AnchorPane id="anchorpane" fx:id="anchorPanePhotoView" style="-fx-background-color: white;">
+                            <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: white;">
+                                <Image url="@../logo-verilin-black.png" />
+                            </PixelatedImageView>
+                        </AnchorPane>
+                    </ScrollPane>
+                    <Canvas fx:id="selectionCanvas" StackPane.alignment="TOP_LEFT" mouseTransparent="true">
+
+                    </Canvas>
+                </StackPane>
             </VBox>
         </HBox>
     </VBox>
