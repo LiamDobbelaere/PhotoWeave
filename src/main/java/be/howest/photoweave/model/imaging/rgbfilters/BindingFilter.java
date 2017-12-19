@@ -4,10 +4,8 @@ import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
-import be.howest.photoweave.model.util.PrimitiveUtil;
 
-import java.awt.Point;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +58,10 @@ public class BindingFilter implements RGBFilter {
 
     public void setMarkedBinding(Binding markedBinding) {
         this.markedBinding = markedBinding;
+    }
+
+    public void setBindingsMap(Map<Integer, Binding> bindingsMap) {
+        this.bindingsMap = bindingsMap;
     }
 
     public PosterizeFilter getPosterizeFilter() {

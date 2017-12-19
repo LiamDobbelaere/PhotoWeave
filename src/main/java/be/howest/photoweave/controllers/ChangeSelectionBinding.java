@@ -9,9 +9,7 @@ import be.howest.photoweave.model.util.PrimitiveUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
@@ -44,8 +42,6 @@ public class ChangeSelectionBinding {
             for (int x = region.getMinX(); x < region.getMinX() + region.getWidth(); x++) {
                 if (region.getRegion()[y - region.getMinY()][x - region.getMinX()]) {
                     byte[] metaData = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(x, y));
-
-
 
 
                     if (!levels.contains((int) metaData[0])) {
