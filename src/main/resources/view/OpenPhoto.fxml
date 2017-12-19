@@ -4,6 +4,7 @@
 <?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -13,7 +14,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-<?import java.net.URL?>
+
 <AnchorPane fx:id="anchorPane" prefHeight="600" prefWidth="800" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
     <stylesheets>
         <URL value="@../style/style.css" />
@@ -63,7 +64,7 @@
                     <Font name="System Bold" size="16.0" />
                 </font>
             </Label>
-            <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="189.0" layoutY="228.0" mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="125.0" text="zoek afbeelding" textAlignment="CENTER">
+            <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0" mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="153.0" text="selecteer afbeelding" textAlignment="CENTER">
                 <cursor>
                     <Cursor fx:constant="HAND" />
                 </cursor>
@@ -72,7 +73,7 @@
                     <String fx:value="button-raised" />
                 </styleClass>
             </JFXButton>
-            <Label layoutX="167.0" layoutY="236.0" text="of" textFill="TEAL">
+            <Label layoutX="153.0" layoutY="236.0" text="of" textFill="TEAL">
                 <font>
                     <Font name="System Bold Italic" size="16.0" />
                 </font>
