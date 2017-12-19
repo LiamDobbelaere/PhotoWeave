@@ -29,7 +29,7 @@ public class Binding {
         int[] targetData = dbb.getData();
 
         int colorCount = 0;
-        int checkColor = -16777216; //BLACK
+        int checkColor = Color.WHITE.getRGB();
 
         for (int i = 0; i < targetData.length; i++) {
             int color = targetData[i];

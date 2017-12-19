@@ -116,7 +116,7 @@ public class FilteredImage {
             threads[k].start();
         }
 
-        System.out.println("Redraw happening");
+        System.out.println("FilteredImage redrawn");
     }
 
     private void applyFilterThreaded(int[] imageData, int[] imageMetaData, int[] fullImageData, int[] fullImageMetaData, int actualStart) {

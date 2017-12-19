@@ -104,7 +104,6 @@ public class OpenPhoto {
 
                 File file = new File(selectedItem.toString());
 
-                System.out.println("clicked on " + listViewRecentFiles.getSelectionModel().getSelectedItem());
                 setImagePath(file);
 
                 try {

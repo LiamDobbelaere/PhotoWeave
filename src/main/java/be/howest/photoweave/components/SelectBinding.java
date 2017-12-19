@@ -67,7 +67,6 @@ public class SelectBinding extends VBox {
     }
 
     private void initializeLevelsListener() {
-        System.out.println("InitList Called");
         levelsChangeListener = (observable, oldValue, newValue) -> { SELECTED_BINDING = bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem()); bindingPicker.setBinding(SELECTED_BINDING);};
     }
 
@@ -88,7 +87,7 @@ public class SelectBinding extends VBox {
         gridPane.add(bindingPicker,0,1);
 
         JFXButton b = new JFXButton("Verander Binding");
-        b.getStylesheets().setAll("@../style/style.css");
+        //b.getStylesheets().setAll("@../style/style.css");
         b.getStyleClass().setAll("button-raised");
         b.setOnMouseClicked(this::testOpenib);
         gridPane.add(b,0,2);
@@ -127,7 +126,6 @@ public class SelectBinding extends VBox {
     }
 
     public void setBindingsMap(Map<Integer, Binding> bindings, BindingFilter bindingFilter) {
-        System.out.println("Bindings Called");
         this.bindings = bindings;
         this.bindingFilter = bindingFilter;
 
@@ -169,7 +167,6 @@ public class SelectBinding extends VBox {
                 String colorString = MessageFormat.format("rgb({0},{1},{2})", color.getRed(), color.getGreen(), color.getBlue());
                 Label pane = new Label(colorString);
 
-                System.out.println(String.format("#%02x%02x%02x", 255-colorInt, 255-colorInt, 255-colorInt));
                 int result = (colorInt < 127)? 255:0;
                 pane.setStyle("-fx-border-color: black;-fx-text-fill:"+String.format("#%02x%02x%02x", result, result, result)+"; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
                 pane.setPrefSize(140, 40);
@@ -210,7 +207,6 @@ public class SelectBinding extends VBox {
         void setBinding(Binding binding){
             this.binding = binding;
             label1.setGraphic(new ImageView(ImageUtil.resample(SwingFXUtils.toFXImage(binding.getBindingImage(),null),4)));
-            System.out.println(binding.getName());
             label2.setText(binding.getName());
             tooltip.setText(binding.getName());
         }

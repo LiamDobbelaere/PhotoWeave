@@ -50,7 +50,6 @@ public class ChangeSelectionBinding {
 
                     if (!levels.contains((int) metaData[0])) {
                         levels.add((int) metaData[0]);
-                        System.out.println(String.format("%s, %s, %s", x, y, metaData[0]));
                     }
                 }
             }

@@ -20,7 +20,6 @@ public class BindingFactory {
     public BindingFactory() {
         try {
             getBindingsFromInternalResources();
-            System.out.println("ok");
         } catch (Exception e) {
             System.out.println("Internal Resources could not be found || e: " + e.getMessage());
         }
@@ -33,10 +32,8 @@ public class BindingFactory {
             Collection<File> files = FileUtils.listFiles(
                     directory, new String[] {"png"}, true);
 
-            System.out.println(directory.getAbsolutePath().toUpperCase());
             List<Binding> localBindings = new ArrayList<>();
             for (File file : files) {
-                System.out.println(file.getPath());
                 InputStream is = new FileInputStream(file);
                 Binding b = new Binding(is,file.getName());
                 localBindings.add(b);
@@ -53,7 +50,6 @@ public class BindingFactory {
         }
 
         optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
-        System.out.println(optimizedBindings);
     }
 
     private Binding getCustomBinding(String path) throws Exception {
