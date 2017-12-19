@@ -1,6 +1,8 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.components.SelectBinding;
+import be.howest.photoweave.components.events.BindingChanged;
+import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
@@ -9,9 +11,7 @@ import be.howest.photoweave.model.util.PrimitiveUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 import java.util.ArrayList;
@@ -73,20 +73,18 @@ public class ChangeSelectionBinding {
                     this.updatePosterizationLevel();
                 });
 
-        /*this.selectBinding
-                .getComboBoxBindings()
-                .getSelectionModel()
-                .selectedItemProperty()
-                .addListener((observable, oldValue, newValue) -> {
-                    this.updatePosterizationLevel();
-                });*/
-
+        this.selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler(){
+            @Override
+            public void onBindingChanged() {
+                updatePosterizationLevel();
+            }
+        });
         updatePosterizationLevel();
     }
 
     private void updatePosterizationLevel() {
         region.setTargetLevel(this.selectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
-        //region.setTargetBinding(this.selectBinding.getComboBoxBindings().getSelectionModel().getSelectedItem());
+        region.setTargetBinding(this.selectBinding.getSelectedBinding());
 
         this.filteredImage.redraw();
 

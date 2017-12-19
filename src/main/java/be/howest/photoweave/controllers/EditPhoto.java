@@ -348,7 +348,7 @@ public class EditPhoto implements ThreadEventListener {
                 BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
 
                 if (posterizeLevel == vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()) {
-                    bf.setMarkedBinding(vboxSelectBinding.getComboBoxBindings().getSelectionModel().getSelectedItem());
+                    bf.setMarkedBinding(vboxSelectBinding.getSelectedBinding());
                     checkBoxMarkBinding.setSelected(true);
                 } else {
                     checkBoxMarkBinding

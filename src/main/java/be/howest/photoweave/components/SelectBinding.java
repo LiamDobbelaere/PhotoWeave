@@ -122,6 +122,9 @@ public class SelectBinding extends VBox {
         this.fireEvent(new BindingChanged());
     }
 
+    public Binding getSelectedBinding(){
+        return SELECTED_BINDING;
+    }
 
     public void setBindingsMap(Map<Integer, Binding> bindings, BindingFilter bindingFilter) {
         System.out.println("Bindings Called");
