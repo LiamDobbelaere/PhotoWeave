@@ -25,6 +25,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -73,8 +74,8 @@ public class EditPhoto implements ThreadEventListener {
     public Label filePath;
     public JFXButton toggleEditButton;
     public ScrollPane imageScrollPane;
-    public PixelatedImageView photoviewSelection;
     public StackPane contentStackpane;
+    public Canvas selectionCanvas;
 
     /*  */
     private int imageWidth;
@@ -95,10 +96,10 @@ public class EditPhoto implements ThreadEventListener {
     private int pXPrevious = -1;
     private int pYPrevious = -1;
 
-    private int pXStartSelection = -1;
-    private int pYStartSelection = -1;
-    private int pXPreviousSelection = -1;
-    private int pYPreviousSelection = -1;
+    private double pXStartSelection = -1;
+    private double pYStartSelection = -1;
+    private double pXPreviousSelection = -1;
+    private double pYPreviousSelection = -1;
 
     private boolean editing = false;
     private java.util.List<Point> selectionPoints;
@@ -182,17 +183,12 @@ public class EditPhoto implements ThreadEventListener {
         int overlayWidth = (int) imageScrollPane.getViewportBounds().getWidth();
         int overlayHeight = (int) imageScrollPane.getViewportBounds().getHeight();
 
-        BufferedImage selectionOverlay = new BufferedImage(overlayWidth, overlayHeight, BufferedImage.TYPE_INT_ARGB);
-        writableSelection = new WritableImage(selectionOverlay.getWidth(), selectionOverlay.getHeight());
+        /*photoviewSelection.setImage(
+                SwingFXUtils.toFXImage(selectionOverlay, writableSelection));*/
 
-        photoviewSelection.setImage(
-                SwingFXUtils.toFXImage(selectionOverlay, writableSelection));
-
-        /*for (int y = 0; y < writableSelection.getHeight(); y++) {
-            for (int x = 0; x < writableSelection.getWidth(); x++) {
-                writableSelection.getPixelWriter().setColor(x, y, new javafx.scene.paint.Color(x / writableSelection.getWidth(), y / writableSelection.getHeight(), 0.0, 1.0));
-            }
-        }*/
+        selectionCanvas.setWidth(overlayWidth);
+        selectionCanvas.setHeight(overlayHeight);
+        selectionCanvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Paint.valueOf("red"));
     }
 
     private void resizeImage() {
@@ -331,6 +327,8 @@ public class EditPhoto implements ThreadEventListener {
             pYStartSelection = overlayY;
 
             selectionPoints = new ArrayList<>();
+
+            selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
         });
         photoView.setOnMouseReleased((event) -> {
             if (!editing) return;
@@ -345,8 +343,13 @@ public class EditPhoto implements ThreadEventListener {
                 pYPreviousSelection = pYStartSelection;
             }
 
-            drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious, true);
-            drawLine(writableSelection.getPixelWriter(), pXStartSelection, pYStartSelection, pXPreviousSelection, pYPreviousSelection, false);
+            if (shouldUseCanvasLines()) {
+                drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious, false);
+                selectionCanvas.getGraphicsContext2D().strokeLine(pXStartSelection, pYStartSelection, pXPreviousSelection, pYPreviousSelection);
+            } else {
+                drawLine(writablePhotoview.getPixelWriter(), pXStart, pYStart, pXPrevious, pYPrevious, true);
+            }
+
 
             pXPrevious = -1;
             pYPrevious = -1;
@@ -355,9 +358,8 @@ public class EditPhoto implements ThreadEventListener {
             pYPreviousSelection = -1;
 
             showChangeSelectionBindingWindow(new Region(selectionPoints));
-            //BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-            //bf.addRegion(selectionPoints);
 
+            selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
         });
     }
 
@@ -372,6 +374,18 @@ public class EditPhoto implements ThreadEventListener {
         bf.getBindingsMap().clear();
 
         updateImage();
+    }
+
+    private boolean shouldUseCanvasLines() {
+        double zoom;
+
+        if (photoView.getFitWidth() > 0) {
+            zoom = photoView.getFitWidth() / photoView.getImage().getWidth();
+        } else {
+            zoom = photoView.getFitHeight() / photoView.getImage().getWidth();
+        }
+
+        return zoom < 5;
     }
 
     private void ResizeImageViewHeight(Observable observable, Number oldValue, Number newValue) {
@@ -578,7 +592,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
 
-    private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2, boolean writePoints) {
+    private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2, boolean draw) {
         // delta of exact value and rounded value of the dependent variable
         int d = 0;
 
@@ -598,8 +612,8 @@ public class EditPhoto implements ThreadEventListener {
             while (true) {
 
                 if (!selectionPoints.contains(new Point(x, y))) {
-                    if (!writePoints) pw.setColor(x, y, javafx.scene.paint.Color.RED);
-                    if (writePoints) selectionPoints.add(new Point(x, y));
+                    if (draw ) pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
                 }
 
                 if (x == x2)
@@ -614,8 +628,8 @@ public class EditPhoto implements ThreadEventListener {
         } else {
             while (true) {
                 if (!selectionPoints.contains(new Point(x, y))) {
-                    if (!writePoints) pw.setColor(x, y, javafx.scene.paint.Color.RED);
-                    if (writePoints) selectionPoints.add(new Point(x, y));
+                    if (draw) pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    selectionPoints.add(new Point(x, y));
                 }
 
                 if (y == y2)
@@ -634,8 +648,8 @@ public class EditPhoto implements ThreadEventListener {
         return event -> {
             if (!editing) return;
 
-            int overlayX = (int) (event.getSceneX() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinX());
-            int overlayY = (int) (event.getSceneY() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinY());
+            double overlayX = event.getSceneX() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinX();
+            double overlayY = event.getSceneY() - contentStackpane.localToScene(contentStackpane.getBoundsInLocal()).getMinY();
 
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
             double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
@@ -646,20 +660,23 @@ public class EditPhoto implements ThreadEventListener {
             pX = Math.min(Math.max(0, pX), (int) writablePhotoview.getWidth() - 1);
             pY = Math.min(Math.max(0, pY), (int) writablePhotoview.getHeight() - 1);
 
-            overlayX = Math.min(Math.max(0, overlayX), (int) writableSelection.getWidth() - 1);
-            overlayY = Math.min(Math.max(0, overlayY), (int) writableSelection.getHeight() - 1);
+            overlayX = Math.min(Math.max(0, overlayX), (int) selectionCanvas.getWidth() - 1);
+            overlayY = Math.min(Math.max(0, overlayY), (int) selectionCanvas.getHeight() - 1);
 
             if (pXPrevious == -1 || pYPrevious == -1) {
-                writableSelection.getPixelWriter().setColor(overlayX, overlayY, javafx.scene.paint.Color.RED);
+                if (!shouldUseCanvasLines()) {
+                    writablePhotoview.getPixelWriter().setColor(pX, pY, javafx.scene.paint.Color.RED);
+                }
                 selectionPoints.add(new Point(pX, pY));
             } else {
-                drawLine(writablePhotoview.getPixelWriter(), pXPrevious, pYPrevious, pX, pY, true);
+                drawLine(writablePhotoview.getPixelWriter(), pXPrevious, pYPrevious, pX, pY, !shouldUseCanvasLines());
             }
 
             if (pXPreviousSelection == -1 || pYPreviousSelection == -1) {
-                writableSelection.getPixelWriter().setColor(pX, pY, javafx.scene.paint.Color.RED);
+                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(overlayX, overlayY, overlayX, overlayY);
             } else {
-                drawLine(writableSelection.getPixelWriter(), pXPreviousSelection, pYPreviousSelection, overlayX, overlayY, false);
+                selectionCanvas.getGraphicsContext2D().setLineWidth(2);
+                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(pXPreviousSelection, pYPreviousSelection, overlayX, overlayY);
             }
 
             pXPrevious = pX;
