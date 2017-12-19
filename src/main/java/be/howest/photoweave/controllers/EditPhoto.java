@@ -341,18 +341,24 @@ public class EditPhoto implements ThreadEventListener {
 
             if (picking) {
                 int posterizeLevel = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(pX, pY))[0];
+                BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
 
-                checkBoxMarkBinding
-                        .selectedProperty()
-                        .removeListener(this.showMarkingChangeListener);
+                if (posterizeLevel == vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()) {
+                    bf.setMarkedBinding(vboxSelectBinding.getComboBoxBindings().getSelectionModel().getSelectedItem());
+                    checkBoxMarkBinding.setSelected(true);
+                } else {
+                    checkBoxMarkBinding
+                            .selectedProperty()
+                            .removeListener(this.showMarkingChangeListener);
 
-                checkBoxMarkBinding.setSelected(true);
+                    checkBoxMarkBinding.setSelected(true);
 
-                checkBoxMarkBinding
-                        .selectedProperty()
-                        .addListener(this.showMarkingChangeListener);
+                    checkBoxMarkBinding
+                            .selectedProperty()
+                            .addListener(this.showMarkingChangeListener);
 
-                vboxSelectBinding.getComboBoxLevels().getSelectionModel().select((Integer) posterizeLevel);
+                    vboxSelectBinding.getComboBoxLevels().getSelectionModel().select((Integer) posterizeLevel);
+                }
 
                 togglePicker(null);
             }
