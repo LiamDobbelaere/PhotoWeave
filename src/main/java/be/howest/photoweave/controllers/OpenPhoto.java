@@ -233,7 +233,7 @@ public class OpenPhoto {
         Task<FXMLLoader> task = new Task<FXMLLoader>() {
             @Override
             public FXMLLoader call() throws InterruptedException {
-                Thread.sleep(2000);
+                //Thread.sleep(2000);
                 return new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
             }
         };
