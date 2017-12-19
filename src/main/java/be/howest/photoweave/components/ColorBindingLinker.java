@@ -6,8 +6,6 @@ import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListCell;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -42,7 +40,6 @@ public class ColorBindingLinker {
 
     private ObservableList<Binding> items = FXCollections.observableArrayList();
     private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
-    private ChangeListener<Binding> bindingChangeListener;
 
     public void initialize(FilteredImage filteredImage) {
         this.filteredImage = filteredImage;
@@ -58,14 +55,6 @@ public class ColorBindingLinker {
         this.vbox = new VBox();
 
         imageview.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
-
-        bindingChangeListener = new ChangeListener<Binding>() {
-            @Override
-            public void changed(ObservableValue<? extends Binding> observable, Binding oldValue, Binding newValue) {
-
-                //comboBox.fireEvent(new BindingChanged());
-            }
-        };
 
         items.clear();
         items.addAll(this.allBindings);
@@ -106,7 +95,6 @@ public class ColorBindingLinker {
         comboBox.setCellFactory(c -> new ImageListCell());
         comboBox.setButtonCell(new ImageListCell());
         comboBox.setTooltip(new Tooltip("Select the binding for the selected color"));
-        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
         comboBox.getSelectionModel().select(i);
 
         return comboBox;
@@ -140,7 +128,8 @@ public class ColorBindingLinker {
 
         int i = 0;
         for (Map.Entry<Integer, Binding> entry : bindingMap.entrySet()) {
-            bindingMap.put(entry.getKey(), newBindingsMap.get(i));
+            bindingMap.replace(entry.getKey(), newBindingsMap.get(i));
+            i++;
         }
 
         bindingFilter.setBindingsMap(bindingMap);
