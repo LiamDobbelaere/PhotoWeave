@@ -46,13 +46,11 @@ public class BindingMaker {
     }
 
     public void initialize() {
-        System.out.println("initialize Called");
         initializeComboBox();
         generateBindingCreator(); // Standard 10 x 10
     }
 
     private void initializeComboBox() {
-        System.out.println("initializeComboBox Called");
         bindingSizes.addAll(10, 9, 8, 7, 6, 5, 4, 3, 2);
         ComboBoxBindingsSizes.setItems(bindingSizes);
         ComboBoxBindingsSizes.getSelectionModel().selectFirst();

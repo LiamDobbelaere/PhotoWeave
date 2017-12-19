@@ -213,10 +213,13 @@
                         <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                 <children>
-                                    <JFXButton fx:id="buttonBindingCreator" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#openBindingCreator" prefHeight="40.0" prefWidth="200.0" styleClass="button-raised" text="Binding maken" textAlignment="CENTER" />
-                                    <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters" />
-                                    <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="0" />
-                                    <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="0" />
+                                    <VBox spacing="24">
+                                        <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters" />
+                                        <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="5" />
+                                        <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="5" />
+
+                                        <JFXButton fx:id="buttonBindingCreator" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#openBindingCreator" prefHeight="40.0" prefWidth="200.0" styleClass="button-raised" text="Binding maken" textAlignment="CENTER" />
+                                    </VBox>
                                 </children>
                             </AnchorPane>
                         </content>

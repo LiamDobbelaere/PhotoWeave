@@ -141,8 +141,6 @@ public class EditPhoto implements ThreadEventListener {
         this.bindingChangedEventHandler = new BindingChangedEventHandler() {
             @Override
             public void onBindingChanged() {
-                System.out.println("BINDING CHANGED");
-
                 filteredImage.redraw();
             }
         };
@@ -218,13 +216,12 @@ public class EditPhoto implements ThreadEventListener {
     /* FXML Hooks */
     public void zoomIn() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() * 2));
-        //photoView.setFitHeight(photoView.getFitHeight() * 1.2);
-        System.out.println("4; " + photoView.getFitWidth());
+        photoView.setFitHeight(photoView.getFitHeight() * 1.2);
     }
 
     public void zoomOut() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() / 2));
-        //photoView.setFitHeight(photoView.getFitHeight() / 1.2);
+        photoView.setFitHeight(photoView.getFitHeight() / 1.2);
     }
 
     public void fitWindow(ActionEvent actionEvent) {
@@ -454,8 +451,6 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void showMarkingOnImageView() {
-        System.out.println("Showmarkingonimageview");
-
         BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         Binding selectedBinding = bindingFilter.getBindingsMap().get(vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem());
 
@@ -535,7 +530,6 @@ public class EditPhoto implements ThreadEventListener {
                 vboxSelectBinding.getComboBoxLevels().getSelectionModel().getSelectedItem()));
         bindingFilter.setShowMarkedBinding(checkBoxMarkBinding.isSelected());
         filteredImage.redraw();
-        System.out.println("MARK COLOR ON IMAGE VIEW");
     }
 
     @Override

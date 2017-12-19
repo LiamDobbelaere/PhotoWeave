@@ -66,7 +66,6 @@ public class FilteredImageTest {
         final Waiter waiter = new Waiter();
 
         ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(3);
-        System.out.println(((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount());
 
         filteredImage.addThreadEventListener(new ThreadEventListener() {
             @Override
