@@ -27,3 +27,5 @@ bin/
 test*.png
 
 config.properties
+.idea/gitModules/GitHub-photoweave_main.iml
+.idea/gitModules/GitHub-photoweave_test.iml

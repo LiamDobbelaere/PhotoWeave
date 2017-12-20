@@ -1,0 +1,66 @@
+
+/* SCROLLPANE */
+/** CSS **/
+.scrollpane{
+    -fx-focus-color: transparent;
+    -fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar CSS class of ListView */
+.scrollpane .scroll-bar:horizontal ,
+.scrollpane  .scroll-bar:vertical{
+    -fx-background-color:transparent;
+
+}
+
+/* The increment and decrement button CSS class of scrollbar */
+.scrollpane .increment-button ,.scrollpane .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color:derive(gray,80%);
+}
+
+/* The main scrollbar **track** CSS class  */
+.scrollpane .scroll-bar:horizontal .track ,
+.scrollpane .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+    -fx-border-color:derive(gray,80%);
+    -fx-background-radius: 0em;
+}
+
+/* The main scrollbar **thumb** CSS class which we drag every time (movable) */
+.scrollpane .scroll-bar:horizontal .thumb,
+.scrollpane .scroll-bar:vertical .thumb {
+    -fx-background-color:derive(black,90%);
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0em;
+
+}
+
+/* ------------------------------------------------------------------------------------- */
+/** EVENT CSS **/
+/* ------------------------------------------------------------------------------------- */
+
+/* The main scrollbar **track** CSS class on event of "hover" and "pressed" */
+
+.scrollpane .scroll-bar:horizontal:hover .track ,
+.scrollpane .scroll-bar:horizontal:pressed .track ,
+.scrollpane .scroll-bar:vertical:hover .track,
+.scrollpane .scroll-bar:vertical:pressed .track{
+    -fx-background-color: derive(#434343,20%);
+
+    -fx-opacity: 0.2;
+    -fx-background-radius: 0em;
+
+}
+
+/* The main scrollbar **thumb** CSS class on event of "hover" and "pressed" */
+.scrollpane .scroll-bar .thumb:hover,
+.scrollpane .scroll-bar .thumb:pressed{
+    -fx-background-color: derive(black,50%);
+}
+
+.scrollpane .increment-button:hover ,.scrollpane .decrement-button:hover {
+    -fx-background-color:derive(gray,100%);
+    -fx-border-color:derive(gray,80%);
+    -fx-padding:10px;
+}
