@@ -6,6 +6,7 @@ import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListCell;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -13,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -25,6 +27,7 @@ import java.util.Map;
 
 public class ColorBindingLinker {
     //GUI elements
+    public AnchorPane anchorpane;
     public ScrollPane scrollpane;
     public PixelatedImageView imageview;
     public VBox vbox;
@@ -40,6 +43,7 @@ public class ColorBindingLinker {
 
     private ObservableList<Binding> items = FXCollections.observableArrayList();
     private ObservableList<Integer> colorItems = FXCollections.observableArrayList();
+    private ChangeListener<Binding> bindingChangeListener;
 
     public void initialize(FilteredImage filteredImage) {
         this.filteredImage = filteredImage;
@@ -52,9 +56,14 @@ public class ColorBindingLinker {
         this.sortedColors = new ArrayList<>(bindingMap.keySet());
         this.allBindings = bindingFilter.getBindingFactory().getOptimizedBindings();
 
+        this.bindingChangeListener = (observable, oldValue, newValue) -> {
+            System.out.println("Binding change listener!");
+            redrawImage();
+        };
+
         this.vbox = new VBox();
 
-        imageview.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
+        redrawImage();
 
         items.clear();
         items.addAll(this.allBindings);
@@ -66,10 +75,11 @@ public class ColorBindingLinker {
             HBox hbox = new HBox();
 
             hbox.getChildren().add(makeColorPalet(colorItems.get(i)));
-            hbox.getChildren().add(makeBindingComboBox(i));
+            hbox.getChildren().add(makeBindingComboBox(i, sortedBindings));
 
             vbox.getChildren().add(hbox);
         }
+
         scrollpane.setContent(vbox);
     }
 
@@ -81,6 +91,7 @@ public class ColorBindingLinker {
 
         Color color = new Color(colorInt, colorInt, colorInt);
 
+        pane.setId(String.valueOf(colorCode));
         pane.setStyle("-fx-border-color: black; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
         pane.setPrefSize(40, 40);
         pane.setMinSize(40, 40);
@@ -89,53 +100,45 @@ public class ColorBindingLinker {
         return pane;
     }
 
-    public JFXComboBox<Binding> makeBindingComboBox(int i) {
+    public JFXComboBox<Binding> makeBindingComboBox(int i, List<Binding> sortedBindings) {
         JFXComboBox<Binding> comboBox = new JFXComboBox<>(items);
 
         comboBox.setCellFactory(c -> new ImageListCell());
         comboBox.setButtonCell(new ImageListCell());
         comboBox.setTooltip(new Tooltip("Select the binding for the selected color"));
-        comboBox.getSelectionModel().select(i);
+        comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
+        comboBox.getSelectionModel().select(sortedBindings.get(i));
 
         return comboBox;
     }
 
     public void saveBindingLibrary(ActionEvent actionEvent) {
-
-        List<Binding> newBindingsMap = new ArrayList<>();
-
         for (int i = 0; i < vbox.getChildren().size(); i++) {
             Binding binding = null;
-            String colorCode;
-            Color color;
-            int colorInt = 0;
+            int colorCode = 1;
             Node nodeOut = vbox.getChildren().get(i);
             if (nodeOut instanceof HBox) {
                 for (Node nodeIn : ((HBox) nodeOut).getChildren()) {
                     if (nodeIn instanceof BorderPane) {
-                        colorCode = ((BorderPane) nodeIn).getBackground().getFills().get(0).getFill().toString();
-                        color = new Color((colorCode.charAt(2) + colorCode.charAt(3)), (colorCode.charAt(4) + colorCode.charAt(5)), (colorCode.charAt(6) + colorCode.charAt(7)));
-                        colorInt = color.getRGB();
-
+                        colorCode = Integer.parseInt(nodeIn.getId());
                     }
                     if (nodeIn instanceof JFXComboBox) {
                         binding = ((Binding) ((JFXComboBox) nodeIn).getSelectionModel().getSelectedItem());
-                        newBindingsMap.add(binding);
                     }
                 }
             }
-        }
-
-        int i = 0;
-        for (Map.Entry<Integer, Binding> entry : bindingMap.entrySet()) {
-            bindingMap.replace(entry.getKey(), newBindingsMap.get(i));
-            i++;
+            bindingMap.replace(colorCode, binding);
         }
 
         bindingFilter.setBindingsMap(bindingMap);
         filteredImage.redraw();
-        Stage stage = (Stage) scrollpane.getScene().getWindow();
+        Stage stage = (Stage) anchorpane.getScene().getWindow();
         stage.close();
+    }
+
+    public void redrawImage() {
+        filteredImage.redraw();
+        imageview.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
     }
 
     class ImageListCell extends JFXListCell<Binding> {
@@ -152,7 +155,7 @@ public class ColorBindingLinker {
 
                 setGraphic(iv);
 
-                //setText("Binding name goes here");
+                setText("Binding");
 
             }
         }
