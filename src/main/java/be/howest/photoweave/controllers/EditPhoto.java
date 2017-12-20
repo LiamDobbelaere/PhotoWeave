@@ -5,12 +5,13 @@ import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
+import be.howest.photoweave.model.ParametersInterface;
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.customFile.LoadFilteredImageController;
+import be.howest.photoweave.model.customFile.SaveFilteredImageController;
 import be.howest.photoweave.model.imaging.FilteredImage;
-import be.howest.photoweave.model.imaging.ThreadEventListener;
 import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
-import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.util.ImageUtil;
@@ -27,9 +28,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
@@ -50,7 +51,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class EditPhoto implements ThreadEventListener {
+public class EditPhoto implements ParametersInterface {
     /* FXML User Interface */
     public AnchorPane anchorPaneWindow;
     public Label labelFileNameId;
@@ -77,13 +78,13 @@ public class EditPhoto implements ThreadEventListener {
     public StackPane contentStackpane;
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
+    public Accordion accoProperties;
 
     /*  */
     private int imageWidth;
     private int imageHeight;
     private String filename;
     private BufferedImage image;
-    private BufferedImage originalImage;
     private FilteredImage filteredImage;
     private Stage stage;
 
@@ -111,32 +112,12 @@ public class EditPhoto implements ThreadEventListener {
     private WritableImage writableSelection;
 
     public void initialize(String path) throws IOException {
-        // Logic
         this.image = ImageIO.read(new File(path));
-        this.originalImage = image;
-        this.filteredImage = new FilteredImage(image);
-        this.filteredImage.addThreadEventListener(this);
-        this.filteredImage.getFilters().add(new GrayscaleFilter());
-        this.filteredImage.getFilters().add(new PosterizeFilter());
-        this.filteredImage.getFilters().add(new BindingFilter(
-                (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
-        this.filteredImage.getFilters().add(new FloatersFilter(checkBoxFloaters.selectedProperty().get()));
-
-        /* nodig ?
-        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
-                (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));*/
-
-        ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
-                .setLevels((int) sliderPosterizationScale.getValue());
-
-        FloatersFilter floatersFilter = (FloatersFilter) this.filteredImage.getFilters().findImageFilter(FloatersFilter.class);
-        floatersFilter.setFloaterTresholdX(Integer.parseInt(textFieldXFloaters.textProperty().getValue()));
-        floatersFilter.setFloaterTresholdY(Integer.parseInt(textFieldYFloaters.textProperty().getValue()));
-
-        this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
-                (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));
-
         this.posterizeScale = 10;
+        //this.filteredImage = new LoadFilteredImageController(image,this.posterizeScale,false,0,0,this).getFilteredImage();
+        LoadFilteredImageController lfic = new LoadFilteredImageController(new File("C:\\Users\\Quinten\\OneDrive\\Documenten\\ver3.json"),this);
+        this.filteredImage = lfic.getFilteredImage();
+
 
         this.bindingChangedEventHandler = new BindingChangedEventHandler() {
             @Override
@@ -162,10 +143,17 @@ public class EditPhoto implements ThreadEventListener {
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
 
         initializeListeners();
+        lfic.loadDataInUserInterface();
         initializePhotoScale();
-        updateTexts();
+        updateUserInterfaceText();
+        updateBindingSelection();
 
         paneDefault.setExpanded(true);
+    }
+
+    private void updateBindingSelection() {
+        BindingFilter bf = ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+        this.vboxSelectBinding.setBindingsMap(bf.getBindingsMap(),bf);
     }
 
     /* UI */
@@ -179,7 +167,7 @@ public class EditPhoto implements ThreadEventListener {
         updateImage();
     }
 
-    private void updateTexts() {
+    private void updateUserInterfaceText() {
         labelFileNameId.setText(new File(filename).getName());
         filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(imageWidth));
@@ -210,7 +198,7 @@ public class EditPhoto implements ThreadEventListener {
 
     private void updateImage() {
         filteredImage.redraw();
-        updateTexts();
+        updateUserInterfaceText();
     }
 
     /* FXML Hooks */
@@ -318,6 +306,7 @@ public class EditPhoto implements ThreadEventListener {
 
         photoView
                 .setOnMouseDragged(ManipulatePixel());
+
         photoView.setOnMousePressed((event) -> {
             double xPercent = event.getX() / photoView.getBoundsInParent().getWidth();
             double yPercent = event.getY() / photoView.getBoundsInParent().getHeight();
@@ -553,8 +542,7 @@ public class EditPhoto implements ThreadEventListener {
         Platform.runLater(
                 () -> {
 
-                    this.vboxSelectBinding.setBindingsMap(((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap(),
-                            (((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class))));
+                    updateBindingSelection();
 
 
                     vboxSelectBinding
@@ -731,6 +719,12 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void togglePicker(ActionEvent actionEvent) {
+        try {
+            new SaveFilteredImageController(this.filteredImage).save("");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if (editing) toggleEdit(null);
 
         picking = !picking;
@@ -751,5 +745,10 @@ public class EditPhoto implements ThreadEventListener {
             button.setStyle("");
             imageScrollPane.setPannable(true);
         }
+    }
+
+    @Override
+    public void setInvert(boolean bool) {
+        checkBoxInvert.selectedProperty().setValue(bool);
     }
 }

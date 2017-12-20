@@ -149,7 +149,7 @@
             </HBox>
         </HBox>
         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0" prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Accordion prefHeight="481.0" prefWidth="230.0" style="-fx-background-color: white;">
+            <Accordion fx:id="accoProperties" prefHeight="481.0" prefWidth="230.0" style="-fx-background-color: white;">
                 <panes>
                     <TitledPane fx:id="paneDefault" layoutX="10.0" layoutY="10.0" style="-fx-background-color: teal;" text="Afbeelding">
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="449.0">

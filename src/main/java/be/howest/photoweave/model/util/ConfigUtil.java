@@ -16,8 +16,8 @@ import java.util.List;
 public class ConfigUtil {
 
     public static PropertiesConfiguration getPropertiesConfig() {
-        if (!Files.exists(Paths.get("config.properties"))) {
-            File f = new File("config.properties");
+        if (!Files.exists(Paths.get("config.accoProperties"))) {
+            File f = new File("config.accoProperties");
             boolean success;
 
             try {
@@ -28,7 +28,7 @@ public class ConfigUtil {
         }
 
         Configurations configs = new Configurations();
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = configs.propertiesBuilder("config.properties");
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = configs.propertiesBuilder("config.accoProperties");
         builder.setAutoSave(true);
 
         PropertiesConfiguration config = null;
