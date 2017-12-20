@@ -11,8 +11,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0"
-            prefHeight="662.0"
-            prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112"
+            prefHeight="662.0" prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121"
             fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0"
           prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
@@ -63,8 +62,8 @@
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
-                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
-                               onAction="#toggleEdit" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false"
+                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0"
+                               mnemonicParsing="false" onAction="#toggleEdit" styleClass="button-raised"
                                textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Selecteer vrije-vormgebied en verander bepaalde binding"/>
@@ -170,9 +169,9 @@
                                               labelFloat="true" layoutX="14.0" layoutY="125.0" prefHeight="25.0"
                                               prefWidth="200.0" promptText="Hoogte" text="1234 px"/>
                                 <Label fx:id="filePath" layoutX="15.0" layoutY="32.0"/>
-                                <JFXButton onAction="#ShowCalculateWindow" layoutX="14.0" layoutY="166.0"
-                                           mnemonicParsing="false" text="Afplatting berekenen"
-                                           styleClass="button-raised"/>
+                                <JFXButton layoutX="14.0" layoutY="166.0" mnemonicParsing="false"
+                                           onAction="#ShowCalculateWindow" styleClass="button-raised"
+                                           text="Afplatting berekenen"/>
                             </children>
                         </AnchorPane>
                         <font>
@@ -233,10 +232,10 @@
                                                mnemonicParsing="false" onAction="#openBindingCreator" prefHeight="40.0"
                                                prefWidth="200.0" styleClass="button-raised" text="Binding maken"
                                                textAlignment="CENTER"/>
-                                    <JFXButton fx:id="buttonBindingColorSelector" mnemonicParsing="false"
-                                               onAction="#openBindingColorSelector" styleClass="button-raised"
-                                               text="Binding Linker"
-                                               textAlignment="CENTER"/>
+                                    <JFXButton fx:id="buttonBindingColorSelector" layoutX="12.0" layoutY="64.0"
+                                               mnemonicParsing="false" onAction="#openBindingColorSelector"
+                                               prefHeight="40.0" prefWidth="200.0" styleClass="button-raised"
+                                               text="Link bindings met kleuren" textAlignment="CENTER"/>
                                 </children>
                             </AnchorPane>
                         </content>
