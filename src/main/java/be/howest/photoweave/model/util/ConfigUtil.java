@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ConfigUtil {
 
@@ -45,7 +47,8 @@ public class ConfigUtil {
 
         ArrayList<String> recentFiles = new ArrayList<>();
 
-        if (obj != null) {
+        if (obj != null)
+        {
             if (obj instanceof String) {
                 recentFiles.add((String) obj);
             } else if (obj instanceof ArrayList) {

@@ -84,6 +84,7 @@ public class EditPhoto implements ThreadEventListener {
     private int imageHeight;
     private String filename;
     private BufferedImage image;
+    private BufferedImage originalImage;
     private FilteredImage filteredImage;
     private Stage stage;
 
@@ -113,6 +114,7 @@ public class EditPhoto implements ThreadEventListener {
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
+        this.originalImage = image;
         this.filteredImage = new FilteredImage(image);
         this.filteredImage.addThreadEventListener(this);
         this.filteredImage.getFilters().add(new GrayscaleFilter());
@@ -259,6 +261,21 @@ public class EditPhoto implements ThreadEventListener {
 
         BindingMaker controller = loader.getController();
         controller.initialize();
+        stage.show();
+    }
+
+    public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setScene(new Scene(loader.load()));
+        stage.setMinHeight(600.0);
+        stage.setMinWidth(800.0);
+        stage.setTitle("PhotoWeave | Link colors to bindings");
+        stage.getIcons().add(new Image("logo.png"));
+
+        ColorBindingLinker controller = loader.getController();
+        controller.initialize(filteredImage);
         stage.show();
     }
 
@@ -594,21 +611,6 @@ public class EditPhoto implements ThreadEventListener {
         textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
 
         filteredImage.redraw();
-    }
-
-    public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setScene(new Scene(loader.load()));
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(800.0);
-        stage.setTitle("PhotoWeave | Link colors to bindings");
-        stage.getIcons().add(new Image("logo.png"));
-
-        ColorBindingLinker controller = loader.getController();
-        controller.initialize(filteredImage);
-        stage.show();
     }
 
     public void showChangeSelectionBindingWindow(Region region) {
