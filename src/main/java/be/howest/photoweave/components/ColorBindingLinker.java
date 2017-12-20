@@ -65,6 +65,7 @@ public class ColorBindingLinker {
 
             System.out.println("true");
             bindingMap.replace(id, newValue);
+
         };
 
         this.vbox = new VBox();
@@ -110,7 +111,7 @@ public class ColorBindingLinker {
         comboBox.setId(String.valueOf(i));
         comboBox.setCellFactory(c -> new ImageListCell());
         comboBox.setButtonCell(new ImageListCell());
-        comboBox.setTooltip(new Tooltip("Select the binding for the selected color"));
+        comboBox.setTooltip(new Tooltip("Select the binding for this color"));
         comboBox.getSelectionModel().selectedItemProperty().addListener(bindingChangeListener);
         comboBox.getSelectionModel().select(sortedBindings.get(i));
 
