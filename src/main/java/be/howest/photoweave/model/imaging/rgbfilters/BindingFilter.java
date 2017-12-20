@@ -129,4 +129,8 @@ public class BindingFilter implements RGBFilter {
 
         return color;
     }
+
+    public void setBindingsMap(Map<Integer, Binding> bindingsMap) {
+        this.bindingsMap = bindingsMap;
+    }
 }
