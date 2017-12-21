@@ -15,7 +15,7 @@
             stylesheets="@style.css"
             fx:id="anchorPane"
             fx:controller="be.howest.photoweave.controllers.About"
-            prefHeight="420.0" prefWidth="600.0">
+            prefHeight="450.0" prefWidth="600.0">
     <AnchorPane AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0"
                 AnchorPane.bottomAnchor="0">
         <AnchorPane AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
@@ -62,6 +62,7 @@
                 <Label text="Apache Commons"/>
                 <Label text="JFoenix (http://www.jfoenix.com)"/>
                 <Label text="Material icons (https://material.io/icons)"/>
+                <Label text="Google Gson (https://github.com/google/gson)"/>
             </VBox>
         </VBox>
     </AnchorPane>
