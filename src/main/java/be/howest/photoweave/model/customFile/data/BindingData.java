@@ -10,4 +10,16 @@ public class BindingData {
         this.index = index;
         this.base64 = base64;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public String getBase64() {
+        return base64;
+    }
 }

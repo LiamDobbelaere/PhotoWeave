@@ -9,6 +9,7 @@ import be.howest.photoweave.model.ParametersInterface;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.customFile.LoadFilteredImageController;
 import be.howest.photoweave.model.customFile.SaveFilteredImageController;
+import be.howest.photoweave.model.customFile.data.UserInterfaceData;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
@@ -43,6 +44,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -77,9 +79,9 @@ public class EditPhoto implements ParametersInterface {
     public StackPane contentStackpane;
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
-    public Accordion accoProperties;
+    public Accordion properties;
 
-    /*  */
+    /* User Interface Data */
     private int imageWidth;
     private int imageHeight;
     private String filename;
@@ -87,11 +89,18 @@ public class EditPhoto implements ParametersInterface {
     private FilteredImage filteredImage;
     private Stage stage;
 
+    private UserInterfaceData userInterfaceData;
+    private boolean isCustomFile;
+    /* Handlers hier nodig?*/
+
     private BindingChangedEventHandler bindingChangedEventHandler;
     private ChangeListener<Integer> markedColorChangeListener;
     private ChangeListener<Boolean> showMarkingChangeListener;
 
+    //Nodig?
     private int posterizeScale = 10;
+
+    /* SELECTION */
 
     private int pXStart = -1;
     private int pYStart = -1;
@@ -108,16 +117,25 @@ public class EditPhoto implements ParametersInterface {
 
     private java.util.List<Point> selectionPoints;
     private WritableImage writablePhotoview;
-    private WritableImage writableSelection;
 
     public void initialize(String path) throws IOException {
-        this.image = ImageIO.read(new File(path));
         this.posterizeScale = 10;
-        //this.filteredImage = new LoadFilteredImageController(image,this.posterizeScale,false,0,0,this).getFilteredImage();
-        LoadFilteredImageController lfic = new LoadFilteredImageController(new File("C:\\Users\\Quinten\\OneDrive\\Documenten\\ver3.json"),this);
+        LoadFilteredImageController lfic;
+        if (FilenameUtils.getExtension(path).toLowerCase().equals("json")) {
+            isCustomFile = true;
+            lfic = new LoadFilteredImageController(new File(path), this);
+            this.image = lfic.getFilteredImage().getOriginalImage();
+        } else {
+            isCustomFile = false;
+            this.image = ImageIO.read(new File(path));
+            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, 0, 0, this);
+        }
+
+
         this.filteredImage = lfic.getFilteredImage();
 
 
+        /* DIT NAAR INITLIST */
         this.bindingChangedEventHandler = new BindingChangedEventHandler() {
             @Override
             public void onBindingChanged() {
@@ -132,6 +150,7 @@ public class EditPhoto implements ParametersInterface {
         this.showMarkingChangeListener = (observable, oldValue, newValue) -> {
             showMarkingOnImageView();
         };
+        /* ------------ */
 
         // UI
         this.imageWidth = image.getWidth();
@@ -142,17 +161,12 @@ public class EditPhoto implements ParametersInterface {
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
 
         initializeListeners();
-        lfic.loadDataInUserInterface();
         initializePhotoScale();
+        if (isCustomFile) lfic.loadDataInUserInterface();
         updateUserInterfaceText();
         updateBindingSelection();
 
         paneDefault.setExpanded(true);
-    }
-
-    private void updateBindingSelection() {
-        BindingFilter bf = ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
-        this.vboxSelectBinding.setBindingsMap(bf.getBindingsMap(),bf);
     }
 
     /* UI */
@@ -174,25 +188,9 @@ public class EditPhoto implements ParametersInterface {
         labelAmountOfColors.setText("Aantal tinten: " + posterizeScale);
     }
 
-    private void redrawPhotoView() {
-        writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
-        photoView.setImage(writablePhotoview);
-
-        int overlayWidth = (int) imageScrollPane.getViewportBounds().getWidth();
-        int overlayHeight = (int) imageScrollPane.getViewportBounds().getHeight();
-
-        /*photoviewSelection.setImage(
-                SwingFXUtils.toFXImage(selectionOverlay, writableSelection));*/
-
-        selectionCanvas.setWidth(overlayWidth);
-        selectionCanvas.setHeight(overlayHeight);
-        selectionCanvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Paint.valueOf("red"));
-    }
-
-    private void resizeImage() {
-        filteredImage.resize(imageWidth, imageHeight);
-
-        updateImage();
+    private void updateBindingSelection() {
+        BindingFilter bf = ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class));
+        this.vboxSelectBinding.setBindingsMap(bf.getBindingsMap(), bf);
     }
 
     private void updateImage() {
@@ -200,21 +198,32 @@ public class EditPhoto implements ParametersInterface {
         updateUserInterfaceText();
     }
 
+    private void resizeImage() {
+        filteredImage.resize(imageWidth, imageHeight);
+        updateImage();
+    }
+
+    private void redrawPhotoView() {
+        writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
+        photoView.setImage(writablePhotoview);
+
+        int overlayWidth = (int) imageScrollPane.getViewportBounds().getWidth();
+        int overlayHeight = (int) imageScrollPane.getViewportBounds().getHeight();
+
+        selectionCanvas.setWidth(overlayWidth);
+        selectionCanvas.setHeight(overlayHeight);
+        selectionCanvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Paint.valueOf("red"));
+    }
+
     /* FXML Hooks */
     public void zoomIn() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() * 2));
-        photoView.setFitHeight(photoView.getFitHeight() * 1.2);
-        System.out.println(photoView.getFitWidth());
-        System.out.println(imageScrollPane.getVvalue());
-        System.out.println(imageScrollPane.getHvalue());
+        photoView.setFitHeight(photoView.getFitHeight() * 2);
     }
 
     public void zoomOut() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() / 2));
-        photoView.setFitHeight(photoView.getFitHeight() / 1.2);
-        System.out.println(photoView.getFitWidth());
-        System.out.println(imageScrollPane.getVvalue());
-        System.out.println(imageScrollPane.getHvalue());
+        photoView.setFitHeight(photoView.getFitHeight() / 2);
     }
 
     public void fitWindow(ActionEvent actionEvent) {
@@ -259,10 +268,9 @@ public class EditPhoto implements ParametersInterface {
 
     /* Event Handlers */
     private void initializeListeners() {
-        /* FXML */
+        /* User Interface */
         sliderPosterizationScale
                 .setOnMouseReleased(this::updatePosterizationLevelOnImage);
-
         textFieldWidth
                 .focusedProperty()
                 .addListener(this::ResizeImageHeight);
@@ -298,17 +306,13 @@ public class EditPhoto implements ParametersInterface {
                 .widthProperty()
                 .addListener(this::ResizeImageViewWidth);
 
-        /* CUSTOM */
-        /*vboxSelectBinding
-                .getComboBoxBindings()
-                .addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);*/
-
         vboxSelectBinding
                 .getComboBoxLevels()
                 .getSelectionModel()
                 .selectedItemProperty()
                 .addListener(this.markedColorChangeListener);
 
+        /* Selection Feature */
         photoView
                 .setOnMouseDragged(ManipulatePixel());
 
@@ -385,7 +389,7 @@ public class EditPhoto implements ParametersInterface {
             pXPreviousSelection = -1;
             pYPreviousSelection = -1;
 
-            showChangeSelectionBindingWindow(new Region(selectionPoints));
+            openChangeSelectionBinding(new Region(selectionPoints));
 
             selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
         });
@@ -526,6 +530,9 @@ public class EditPhoto implements ParametersInterface {
         filteredImage.redraw();
     }
 
+    /* INTERFACE
+     * ThreadListener
+     */
     @Override
     public void OnRedrawBegin() {
         vboxSelectBinding
@@ -561,7 +568,9 @@ public class EditPhoto implements ParametersInterface {
                 });
     }
 
-    public void ShowCalculateWindow(ActionEvent actionEvent) {
+
+    /* FXML Hooks */
+    public void openFlatteningOptions(ActionEvent actionEvent) {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/CalculateFlattening.fxml"));
 
         Scene scene = null;
@@ -590,7 +599,7 @@ public class EditPhoto implements ParametersInterface {
         filteredImage.redraw();
     }
 
-    public void showChangeSelectionBindingWindow(Region region) {
+    public void openChangeSelectionBinding(Region region) {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeSelectionBinding.fxml"));
 
         Scene scene = null;
@@ -620,6 +629,9 @@ public class EditPhoto implements ParametersInterface {
     }
 
 
+    /* FEATURE
+     * SelectionTool
+     */
     private void drawLine(PixelWriter pw, int x1, int y1, int x2, int y2, boolean draw) {
         // delta of exact value and rounded value of the dependent variable
         int d = 0;
@@ -640,7 +652,7 @@ public class EditPhoto implements ParametersInterface {
             while (true) {
 
                 if (!selectionPoints.contains(new Point(x, y))) {
-                    if (draw ) pw.setColor(x, y, javafx.scene.paint.Color.RED);
+                    if (draw) pw.setColor(x, y, javafx.scene.paint.Color.RED);
                     selectionPoints.add(new Point(x, y));
                 }
 
@@ -701,10 +713,12 @@ public class EditPhoto implements ParametersInterface {
             }
 
             if (pXPreviousSelection == -1 || pYPreviousSelection == -1) {
-                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(overlayX, overlayY, overlayX, overlayY);
+                if (shouldUseCanvasLines())
+                    selectionCanvas.getGraphicsContext2D().strokeLine(overlayX, overlayY, overlayX, overlayY);
             } else {
                 selectionCanvas.getGraphicsContext2D().setLineWidth(2);
-                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(pXPreviousSelection, pYPreviousSelection, overlayX, overlayY);
+                if (shouldUseCanvasLines())
+                    selectionCanvas.getGraphicsContext2D().strokeLine(pXPreviousSelection, pYPreviousSelection, overlayX, overlayY);
             }
 
             pXPrevious = pX;
@@ -715,6 +729,7 @@ public class EditPhoto implements ParametersInterface {
         };
     }
 
+    /* FXML Hook */
     public void toggleEdit(ActionEvent actionEvent) {
         if (picking) togglePicker(null);
 
@@ -723,9 +738,11 @@ public class EditPhoto implements ParametersInterface {
         updateModeVisual(editing, toggleEditButton);
     }
 
+    /* FXML Hook */
     public void togglePicker(ActionEvent actionEvent) {
         try {
-            new SaveFilteredImageController(this.filteredImage).save("");
+            collectUserInterfaceData();
+            new SaveFilteredImageController(this.filteredImage, this.userInterfaceData).save("C:\\Users\\Quinten\\Pictures\\verilin\\SavedFile\\verilin.json");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -742,6 +759,7 @@ public class EditPhoto implements ParametersInterface {
         updateModeVisual(picking, togglePickerButton);
     }
 
+    /* Enchantment */
     private void updateModeVisual(boolean flag, JFXButton button) {
         if (flag) {
             button.setStyle("-fx-background-color: -app-color-secondary;");
@@ -752,28 +770,72 @@ public class EditPhoto implements ParametersInterface {
         }
     }
 
+    /* INTERFACE
+     * ParametersInterface
+     */
     @Override
-    public void setUIComponentInverted(boolean bool) {
-        checkBoxInvert.selectedProperty().setValue(bool);
+    public void setUIComponentInverted(boolean asBoolean) {
+
+        checkBoxInvert.selectedProperty().setValue(asBoolean);
     }
 
     @Override
     public void setUIComponentMarked(boolean asBoolean) {
-
+        checkBoxMarkBinding.selectedProperty().setValue(asBoolean);
     }
 
     @Override
     public void setUICompentenPosterize(int asInt) {
+        sliderPosterizationScale.setValue(asInt);
+    }
+
+    @Override
+    public void setUIComponentHeight(double asDouble) {
+        System.out.println("== fit height ==");
+        System.out.println(asDouble);
+        System.out.println(photoView.getFitHeight());
+
+        this.photoView.setFitHeight(asDouble * 1.5);
+
+        System.out.println(photoView.getFitHeight());
+    }
+
+    @Override
+    public void setUIComponentWidth(double asDouble) {
+        System.out.println("== fit width ==");
+        System.out.println(asDouble);
+        System.out.println(photoView.getFitWidth());
+
+        this.photoView.setFitWidth(asDouble * 1.5);
+
+        System.out.println(photoView.getFitWidth());
 
     }
 
     @Override
-    public void setUIComponentHeight(int asInt) {
-
+    public void setUIComponentXScroll(double asDouble) {
+        System.out.println("SCROLL X CALLED");
+        System.out.println(asDouble);
+        imageScrollPane.setHvalue(asDouble);
     }
 
     @Override
-    public void setUIComponentWidth(int asInt) {
+    public void setUIComponentYScroll(double asDouble) {
+        imageScrollPane.setVvalue(asDouble);
+    }
 
+
+    /* FXML Hook add button*/
+    private void collectUserInterfaceData() {
+        this.userInterfaceData = new UserInterfaceData();
+        this.userInterfaceData.setInverted(this.checkBoxInvert.selectedProperty().getValue());
+        this.userInterfaceData.setMarked(this.checkBoxMarkBinding.selectedProperty().getValue());
+        this.userInterfaceData.setBindingIndex(0); //TODO change
+        this.userInterfaceData.setxFloater(Integer.parseInt(this.textFieldXFloaters.getText()));
+        this.userInterfaceData.setyFloater(Integer.parseInt(this.textFieldYFloaters.getText()));
+        this.userInterfaceData.setHeight(this.photoView.getFitHeight());
+        this.userInterfaceData.setWidth(this.photoView.getFitWidth());
+        this.userInterfaceData.setxScroll(this.imageScrollPane.getVvalue());
+        this.userInterfaceData.setyScroll(this.imageScrollPane.getVvalue());
     }
 }

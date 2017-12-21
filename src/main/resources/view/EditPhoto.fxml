@@ -149,7 +149,7 @@
             </HBox>
         </HBox>
         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0" prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Accordion fx:id="accoProperties" prefHeight="481.0" prefWidth="230.0" style="-fx-background-color: white;">
+            <Accordion fx:id="properties" prefHeight="481.0" prefWidth="230.0" style="-fx-background-color: white;">
                 <panes>
                     <TitledPane fx:id="paneDefault" layoutX="10.0" layoutY="10.0" style="-fx-background-color: teal;" text="Afbeelding">
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="449.0">
@@ -162,7 +162,7 @@
                                 <JFXTextField fx:id="textFieldWidth" accessibleHelp="Geef een andere waarde in om de breedte te veranderen" labelFloat="true" layoutX="14.0" layoutY="76.0" prefHeight="25.0" prefWidth="200.0" promptText="Breedte" text="1234 px" />
                                 <JFXTextField fx:id="textFieldHeight" accessibleHelp="Geef een andere waarde in om de hoogte te veranderen" accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2" accessibleText="Geef een andere waarde in om de hoogte te veranderen 1" labelFloat="true" layoutX="14.0" layoutY="125.0" prefHeight="25.0" prefWidth="200.0" promptText="Hoogte" text="1234 px" />
                                 <Label fx:id="filePath" layoutX="15.0" layoutY="32.0" />
-                                <JFXButton layoutX="14.0" layoutY="166.0" mnemonicParsing="false" onAction="#ShowCalculateWindow" styleClass="button-raised" text="Afplatting berekenen" />
+                                <JFXButton layoutX="14.0" layoutY="166.0" mnemonicParsing="false" onAction="#openFlatteningOptions" styleClass="button-raised" text="Afplatting berekenen" />
                             </children>
                         </AnchorPane>
                         <font>

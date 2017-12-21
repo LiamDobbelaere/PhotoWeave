@@ -12,4 +12,16 @@ public class Mutation{
         this.posterization = posterization;
         this.bindingpalette = bindingpalette;
     }
+
+    public Scale getScale() {
+        return scale;
+    }
+
+    public int getPosterization() {
+        return posterization;
+    }
+
+    public List<BindingData> getBindingpalette() {
+        return bindingpalette;
+    }
 }

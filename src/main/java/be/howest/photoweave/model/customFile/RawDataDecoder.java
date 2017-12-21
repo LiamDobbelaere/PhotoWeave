@@ -1,6 +1,7 @@
 package be.howest.photoweave.model.customFile;
 
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.customFile.data.CustomFile;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RawDataDecoder {
+    private String json;
     private Gson g;
     private JsonObject jsonObject;
     private String base64;
@@ -27,17 +29,22 @@ public class RawDataDecoder {
     private JsonArray bindingArray;
     private boolean inverted;
     private BufferedImage image;
+    
+    
+
+    private Map<Integer, Binding> bindingMap;
+    private CustomFile customFile;
 
 
-    public RawDataDecoder(File customFile) throws IOException {
-        String json = new String(Files.readAllBytes(Paths.get(customFile.getAbsolutePath())));
+    public RawDataDecoder(File file) throws IOException {
+        this.json = new String(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
         this.g = new Gson();
-        JsonObject jsonObject = g.fromJson(json, JsonObject.class);
-        this.jsonObject = jsonObject;
+        //JsonObject jsonObject = g.fromJson(json, JsonObject.class);
+        //this.jsonObject = jsonObject;
     }
 
     public void decode() throws IOException {
-        this.base64 = jsonObject
+/*        this.base64 = jsonObject
                 .get("image")
                 .getAsJsonObject()
                 .get("base64")
@@ -48,7 +55,6 @@ public class RawDataDecoder {
                 .getAsJsonObject()
                 .get("width")
                 .getAsInt();
-
 
         this.height = jsonObject
                 .get("image")
@@ -74,11 +80,17 @@ public class RawDataDecoder {
                 .get("inverted")
                 .getAsBoolean();
 
-        Map<Integer,Binding> bindingMap = new HashMap<>();
-        this.bindingArray.forEach(jsonElement -> {
-            String bName = jsonElement.getAsJsonObject().get("name").getAsString();
-            Integer bIndex = jsonElement.getAsJsonObject().get("index").getAsInt();
-            String bBase64 = jsonElement.getAsJsonObject().get("base64").getAsString();
+
+
+*/
+
+        this.customFile = g.fromJson(json, CustomFile.class);
+
+        this.bindingMap = new HashMap<>();
+        this.customFile.getMutation().getBindingpalette().forEach(bindingData -> {
+            String bName = bindingData.getName();
+            Integer bIndex = bindingData.getIndex();
+            String bBase64 = bindingData.getBase64();
 
             try {
                 bindingMap.put(bIndex,new Binding(bBase64,bName));
@@ -87,45 +99,26 @@ public class RawDataDecoder {
             }
         });
 
-
-        //BASE64Decoder decoder = new BASE64Decoder();
-        //byte[] b64ImageBytes = decoder.decodeBuffer(base64);
+        /*
+         * Alt
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] b64ImageBytes = decoder.decodeBuffer(base64);
+         */
 
         //ArrayIndexOutOfBoundsException; image is to big
-        byte[] b64ImageBytes = DatatypeConverter.parseBase64Binary(base64);
-
+        byte[] b64ImageBytes = DatatypeConverter.parseBase64Binary(this.customFile.getImage().getBase64());
         this.image = ImageUtil.convertImageToRGBInt(ImageIO.read(new ByteArrayInputStream(b64ImageBytes)));
-    }
-
-    public JsonObject getJsonObject() {
-        return jsonObject;
-    }
-
-    public String getBase64() {
-        return base64;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getPosterization() {
-        return posterization;
-    }
-
-    public JsonArray getBindingArray() {
-        return bindingArray;
-    }
-
-    public boolean isInverted() {
-        return inverted;
     }
 
     public BufferedImage getImage() {
         return image;
+    }
+
+    public Map<Integer, Binding> getBindingMap() {
+        return bindingMap;
+    }
+
+    public CustomFile getCustomFile() {
+        return customFile;
     }
 }

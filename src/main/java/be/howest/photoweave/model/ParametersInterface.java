@@ -9,7 +9,11 @@ public interface ParametersInterface extends ThreadEventListener {
 
     void setUICompentenPosterize(int asInt);
 
-    void setUIComponentHeight(int asInt);
+    void setUIComponentHeight(double asDouble);
 
-    void setUIComponentWidth(int asInt);
+    void setUIComponentWidth(double asDouble);
+
+    void setUIComponentXScroll(double asDouble);
+
+    void setUIComponentYScroll(double asDouble);
 }

@@ -11,4 +11,16 @@ public class CustomFile {
         this.mutation = mutation;
         this.userInterface = userInterface;
     }
+
+    public ImageData getImage() {
+        return image;
+    }
+
+    public Mutation getMutation() {
+        return mutation;
+    }
+
+    public UserInterfaceData getUserInterface() {
+        return userInterface;
+    }
 }

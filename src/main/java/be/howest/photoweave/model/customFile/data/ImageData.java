@@ -10,4 +10,16 @@ public class ImageData {
         this.width = width;
         this.height = height;
     }
+
+    public String getBase64() {
+        return base64;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
 }

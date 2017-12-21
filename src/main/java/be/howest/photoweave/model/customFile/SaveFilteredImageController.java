@@ -6,6 +6,7 @@ import be.howest.photoweave.model.imaging.FilteredImage;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class SaveFilteredImageController {
     private FilteredImage filteredImage;
@@ -25,5 +26,8 @@ public class SaveFilteredImageController {
 
         String json = g.toJson(fileData);
         System.out.println(json);
+        try(  PrintWriter out = new PrintWriter( path )  ){
+            out.println( json );
+        }
     }
 }

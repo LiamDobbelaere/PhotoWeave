@@ -2,29 +2,24 @@ package be.howest.photoweave.model.customFile;
 
 import be.howest.photoweave.model.ParametersInterface;
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.customFile.data.CustomFile;
+import be.howest.photoweave.model.customFile.data.Mutation;
+import be.howest.photoweave.model.customFile.data.UserInterfaceData;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
-import be.howest.photoweave.model.util.ImageUtil;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Map;
 
 public class LoadFilteredImageController {
 
+    private UserInterfaceData userInterfaceData;
     private JsonObject jsonObject;
 
     public FilteredImage getFilteredImage() {
@@ -39,10 +34,16 @@ public class LoadFilteredImageController {
         load(image,posterization,enableFloaters,xFloater,yFloater,false,null,parent);
     }
 
-    public LoadFilteredImageController(File customFile, ParametersInterface parent) throws IOException {
-        RawDataDecoder decoder = new RawDataDecoder(customFile);
+    public LoadFilteredImageController(File jsonFile, ParametersInterface parent) throws IOException {
+        RawDataDecoder decoder = new RawDataDecoder(jsonFile);
         decoder.decode();
-        load(image,posterization,false,0,3,inverted,bindingMap,parent);
+
+        CustomFile file = decoder.getCustomFile();
+        Mutation mutation = file.getMutation();
+        UserInterfaceData userInterfaceData = file.getUserInterface();
+        this.userInterfaceData = userInterfaceData;
+
+        load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),userInterfaceData.isInverted(),decoder.getBindingMap(),parent);
     }
 
     private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,boolean inverted, Map<Integer,Binding> bindingMap,  ParametersInterface parent){
@@ -70,40 +71,12 @@ public class LoadFilteredImageController {
     }
 
     public void loadDataInUserInterface(){
-        this.parent.setUIComponentInverted(this.jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("inverted")
-                .getAsBoolean());
-        /*this.parent.setUIComponentMarked(this.jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("marked")
-                .getAsBoolean());
-
-        this.parent.setUICompentenPosterize(this.jsonObject
-                .get("mutation")
-                .getAsJsonObject()
-                .get("posterization")
-                .getAsInt());
-
-
-        this.parent.setUIComponentHeight(this.jsonObject
-                .get("mutation")
-                .getAsJsonObject()
-                .get("scale")
-                .getAsJsonObject()
-                .get("height")
-                .getAsInt());
-
-        this.parent.setUIComponentWidth(this.jsonObject
-                .get("mutation")
-                .getAsJsonObject()
-                .get("scale")
-                .getAsJsonObject()
-                .get("width")
-                .getAsInt());
-        */
-
+        this.parent.setUIComponentInverted(this.userInterfaceData.isInverted()); //DURING INIT
+        //this.parent.setUICompentenPosterize(); // poseterization before hook //
+        this.parent.setUIComponentHeight(this.userInterfaceData.getHeight()); //DURING INIT
+        this.parent.setUIComponentWidth(this.userInterfaceData.getWidth()); //DURING INIT
+        this.parent.setUIComponentMarked(this.userInterfaceData.isMarked()); //
+        this.parent.setUIComponentXScroll(this.userInterfaceData.getxScroll());
+        this.parent.setUIComponentYScroll(this.userInterfaceData.getyScroll());
     }
 }
