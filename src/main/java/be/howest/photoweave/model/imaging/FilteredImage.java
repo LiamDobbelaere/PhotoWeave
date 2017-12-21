@@ -39,6 +39,7 @@ public class FilteredImage {
     }
 
     public void resize(int newWidth, int newHeight) {
+        this.filters.resize(newWidth, newHeight);
         this.modifiedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
     }
 

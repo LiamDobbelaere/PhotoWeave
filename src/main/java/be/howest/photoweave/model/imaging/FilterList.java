@@ -56,6 +56,16 @@ public class FilterList {
         return found;
     }
 
+    public void resize(int newWidth, int newHeight) {
+        for (RGBFilter filter : this.rgbFilters) {
+            filter.resize(newWidth, newHeight);
+        }
+
+        for (ImageFilter filter : this.imageFilters) {
+            filter.resize(newWidth, newHeight);
+        }
+    }
+
     public Iterator<RGBFilter> getRGBFilters() {
         return rgbFilters.iterator();
     }

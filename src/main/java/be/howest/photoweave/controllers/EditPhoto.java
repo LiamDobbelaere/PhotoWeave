@@ -243,6 +243,9 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.setManualAssign(true);
+
         CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
@@ -705,5 +708,26 @@ public class EditPhoto implements ThreadEventListener {
             button.setStyle("");
             imageScrollPane.setPannable(true);
         }
+    }
+
+    public void showAbout(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/About.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("About");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
 }

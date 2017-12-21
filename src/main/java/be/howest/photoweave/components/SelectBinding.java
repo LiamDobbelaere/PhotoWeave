@@ -44,8 +44,8 @@ public class SelectBinding extends VBox {
     private Map<Integer, Binding> bindings;
 
     //new code
-    private Binding SELECTED_BINDING = new BindingFactory().getOptimizedBindings()[0]; //temp
-    private BindingPicker bindingPicker = new BindingPicker(0, 0, false, false, SELECTED_BINDING);
+    private Binding SELECTED_BINDING = BindingFactory.getInstance().getOptimizedBindings()[0]; //temp
+    private BindingPicker bindingPicker = new BindingPicker(0,0,false,false,SELECTED_BINDING);
     private BindingFilter bindingFilter;
     private ChangeListener levelsChangeListener;
 
@@ -62,7 +62,6 @@ public class SelectBinding extends VBox {
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         fxmlLoader.load();
-
     }
 
     private void initializeLevelsListener() {
@@ -183,10 +182,12 @@ public class SelectBinding extends VBox {
 
             label1 = new Label();
             label1.relocate(this.x * BINDING_SIZE, this.y * BINDING_SIZE);
+
             label1.setGraphic(new ImageView(ImageUtil.resample(SwingFXUtils.toFXImage(this.binding.getBindingImage(), null), 4)));
 
             label2 = new Label(binding.getName());
             tooltip = new Tooltip(binding.getName());
+
             Tooltip.install(this, tooltip);
 
             getChildren().addAll(label1, label2);
