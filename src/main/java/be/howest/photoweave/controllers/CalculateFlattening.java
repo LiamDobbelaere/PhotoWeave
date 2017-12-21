@@ -7,16 +7,12 @@ import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
-import javax.swing.event.ChangeListener;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.util.Objects;
 
 /**
  * Created by tomdo on 22/11/2017.
@@ -48,7 +44,7 @@ public class CalculateFlattening {
         integerFormat = DecimalFormat.getInstance();
         integerFormat.setParseIntegerOnly(true);
 
-        decimalFormat = new DecimalFormat( "#.0" );
+        decimalFormat = new DecimalFormat("#.0");
 
         lblOudeGrootte.setText(String.format("%spx x %spx", filteredImage.getOriginalImage().getWidth(), filteredImage.getOriginalImage().getHeight()));
         txtMaxBreedte.setText("");
@@ -81,9 +77,9 @@ public class CalculateFlattening {
     private void recalculate(Observable observable, String oldValue, String newValue) {
         //Only calculate if all values are set
         if (txtMaxBreedte.textProperty().get().equals("")
-                ||  txtWeefBreedte.textProperty().get().equals("")
-                ||  txtDradenCm.textProperty().get().equals("")
-                ||  txtInslagenCm.textProperty().get().equals(""))
+                || txtWeefBreedte.textProperty().get().equals("")
+                || txtDradenCm.textProperty().get().equals("")
+                || txtInslagenCm.textProperty().get().equals(""))
             return;
 
         int maxBreedte = 0;
@@ -100,9 +96,9 @@ public class CalculateFlattening {
             return;
         }
 
-        double verhouding  =
+        double verhouding =
                 ((double) filteredImage.getOriginalImage().getWidth()
-                / (double) filteredImage.getOriginalImage().getHeight());
+                        / (double) filteredImage.getOriginalImage().getHeight());
         double breedteCm = weefBreedteGeheel / dradenCm;
         double hoogteCm = breedteCm / verhouding;
         double weefHoogte = hoogteCm * inslagenCm;
@@ -120,20 +116,16 @@ public class CalculateFlattening {
     }
 
     private TextFormatter.Change textFormatter(NumberFormat format, TextFormatter.Change c) {
-        if ( c.getControlNewText().isEmpty() )
-        {
+        if (c.getControlNewText().isEmpty()) {
             return c;
         }
 
-        ParsePosition parsePosition = new ParsePosition( 0 );
-        Object object = format.parse( c.getControlNewText(), parsePosition );
+        ParsePosition parsePosition = new ParsePosition(0);
+        Object object = format.parse(c.getControlNewText(), parsePosition);
 
-        if ( object == null || parsePosition.getIndex() < c.getControlNewText().length() )
-        {
+        if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
             return null;
-        }
-        else
-        {
+        } else {
             return c;
         }
     }
