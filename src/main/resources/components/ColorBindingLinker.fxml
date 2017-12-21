@@ -29,11 +29,16 @@
                                 </AnchorPane>
                             </content>
                         </ScrollPane>
-                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
-                                   mnemonicParsing="false" onAction="#saveBindingLibrary" prefHeight="40.0"
-                                   prefWidth="200.0"
-                                   styleClass="button-raised" text="Save Bindings" textAlignment="CENTER"/>
 
+                        <HBox>
+                            <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
+                                       mnemonicParsing="false" onAction="#saveBindingLibrary" prefHeight="40.0"
+                                       prefWidth="200.0"
+                                       styleClass="button-raised" text="Toepassen" textAlignment="CENTER"/>
+                            <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER"
+                                       mnemonicParsing="false" onAction="#cancel" prefHeight="40.0"
+                                       prefWidth="200.0" text="Annuleren" textAlignment="CENTER"/>
+                        </HBox>
                     </children>
                 </VBox>
             </children>

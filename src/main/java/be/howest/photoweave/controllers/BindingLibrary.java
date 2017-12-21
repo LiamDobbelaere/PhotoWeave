@@ -47,9 +47,9 @@ public class BindingLibrary {
         this.lblSelectedBinding.setText(passedBinding.getName());
 
         this.tempBinding.clear();
-        this.tempBinding.addAll(new BindingFactory().getOptimizedBindings());
+        this.tempBinding.addAll(BindingFactory.getInstance().getBindings());
 
-        HashMap<String, List<Binding>> allBindings = new BindingFactory().getAllBindings();
+        HashMap<String, List<Binding>> allBindings = BindingFactory.getInstance().getAllBindings();
         allBindings.forEach(this::generateAccordion);
     }
 

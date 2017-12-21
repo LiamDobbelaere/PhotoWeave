@@ -55,7 +55,7 @@
                 <MenuItem mnemonicParsing="false" text="Herhalen"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
-                <MenuItem mnemonicParsing="false" text="About"/>
+                <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
             </Menu>
         </MenuBar>
         <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0"
