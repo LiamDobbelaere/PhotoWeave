@@ -26,7 +26,7 @@
                 </padding>
                 <center>
                     <ImageView fitWidth="280" fitHeight="200" preserveRatio="true">
-                        <Image url="@../logo-photoweave.png"/>
+                        <Image url="@../logo.png"/>
                     </ImageView>
                 </center>
             </BorderPane>
