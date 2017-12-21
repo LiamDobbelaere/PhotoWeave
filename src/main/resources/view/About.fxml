@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.JFXButton?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            stylesheets="@style.css"
+            fx:id="anchorPane"
+            fx:controller="be.howest.photoweave.controllers.About"
+            prefHeight="450.0" prefWidth="600.0">
+    <AnchorPane AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0"
+                AnchorPane.bottomAnchor="0">
+        <AnchorPane AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
+                    style="-fx-background-color: #eee">
+            <BorderPane AnchorPane.leftAnchor="25">
+                <padding>
+                    <Insets top="24" left="24" right="24" bottom="24"/>
+                </padding>
+                <center>
+                    <ImageView fitWidth="280" fitHeight="200" preserveRatio="true">
+                        <Image url="@../logo.png"/>
+                    </ImageView>
+                </center>
+            </BorderPane>
+            <VBox AnchorPane.rightAnchor="50">
+                <padding>
+                    <Insets top="24" bottom="24" left="24" right="24"/>
+                </padding>
+                <Label text="PhotoWeave" style="-fx-font-size: 38"/>
+                <Label text="Ontworpen voor Verilin door:" style="-fx-font-weight: bold"/>
+                <Label text="Quinten Degraeve"/>
+                <Label text="Tom Dobbelaere"/>
+                <Label text="Ward Pauwels"/>
+                <Label/>
+                <Label text="Hogeschool West-Vlaanderen"/>
+                <Label text="(Howest)"/>
+            </VBox>
+        </AnchorPane>
+        <VBox AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0">
+            <padding>
+                <Insets top="12" left="12" right="12" bottom="12"/>
+            </padding>
+
+            <Label text="Libraries and resources used" style="-fx-font-size: 18; -fx-font-weight: bold"/>
+            <VBox style="-fx-background-color: #eee">
+                <padding>
+                    <Insets top="8" bottom="8" left="8" right="8"/>
+                </padding>
+                <AnchorPane>
+                    <Label text="Apache License 2.0" style="-fx-font-weight: bold"/>
+                    <JFXButton styleClass="button-raised" text="View license" AnchorPane.rightAnchor="0"
+                               AnchorPane.topAnchor="0" onAction="#showApache20License"/>
+                </AnchorPane>
+                <Label text="Apache Commons"/>
+                <Label text="JFoenix (http://www.jfoenix.com)"/>
+                <Label text="Material icons (https://material.io/icons)"/>
+                <Label text="Google Gson (https://github.com/google/gson)"/>
+            </VBox>
+        </VBox>
+    </AnchorPane>
+</AnchorPane>

@@ -10,18 +10,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BindingFactory {
+    private static BindingFactory instance = null;
 
     private List<Binding> bindings = new ArrayList<>();
     private final Integer MAX_INTERNAL_BINDINGS = 24;
     private Binding[] optimizedBindings;
     private HashMap<String, List<Binding>> allBindings = new HashMap<>();
 
-    public BindingFactory() {
+    protected BindingFactory() {
         try {
             getBindingsFromInternalResources();
         } catch (Exception e) {
             System.out.println("Internal Resources could not be found || e: " + e.getMessage());
         }
+    }
+
+    public static BindingFactory getInstance() {
+        if (instance == null) instance = new BindingFactory();
+
+        return instance;
     }
 
     private void getBindingsFromInternalResources() throws Exception {
@@ -41,14 +48,11 @@ public class BindingFactory {
             allBindings.put(directory.getName(),localBindings);
         }
 
-        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
+        optimizedBindings = getSortedBindings(allBindings.get("default")).toArray(new Binding[allBindings.get("default").size()]);
+    }
 
-        for (int j = 0; j < this.bindings.size(); j++) {
-            convertToRBGIntImages(this.bindings.get(j));
-            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
-        }
-
-        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
+    public List<Binding> getBindings() {
+        return bindings;
     }
 
 
@@ -56,13 +60,14 @@ public class BindingFactory {
         return optimizedBindings;
     }
 
-    public List<Binding> getSortedBindings() {
+    public List<Binding> getSortedBindings(List<Binding> bindingList) {
         HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
 
-        for (int j = 0; j < this.bindings.size(); j++) {
-            convertToRBGIntImages(bindings.get(j));
-            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
+        for (int j = 0; j < bindingList.size(); j++) {
+            convertToRBGIntImages(bindingList.get(j));
+            setIntensityFromBindings(bindingIntensityMap, bindingList.get(j));
         }
+
         return new ArrayList<>(getSortedIntensity(bindingIntensityMap));
     }
 

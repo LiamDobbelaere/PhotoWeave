@@ -267,6 +267,9 @@ public class EditPhoto implements ParametersInterface {
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.setManualAssign(true);
+
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
 
         Stage stage = new Stage(StageStyle.DECORATED);
@@ -853,5 +856,26 @@ public class EditPhoto implements ParametersInterface {
         this.userInterfaceData.setWidth(this.photoView.getFitWidth());
         this.userInterfaceData.setxScroll(this.imageScrollPane.getVvalue());
         this.userInterfaceData.setyScroll(this.imageScrollPane.getVvalue());
+
+    }
+    public void showAbout(ActionEvent actionEvent) {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/About.fxml"));
+
+        Scene scene = null;
+
+        try {
+            scene = new Scene(loader.load());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setResizable(false);
+        stage.sizeToScene();
+        stage.setTitle("About");
+        stage.setScene(scene);
+        stage.initOwner(this.stage.getScene().getWindow());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
 }
