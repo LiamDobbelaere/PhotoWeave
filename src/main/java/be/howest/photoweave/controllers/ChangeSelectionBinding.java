@@ -46,8 +46,6 @@ public class ChangeSelectionBinding {
                     byte[] metaData = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(x, y));
 
 
-
-
                     if (!levels.contains((int) metaData[0])) {
                         levels.add((int) metaData[0]);
                     }
@@ -72,7 +70,7 @@ public class ChangeSelectionBinding {
                     this.updatePosterizationLevel();
                 });
 
-        this.selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler(){
+        this.selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler() {
             @Override
             public void onBindingChanged() {
                 updatePosterizationLevel();

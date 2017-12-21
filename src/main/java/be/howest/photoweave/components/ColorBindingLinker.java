@@ -63,9 +63,7 @@ public class ColorBindingLinker {
 
             int id = getColorFromBinding(newValue);
 
-            System.out.println("true");
             bindingMap.replace(id, newValue);
-
         };
 
         this.vbox = new VBox();
@@ -161,11 +159,6 @@ public class ColorBindingLinker {
             bindingMap.replace(colorCode, binding);
         }
         return 0;
-    }
-
-    public void redrawImage() {
-        filteredImage.redraw();
-        imageview.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
     }
 
     class ImageListCell extends JFXListCell<Binding> {
