@@ -1,9 +1,16 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.components.*;
+import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.components.ColorBindingLinker;
+import be.howest.photoweave.components.PixelatedImageView;
+import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
+import be.howest.photoweave.model.properties.bitmapProperties;
+import be.howest.photoweave.model.properties.filterDescription;
+import be.howest.photoweave.model.properties.jsonProperties;
+import be.howest.photoweave.model.properties.saveAsProperties;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
 import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
@@ -11,6 +18,8 @@ import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
+import be.howest.photoweave.model.util.CreateFilePicker;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.util.PrimitiveUtil;
 import com.jfoenix.controls.JFXButton;
@@ -23,9 +32,9 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
@@ -33,7 +42,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -43,6 +51,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -221,19 +230,6 @@ public class EditPhoto implements ThreadEventListener {
             photoView.setFitWidth(vboxPhotoView.getWidth() - 2);
         else
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
-    }
-
-    public void saveImage(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
-
-        File file = fp.saveFile();
-
-        if (file != null) {
-            try {
-                ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
-            } catch (IOException ex) {
-            }
-        }
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {
@@ -713,5 +709,92 @@ public class EditPhoto implements ThreadEventListener {
     public void showAbout(ActionEvent actionEvent) throws IOException {
         CreateWindow newWindow = new CreateWindow("About", 0.0, 0.0, "view/About.fxml", false, true);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+    }
+
+    public void makeNewFile(ActionEvent actionEvent) throws IOException {
+        openSaveWarningWindow(filterDescription.JSON, false, true);
+    }
+
+    public void openFile(ActionEvent actionEvent) throws IOException {
+        openSaveWarningWindow(filterDescription.JSON, false, true);
+    }
+
+    public void saveFile(ActionEvent actionEvent) {
+        openSaveWindow(filterDescription.JSON);
+    }
+
+    public void saveFileAs(ActionEvent actionEvent) {
+        openSaveWindow(filterDescription.ALL);
+    }
+
+    public void exportImage(ActionEvent actionEvent) {
+        openSaveWindow(filterDescription.BITMAP);
+    }
+
+    public void closeWindow(ActionEvent actionEvent) throws IOException {
+        openSaveWarningWindow(filterDescription.JSON, true, false);
+    }
+
+    private void openSaveWindow(filterDescription filterDescription) {
+        CreateFilePicker fp;
+        if (filterDescription == filterDescription.BITMAP) {
+            fp = new CreateFilePicker(bitmapProperties.title, "user.home", this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtentions);
+        } else if (filterDescription == filterDescription.JSON){
+            fp = new CreateFilePicker(jsonProperties.title, "user.home", this.stage, jsonProperties.filterDescription, jsonProperties.filterExtentions);
+        } else {
+            fp = new CreateFilePicker(saveAsProperties.title, "user.home", this.stage, saveAsProperties.filterDescription, saveAsProperties.filterExtentions);
+        }
+
+        File file = fp.saveFile();
+
+        if (file != null) {
+            try {
+                if (filterDescription.equals("Bitmap")) {
+                    ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
+                } else if (filterDescription.equals("JSON File")) {
+
+                }
+            } catch (IOException ex) {
+            }
+        }
+    }
+
+    private void openStartWindow() throws IOException {
+        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
+        ((OpenPhoto) newWindow.getController()).initialize();
+        newWindow.showWindow();
+    }
+
+    private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Waarschuwing!");
+        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken. Wilt u uw bestand eerst opslaan?");
+        alert.setContentText("Druk op opslaan om uw bestand op te slaan, negeren om uw wijzigingen te annuleren en annuleren om verder te gaan met uw huidige bestand.");
+
+        ButtonType buttonSave = new ButtonType("Opslaan");
+        ButtonType buttonIgnore = new ButtonType("Negeren");
+        ButtonType buttonCancel = new ButtonType("Annuleer", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonSave, buttonIgnore, buttonCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == buttonSave) {
+            openSaveWindow(filterDescription);
+            whatWithWindow(closeWindow, newWindow);
+        } else if (result.get() == buttonIgnore) {
+            whatWithWindow(closeWindow, newWindow);
+        } else if (result.get() == buttonCancel) {
+            alert.close();
+        }
+    }
+
+    private void whatWithWindow(boolean closeWindow, boolean newWindow) throws IOException {
+        if (closeWindow) {
+            this.stage.close();
+        }
+        if (newWindow) {
+            openStartWindow();
+        }
     }
 }

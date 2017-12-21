@@ -1,6 +1,6 @@
 package be.howest.photoweave;
 
-import be.howest.photoweave.components.CreateWindow;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.controllers.OpenPhoto;
 import javafx.stage.Stage;
 
@@ -15,7 +15,7 @@ public class Application extends javafx.application.Application {
     @Override
     public void start(Stage stage) throws IOException {
         
-        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/OpenPhoto.fxml", false, true);
+        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
         ((OpenPhoto)newWindow.getController()).initialize();
         newWindow.showWindow();
 

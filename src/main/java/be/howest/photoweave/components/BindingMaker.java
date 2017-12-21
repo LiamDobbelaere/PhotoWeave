@@ -1,5 +1,7 @@
 package be.howest.photoweave.components;
 
+import be.howest.photoweave.model.properties.bitmapProperties;
+import be.howest.photoweave.model.util.CreateFilePicker;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -7,7 +9,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -15,7 +16,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -107,7 +107,7 @@ public class BindingMaker {
     }
 
     public void saveBinding(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Binding", "user.home", (Stage) anchorPane.getScene().getWindow(), "Bitmap", ".bmp");
+        CreateFilePicker fp = new CreateFilePicker(bitmapProperties.title, "user.home", (Stage) anchorPane.getScene().getWindow(), bitmapProperties.filterDescription, bitmapProperties.filterExtentions);
         File file = fp.saveFile();
 
         if (file != null) {

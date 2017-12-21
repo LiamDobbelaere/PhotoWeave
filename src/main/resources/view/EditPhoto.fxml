@@ -39,12 +39,12 @@
     <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <MenuBar prefHeight="25.0" prefWidth="1143.0" style="-fx-background-color: #efefef;">
             <Menu mnemonicParsing="false" text="Bestand">
-                <MenuItem mnemonicParsing="false" text="Nieuw"/>
-                <MenuItem mnemonicParsing="false" text="Openen"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan als"/>
-                <MenuItem mnemonicParsing="false" text="Exporteren"/>
-                <MenuItem mnemonicParsing="false" text="Sluiten"/>
+                <MenuItem mnemonicParsing="false" text="Nieuw" onAction="#makeNewFile"/>
+                <MenuItem mnemonicParsing="false" text="Openen" onAction="#openFile"/>
+                <MenuItem mnemonicParsing="false" text="Opslaan" onAction="#saveFile"/>
+                <MenuItem mnemonicParsing="false" text="Opslaan als" onAction="#saveFileAs"/>
+                <MenuItem mnemonicParsing="false" text="Exporteren" onAction="#exportImage"/>
+                <MenuItem mnemonicParsing="false" text="Sluiten" onAction="#closeWindow"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Bewerken">
                 <MenuItem mnemonicParsing="false" text="Ongedaan maken"/>
@@ -134,7 +134,7 @@
                      <Insets right="5.0" />
                   </HBox.margin>
                     </JFXButton>
-                        <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false" onAction="#saveImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised" text="Exporteren" textAlignment="CENTER">
+                        <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false" onAction="#exportImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised" text="Exporteren" textAlignment="CENTER">
                   <opaqueInsets>
                      <Insets />
                   </opaqueInsets>

@@ -1,4 +1,4 @@
-package be.howest.photoweave.components;
+package be.howest.photoweave.model.util;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -17,12 +17,12 @@ public class CreateFilePicker {
 
     private Stage stage;
 
-    public CreateFilePicker(String title, String startFolder, Stage stage, String filterDescription, String... filterExtentions) {
+    public CreateFilePicker(String title, String startFolder, Stage stage, String filterDescription, List<String> filterExtentions) {
         this.title = title;
         this.startFolder = startFolder;
         this.stage = stage;
         this.filterDescription = filterDescription;
-        this.filterExtentions = Collections.unmodifiableList(Arrays.asList(filterExtentions.clone()));
+        this.filterExtentions = filterExtentions;
 
         createWindow();
     }
