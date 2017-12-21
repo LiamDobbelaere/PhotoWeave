@@ -107,12 +107,9 @@ public class BindingMaker {
     }
 
     public void saveBinding(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("BMP", ".bmp")
-        );
-        fileChooser.setTitle("PhotoWeave | Save Binding");
-        File file = fileChooser.showSaveDialog((Stage) anchorPane.getScene().getWindow());
+        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Binding", "user.home", (Stage) anchorPane.getScene().getWindow(), "Bitmap", ".bmp");
+        File file = fp.saveFile();
+
         if (file != null) {
             try {
                 ImageIO.write(bindingImage, "bmp", file);
