@@ -78,6 +78,7 @@ public class EditPhoto implements ThreadEventListener {
     public StackPane contentStackpane;
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
+    public Label sizeWarning;
 
     /*  */
     private int imageWidth;

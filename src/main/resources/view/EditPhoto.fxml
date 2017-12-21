@@ -28,15 +28,19 @@
 <?import java.net.URL?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.canvas.Canvas?>
-<AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
+<AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0"
+      xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
+      fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
-        <URL value="@../style/style.css" />
-        <URL value="@../style/accordion.css" />
-        <URL value="@../style/listview.css" />
-        <URL value="@../style/menu.css" />
-        <URL value="@../style/scrollpane.css" />
+        <URL value="@../style/style.css"/>
+        <URL value="@../style/accordion.css"/>
+        <URL value="@../style/listview.css"/>
+        <URL value="@../style/menu.css"/>
+        <URL value="@../style/scrollpane.css"/>
     </stylesheets>
-    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0"
+          prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          AnchorPane.topAnchor="0.0">
         <MenuBar prefHeight="25.0" prefWidth="1143.0" style="-fx-background-color: #efefef;">
             <Menu mnemonicParsing="false" text="Bestand">
                 <MenuItem mnemonicParsing="false" text="Nieuw"/>
@@ -54,188 +58,224 @@
                 <MenuItem mnemonicParsing="false" text="About"/>
             </Menu>
         </MenuBar>
-        <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Pane prefHeight="77.0" prefWidth="230.0" style="-fx-border-width: 2 0 2 0; -fx-background-color: teal; -fx-border-color: white; -fx-border-style: dashed;">
+        <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Pane prefHeight="77.0" prefWidth="260.0"
+                  style="-fx-border-width: 2 0 2 0; -fx-background-color: teal; -fx-border-color: white; -fx-border-style: dashed;">
                 <children>
-                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="172.0" layoutX="34.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="260.0" layoutX="34.0"
+                               layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                         <image>
-                            <Image url="@../logo-verilin-fat.png" />
+                            <Image url="@../logo-verilin-fat.png"/>
                         </image>
                     </ImageView>
                     <Label layoutX="14.0" layoutY="103.0" text="RECENT GEOPENDE BESTANDEN" textFill="#fffffff7">
                         <font>
-                            <Font name="System Bold" size="14.0" />
+                            <Font name="System Bold" size="14.0"/>
                         </font>
                     </Label>
                 </children>
             </Pane>
             <HBox maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
-                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      minHeight="-Infinity" minWidth="200.0"
+                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;"
+                      HBox.hgrow="ALWAYS">
                     <padding>
-                        <Insets left="10.0" />
+                        <Insets left="10.0"/>
                     </padding>
                     <HBox.margin>
-                        <Insets />
+                        <Insets/>
                     </HBox.margin>
-                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" onAction="#toggleEdit" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false" textAlignment="CENTER">
+                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
+                               onAction="#toggleEdit" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false"
+                               textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Selecteer vrije-vormgebied en verander bepaalde binding"/>
                         </tooltip>
                         <HBox.margin>
-                            <Insets right="5.0" />
+                            <Insets right="5.0"/>
                         </HBox.margin>
                         <graphic>
-                            <SVGPath content="M4.59 6.89c.7-.71 1.4-1.35 1.71-1.22.5.2 0 1.03-.3 1.52-.25.42-2.86 3.89-2.86 6.31 0 1.28.48 2.34 1.34 2.98.75.56 1.74.73 2.64.46 1.07-.31 1.95-1.4 3.06-2.77 1.21-1.49 2.83-3.44 4.08-3.44 1.63 0 1.65 1.01 1.76 1.79-3.78.64-5.38 3.67-5.38 5.37 0 1.7 1.44 3.09 3.21 3.09 1.63 0 4.29-1.33 4.69-6.1H21v-2.5h-2.47c-.15-1.65-1.09-4.2-4.03-4.2-2.25 0-4.18 1.91-4.94 2.84-.58.73-2.06 2.48-2.29 2.72-.25.3-.68.84-1.11.84-.45 0-.72-.83-.36-1.92.35-1.09 1.4-2.86 1.85-3.52.78-1.14 1.3-1.92 1.3-3.28C8.95 3.69 7.31 3 6.44 3 5.12 3 3.97 4 3.72 4.25c-.36.36-.66.66-.88.93l1.75 1.71zm9.29 11.66c-.31 0-.74-.26-.74-.72 0-.6.73-2.2 2.87-2.76-.3 2.69-1.43 3.48-2.13 3.48z" fill="WHITE" />
+                            <SVGPath
+                                    content="M4.59 6.89c.7-.71 1.4-1.35 1.71-1.22.5.2 0 1.03-.3 1.52-.25.42-2.86 3.89-2.86 6.31 0 1.28.48 2.34 1.34 2.98.75.56 1.74.73 2.64.46 1.07-.31 1.95-1.4 3.06-2.77 1.21-1.49 2.83-3.44 4.08-3.44 1.63 0 1.65 1.01 1.76 1.79-3.78.64-5.38 3.67-5.38 5.37 0 1.7 1.44 3.09 3.21 3.09 1.63 0 4.29-1.33 4.69-6.1H21v-2.5h-2.47c-.15-1.65-1.09-4.2-4.03-4.2-2.25 0-4.18 1.91-4.94 2.84-.58.73-2.06 2.48-2.29 2.72-.25.3-.68.84-1.11.84-.45 0-.72-.83-.36-1.92.35-1.09 1.4-2.86 1.85-3.52.78-1.14 1.3-1.92 1.3-3.28C8.95 3.69 7.31 3 6.44 3 5.12 3 3.97 4 3.72 4.25c-.36.36-.66.66-.88.93l1.75 1.71zm9.29 11.66c-.31 0-.74-.26-.74-.72 0-.6.73-2.2 2.87-2.76-.3 2.69-1.43 3.48-2.13 3.48z"
+                                    fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton fx:id="togglePickerButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" onAction="#togglePicker" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false" textAlignment="CENTER">
+                    <JFXButton fx:id="togglePickerButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
+                               onAction="#togglePicker" styleClass="button-raised" minWidth="30.0"
+                               mnemonicParsing="false" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Selecteer bepaalde binding door te klikken op de foto"/>
                         </tooltip>
                         <HBox.margin>
-                            <Insets right="5.0" />
+                            <Insets right="5.0"/>
                         </HBox.margin>
                         <graphic>
-                            <SVGPath content="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z" fill="WHITE" />
+                            <SVGPath
+                                    content="M20.71 5.63l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-3.12 3.12-1.93-1.91-1.41 1.41 1.42 1.42L3 16.25V21h4.75l8.92-8.92 1.42 1.42 1.41-1.41-1.92-1.92 3.12-3.12c.4-.4.4-1.03.01-1.42zM6.92 19L5 17.08l8.06-8.06 1.92 1.92L6.92 19z"
+                                    fill="WHITE"/>
                         </graphic>
                     </JFXButton>
                 </HBox>
-                <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;" HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                      minHeight="-Infinity" minWidth="200.0"
+                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;"
+                      HBox.hgrow="ALWAYS">
                     <padding>
-                        <Insets right="10.0" />
+                        <Insets right="10.0"/>
                     </padding>
                     <HBox.margin>
-                        <Insets />
+                        <Insets/>
                     </HBox.margin>
-                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
+                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
+                               onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
                         <HBox.margin>
-                            <Insets right="5.0" />
+                            <Insets right="5.0"/>
                         </HBox.margin>
                         <graphic>
-                            <SVGPath content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z&#10;M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z" fill="WHITE" />
+                            <SVGPath
+                                    content="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z&#10;M12 10h-2v2H9v-2H7V9h2V7h1v2h2v1z"
+                                    fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton id="zoomOutButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomOut" styleClass="button-raised" textAlignment="CENTER">
+                    <JFXButton id="zoomOutButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0"
+                               mnemonicParsing="false" onAction="#zoomOut" styleClass="button-raised"
+                               textAlignment="CENTER">
                         <HBox.margin>
-                            <Insets right="5.0" />
+                            <Insets right="5.0"/>
                         </HBox.margin>
                         <graphic>
-                            <SVGPath content="M 15.5 14 h -0.79 l -0.28 -0.27 C 15.41 12.59 16 11.11 16 9.5 C 16 5.91 13.09 3 9.5 3 S 3 5.91 3 9.5 S 5.91 16 9.5 16 c 1.61 0 3.09 -0.59 4.23 -1.57 l 0.27 0.28 v 0.79 l 5 4.99 L 20.49 19 l -4.99 -5 Z m -6 0 C 7.01 14 5 11.99 5 9.5 S 7.01 5 9.5 5 S 14 7.01 14 9.5 S 11.99 14 9.5 14 Z M 7 9 h 5 v 1 H 7 Z" fill="WHITE" />
+                            <SVGPath
+                                    content="M 15.5 14 h -0.79 l -0.28 -0.27 C 15.41 12.59 16 11.11 16 9.5 C 16 5.91 13.09 3 9.5 3 S 3 5.91 3 9.5 S 5.91 16 9.5 16 c 1.61 0 3.09 -0.59 4.23 -1.57 l 0.27 0.28 v 0.79 l 5 4.99 L 20.49 19 l -4.99 -5 Z m -6 0 C 7.01 14 5 11.99 5 9.5 S 7.01 5 9.5 5 S 14 7.01 14 9.5 S 11.99 14 9.5 14 Z M 7 9 h 5 v 1 H 7 Z"
+                                    fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#fitWindow" styleClass="button-raised" textAlignment="CENTER">
+                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
+                               onAction="#fitWindow" styleClass="button-raised" textAlignment="CENTER">
                         <graphic>
-                            <SVGPath content="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6z" fill="WHITE" />
+                            <SVGPath
+                                    content="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6z"
+                                    fill="WHITE"/>
                         </graphic>
-                  <opaqueInsets>
-                     <Insets />
-                  </opaqueInsets>
-                  <HBox.margin>
-                     <Insets right="5.0" />
-                  </HBox.margin>
+                        <opaqueInsets>
+                            <Insets/>
+                        </opaqueInsets>
+                        <HBox.margin>
+                            <Insets right="5.0"/>
+                        </HBox.margin>
                     </JFXButton>
-                        <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false" onAction="#saveImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised" text="Exporteren" textAlignment="CENTER">
-                  <opaqueInsets>
-                     <Insets />
-                  </opaqueInsets>
-                  <HBox.margin>
-                     <Insets left="10.0" />
-                  </HBox.margin>
-                  <graphic>
-                     <SVGPath content="M 12 16.5 l 4 -4 h -3 v -9 h -2 v 9 H 8 l 4 4 Z m 9 -13 h -6 v 1.99 h 6 v 14.03 H 3 V 5.49 h 6 V 3.5 H 3 c -1.1 0 -2 0.9 -2 2 v 14 c 0 1.1 0.9 2 2 2 h 18 c 1.1 0 2 -0.9 2 -2 v -14 c 0 -1.1 -0.9 -2 -2 -2 Z" fill="WHITE" />
-                  </graphic>
-               </JFXButton>
+                    <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false"
+                               onAction="#saveImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised"
+                               text="Exporteren" textAlignment="CENTER">
+                        <opaqueInsets>
+                            <Insets/>
+                        </opaqueInsets>
+                        <HBox.margin>
+                            <Insets left="10.0"/>
+                        </HBox.margin>
+                        <graphic>
+                            <SVGPath
+                                    content="M 12 16.5 l 4 -4 h -3 v -9 h -2 v 9 H 8 l 4 4 Z m 9 -13 h -6 v 1.99 h 6 v 14.03 H 3 V 5.49 h 6 V 3.5 H 3 c -1.1 0 -2 0.9 -2 2 v 14 c 0 1.1 0.9 2 2 2 h 18 c 1.1 0 2 -0.9 2 -2 v -14 c 0 -1.1 -0.9 -2 -2 -2 Z"
+                                    fill="WHITE"/>
+                        </graphic>
+                    </JFXButton>
                 </HBox>
             </HBox>
         </HBox>
-        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0" prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Accordion prefHeight="481.0" prefWidth="230.0" style="-fx-background-color: white;">
+        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0"
+              prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Accordion prefWidth="230.0" maxWidth="260.0" style="-fx-background-color: white;">
                 <panes>
-                    <TitledPane fx:id="paneDefault" layoutX="10.0" layoutY="10.0" style="-fx-background-color: teal;" text="Afbeelding">
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="449.0">
-                            <children>
-                                <Label fx:id="labelFileNameId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM" layoutX="14.0" maxHeight="1.7976931348623157E308" minHeight="-Infinity" text="FileName.jpg">
-                                    <font>
-                                        <Font size="26.0" />
-                                    </font>
-                                </Label>
-                                <JFXTextField fx:id="textFieldWidth" accessibleHelp="Geef een andere waarde in om de breedte te veranderen" labelFloat="true" layoutX="14.0" layoutY="76.0" prefHeight="25.0" prefWidth="200.0" promptText="Breedte" text="1234 px" />
-                                <JFXTextField fx:id="textFieldHeight" accessibleHelp="Geef een andere waarde in om de hoogte te veranderen" accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2" accessibleText="Geef een andere waarde in om de hoogte te veranderen 1" labelFloat="true" layoutX="14.0" layoutY="125.0" prefHeight="25.0" prefWidth="200.0" promptText="Hoogte" text="1234 px" />
-                                <Label fx:id="filePath" layoutX="15.0" layoutY="32.0" />
-                                <JFXButton layoutX="14.0" layoutY="166.0" mnemonicParsing="false" onAction="#ShowCalculateWindow" styleClass="button-raised" text="Afplatting berekenen" />
-                            </children>
-                        </AnchorPane>
+                    <TitledPane fx:id="paneDefault" style="-fx-background-color: -app-color;" text="Afbeelding">
+                        <VBox spacing="24">
+                            <Label wrapText="true" fx:id="labelFileNameId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM"
+                                   text="FileName.jpg">
+                                <font>
+                                    <Font size="26.0"/>
+                                </font>
+                            </Label>
+                            <Label fx:id="filePath" wrapText="true"/>
+                            <JFXTextField fx:id="textFieldWidth"
+                                          accessibleHelp="Geef een andere waarde in om de breedte te veranderen"
+                                          labelFloat="true" promptText="Breedte" text="1234 px"/>
+                            <JFXTextField fx:id="textFieldHeight"
+                                          accessibleHelp="Geef een andere waarde in om de hoogte te veranderen"
+                                          accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2"
+                                          accessibleText="Geef een andere waarde in om de hoogte te veranderen 1"
+                                          labelFloat="true" promptText="Hoogte" text="1234 px"/>
+                            <JFXButton mnemonicParsing="false" onAction="#ShowCalculateWindow"
+                                       styleClass="button-raised" text="Afplatting berekenen"/>
+                            <Label fx:id="sizeWarning" visible="false"
+                                   text="Waarschuwing: De breedte of hoogte van de afbeelding is groter dan 4096. De afbeelding kan er wazig uitzien tijdens het bewerken."
+                                   wrapText="true"/>
+                        </VBox>
                         <font>
-                            <Font name="System Bold" size="14.0" />
+                            <Font name="System Bold" size="14.0"/>
                         </font>
                     </TitledPane>
-                    <TitledPane expanded="false" style="-fx-background-color: teal;" text="Posterization">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="465.0" prefWidth="449.0">
-                                <children>
-                                    <Label layoutX="14.0" layoutY="14.0" text="Aantal tinten">
-                                        <font>
-                                            <Font size="14.0" />
-                                        </font>
-                                    </Label>
-                                    <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0" layoutX="14.0" layoutY="34.0" max="24.0" min="2.0" minorTickCount="24" prefHeight="42.0" prefWidth="200.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-                                    <Label fx:id="labelAmountOfColors" layoutX="14.0" layoutY="72.0" text="Aantal tinten:" />
-                                </children>
-                            </AnchorPane>
-                        </content>
+                    <TitledPane expanded="false" style="-fx-background-color: -app-color;" text="Posterization">
                         <font>
-                            <Font name="System Bold" size="14.0" />
+                            <Font name="System Bold" size="14.0"/>
                         </font>
+                        <VBox spacing="24">
+                            <Label wrapText="true" text="Aantal tinten">
+                                <font>
+                                    <Font size="14.0"/>
+                                </font>
+                            </Label>
+                            <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0"
+                                       max="24.0" min="2.0" minorTickCount="24"
+                                       showTickLabels="true" showTickMarks="true"
+                                       snapToTicks="true" value="10.0"/>
+                            <Label wrapText="true" fx:id="labelAmountOfColors"
+                                   text="Aantal tinten:"/>
+                        </VBox>
                     </TitledPane>
                     <TitledPane expanded="false" text="Bindings">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                <children>
-                           <Label text="Selecteer kleur dat je wilt aanpassen:" />
-                                    <SelectBinding fx:id="vboxSelectBinding" layoutX="19.0" layoutY="14.0" />
-                                    <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="17.0" layoutY="208.0" text="Markeer geselecteerde binding" />
-                                    <JFXCheckBox fx:id="checkBoxInvert" layoutX="17.0" layoutY="234.0" text="Inverteer bindings" />
-                                    <!--
-                                    <JFXCheckBox fx:id="checkBoxMarkBinding" layoutX="19.0" layoutY="87.0" text="Markeer geselecteerde binding" />
-                                    <JFXCheckBox fx:id="checkBoxInvert" layoutX="19.0" layoutY="113.0" text="Inverteer afbeelding" />
-                                    <JFXCheckBox fx:id="checkBoxFloaters" layoutX="19.0" layoutY="139.0" text="Toon floaters" />
-                                    <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" layoutX="18.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="5" />
-                                    <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" layoutX="131.0" layoutY="182.0" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="5" />
-                                    -->
-                                </children>
-                            </AnchorPane>
-                        </content>
                         <font>
-                            <Font name="System Bold" size="14.0" />
+                            <Font name="System Bold" size="14.0"/>
                         </font>
-                    </TitledPane>
-                    <TitledPane expanded="false" prefWidth="230.0" text="Extra">
-                        <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                <children>
-                                    <VBox spacing="24">
-                                        <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters" />
-                                        <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Inslag" text="5" />
-                                        <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" prefHeight="25.0" prefWidth="75.0" promptText="Draad" text="5" />
 
-                                        <JFXButton fx:id="buttonBindingCreator" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#openBindingCreator" prefHeight="40.0" prefWidth="200.0" styleClass="button-raised" text="Binding maken" textAlignment="CENTER" />
-                                        <JFXButton fx:id="buttonColorBindingLinker" layoutX="12.0" layoutY="64.0" mnemonicParsing="false" onAction="#openBindingColorSelector" prefHeight="40.0" prefWidth="200.0" styleClass="button-raised" text="Link bindings met kleuren" textAlignment="CENTER" />
-                                    </VBox>
-                                </children>
-                            </AnchorPane>
-                        </content>
+                        <VBox spacing="24">
+                            <Label wrapText="true" text="Selecteer kleur dat je wilt aanpassen:"/>
+                            <SelectBinding fx:id="vboxSelectBinding"/>
+                            <JFXCheckBox fx:id="checkBoxMarkBinding"
+                                         text="Markeer geselecteerde binding"/>
+                            <JFXCheckBox fx:id="checkBoxInvert"
+                                         text="Inverteer bindings"/>
+                        </VBox>
+                    </TitledPane>
+                    <TitledPane expanded="false" text="Extra">
                         <font>
-                            <Font name="System Bold" size="14.0" />
+                            <Font name="System Bold" size="14.0"/>
                         </font>
+                        <VBox spacing="24">
+                            <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters"/>
+                            <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" promptText="Inslag" text="5"/>
+                            <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" promptText="Draad" text="5"/>
+
+                            <JFXButton fx:id="buttonBindingCreator"
+                                       mnemonicParsing="false" onAction="#openBindingCreator"
+                                       styleClass="button-raised"
+                                       text="Binding maken" textAlignment="CENTER"/>
+                            <JFXButton fx:id="buttonColorBindingLinker"
+                                       mnemonicParsing="false" onAction="#openBindingColorSelector"
+                                       styleClass="button-raised"
+                                       text="Link bindings met kleuren" textAlignment="CENTER"/>
+                        </VBox>
                     </TitledPane>
                 </panes>
             </Accordion>
             <VBox fx:id="vboxPhotoView" prefHeight="560.0" prefWidth="906.0">
                 <StackPane fx:id="contentStackpane">
-                    <ScrollPane StackPane.alignment="TOP_LEFT" fx:id="imageScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" style="-fx-background-color: white;" styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
+                    <ScrollPane StackPane.alignment="TOP_LEFT" fx:id="imageScrollPane" fitToHeight="true"
+                                fitToWidth="true" pannable="true" style="-fx-background-color: white;"
+                                styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
                         <AnchorPane id="anchorpane" fx:id="anchorPanePhotoView" style="-fx-background-color: white;">
-                            <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: white;">
-                                <Image url="@../logo-verilin-black.png" />
+                            <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true"
+                                                preserveRatio="true" style="-fx-background-color: white;">
+                                <Image url="@../logo-verilin-black.png"/>
                             </PixelatedImageView>
                         </AnchorPane>
                     </ScrollPane>
