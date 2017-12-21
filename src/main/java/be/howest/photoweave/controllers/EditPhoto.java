@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.components.ColorBindingLinker;
 import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
@@ -262,6 +263,21 @@ public class EditPhoto implements ParametersInterface {
 
         BindingMaker controller = loader.getController();
         controller.initialize();
+        stage.show();
+    }
+
+    public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
+
+        Stage stage = new Stage(StageStyle.DECORATED);
+        stage.setScene(new Scene(loader.load()));
+        stage.setMinHeight(600.0);
+        stage.setMinWidth(800.0);
+        stage.setTitle("PhotoWeave | Link colors to bindings");
+        stage.getIcons().add(new Image("logo.png"));
+
+        ColorBindingLinker controller = loader.getController();
+        controller.initialize(filteredImage);
         stage.show();
     }
 
