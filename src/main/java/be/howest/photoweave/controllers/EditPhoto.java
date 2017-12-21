@@ -43,6 +43,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class EditPhoto implements ThreadEventListener {
     /* FXML User Interface */
@@ -71,6 +72,7 @@ public class EditPhoto implements ThreadEventListener {
     public StackPane contentStackpane;
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
+    public Label sizeWarning;
 
     /*  */
     private int imageWidth;
@@ -194,8 +196,24 @@ public class EditPhoto implements ThreadEventListener {
         selectionCanvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Paint.valueOf("red"));
     }
 
+    private boolean askForConfirmation(String body) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Waarschuwing!");
+        alert.setContentText(body);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private void resizeImage() {
+        if (!checkForSelections()) return;
+
         filteredImage.resize(imageWidth, imageHeight);
+        sizeWarning.setVisible(imageWidth > 4096 || imageHeight > 4096);
 
         updateImage();
     }
@@ -390,16 +408,18 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
-        posterizeScale = sliderPosterizationScale.valueProperty().intValue();
-        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+        if (askForConfirmation("Als je het posterize-niveau aanpast gaan alle andere wijzigingen verloren, doorgaan?")) {
+            posterizeScale = sliderPosterizationScale.valueProperty().intValue();
+            labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
 
-        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
-        posterizeFilter.setLevels(posterizeScale);
+            PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
+            posterizeFilter.setLevels(posterizeScale);
 
-        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-        bf.getBindingsMap().clear();
+            BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            bf.getBindingsMap().clear();
 
-        updateImage();
+            updateImage();
+        }
     }
 
     private boolean shouldUseCanvasLines() {
@@ -430,6 +450,7 @@ public class EditPhoto implements ThreadEventListener {
                 imageWidth = Integer.parseInt(newValue);
             }
         }
+
     }
 
     private void ChangeImageHeight(Observable observable, String oldValue, String newValue) {
@@ -440,6 +461,7 @@ public class EditPhoto implements ThreadEventListener {
                 imageHeight = Integer.parseInt(newValue);
             }
         }
+
     }
 
     public void showMarkingOnImageView() {
@@ -499,16 +521,27 @@ public class EditPhoto implements ThreadEventListener {
         }
     }
 
-    private void ResizeImageWidth(Observable observable, Boolean oldValue, Boolean newValue) {
+    private boolean checkForSelections() {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        if (bf.getRegions().size() > 0) {
+            return askForConfirmation("De afbeelding bevat selecties! Als je doorgaat, worden deze selecties verwijderd.");
+        } else {
+            return true;
+        }
+    }
+
+    private void resizeImageIfOk(Boolean newValue) {
         if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
             resizeImage();
         }
     }
 
+    private void ResizeImageWidth(Observable observable, Boolean oldValue, Boolean newValue) {
+        resizeImageIfOk(newValue);
+    }
+
     private void ResizeImageHeight(Observable observable, Boolean oldValue, Boolean newValue) {
-        if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
-            resizeImage();
-        }
+        resizeImageIfOk(newValue);
     }
 
     private BindingChangedEventHandler changeBindingInWovenImage() {
@@ -560,7 +593,10 @@ public class EditPhoto implements ThreadEventListener {
                 });
     }
 
+
     public void ShowCalculateWindow(ActionEvent actionEvent) throws IOException {
+        if (!checkForSelections()) return;
+
         CreateWindow newWindow = new CreateWindow("Afplatting Berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
         ((CalculateFlattening) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
@@ -665,10 +701,12 @@ public class EditPhoto implements ThreadEventListener {
             }
 
             if (pXPreviousSelection == -1 || pYPreviousSelection == -1) {
-                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(overlayX, overlayY, overlayX, overlayY);
+                if (shouldUseCanvasLines())
+                    selectionCanvas.getGraphicsContext2D().strokeLine(overlayX, overlayY, overlayX, overlayY);
             } else {
                 selectionCanvas.getGraphicsContext2D().setLineWidth(2);
-                if (shouldUseCanvasLines()) selectionCanvas.getGraphicsContext2D().strokeLine(pXPreviousSelection, pYPreviousSelection, overlayX, overlayY);
+                if (shouldUseCanvasLines())
+                    selectionCanvas.getGraphicsContext2D().strokeLine(pXPreviousSelection, pYPreviousSelection, overlayX, overlayY);
             }
 
             pXPrevious = pX;

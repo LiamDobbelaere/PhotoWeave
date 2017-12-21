@@ -90,6 +90,7 @@ public class SelectBinding extends VBox {
         JFXButton b = new JFXButton("Verander Binding");
         //b.getStylesheets().setAll("@../style/style.css");
         b.getStyleClass().setAll("button-raised");
+        b.setTooltip(new Tooltip("Opent de binding library waar je een nieuwe binding kan selecteren"));
         b.setOnMouseClicked(this::testOpenib);
         gridPane.add(b, 0, 2);
     }

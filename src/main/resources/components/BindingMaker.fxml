@@ -8,14 +8,23 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.scene.control.Tooltip?>
 <AnchorPane fx:id="anchorPane" prefHeight="569.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.components.BindingMaker">
    <Label alignment="TOP_LEFT" contentDisplay="BOTTOM" layoutX="35.0" layoutY="28.0" prefHeight="17.0" prefWidth="167.0" text="Teken een binding" underline="true">
       <font>
          <Font size="16.0" />
       </font>
    </Label>
-   <JFXButton layoutX="208.0" layoutY="520.0" mnemonicParsing="false" onAction="#saveBinding" text="Export" />
-   <JFXComboBox id="bindingsizes" fx:id="ComboBoxBindingsSizes" layoutX="26.0" layoutY="518.0" prefWidth="150.0" />
+   <JFXButton layoutX="208.0" layoutY="520.0" mnemonicParsing="false" onAction="#saveBinding" text="Export">
+      <tooltip>
+         <Tooltip text="Exporteer de gemaakte binding als bitmap (bmp)"/>
+      </tooltip>
+   </JFXButton>
+   <JFXComboBox id="bindingsizes" fx:id="ComboBoxBindingsSizes" layoutX="26.0" layoutY="518.0" prefWidth="150.0">
+      <tooltip>
+         <Tooltip text="Selecteer de grootte van de binding"/>
+      </tooltip>
+   </JFXComboBox>
    <Label alignment="TOP_LEFT" contentDisplay="BOTTOM" layoutX="511.0" layoutY="32.0" prefHeight="13.0" prefWidth="50.0" text="Preview" textAlignment="CENTER" underline="true" />
    <Pane fx:id="paneImagePreview" layoutX="511.0" layoutY="57.0" prefHeight="13.0" prefWidth="16.0" style="-fx-border-color: grey;" />
    <Pane fx:id="paneBindingCreator" layoutX="35.0" layoutY="57.0" onMouseClicked="#previewBinding" prefHeight="64.0" prefWidth="66.0" style="-fx-border-color: grey;" />

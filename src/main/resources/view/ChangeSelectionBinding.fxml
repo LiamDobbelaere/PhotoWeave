@@ -9,6 +9,7 @@
 
 <?import be.howest.photoweave.components.SelectBinding?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Tooltip?>
 <AnchorPane prefHeight="200.0" prefWidth="200.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.ChangeSelectionBinding">
 
     <VBox spacing="24">
@@ -23,7 +24,11 @@
         </HBox>
 
         <AnchorPane>
-                <JFXButton AnchorPane.leftAnchor="0" fx:id="buttonConfirm" onAction="#confirmChanges" mnemonicParsing="false" styleClass="button-raised" text="Bevestigen" textAlignment="CENTER" />
+                <JFXButton AnchorPane.leftAnchor="0" fx:id="buttonConfirm" onAction="#confirmChanges" mnemonicParsing="false" styleClass="button-raised" text="Bevestigen" textAlignment="CENTER" >
+                    <tooltip>
+                        <Tooltip text="Als je bevestigt, wordt het gekozen niveau in de selectie vervangen met de gekozen nieuwe binding"/>
+                    </tooltip>
+                </JFXButton>
                 <JFXButton AnchorPane.rightAnchor="0" fx:id="buttonCancel" onAction="#cancelChanges" mnemonicParsing="false" text="Annuleren" textAlignment="CENTER" />
         </AnchorPane>
     </VBox>
