@@ -710,24 +710,8 @@ public class EditPhoto implements ThreadEventListener {
         }
     }
 
-    public void showAbout(ActionEvent actionEvent) {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/About.fxml"));
-
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("About");
-        stage.setScene(scene);
-        stage.initOwner(this.stage.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+    public void showAbout(ActionEvent actionEvent) throws IOException {
+        CreateWindow newWindow = new CreateWindow("About", 0.0, 0.0, "view/About.fxml", false, true);
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 }
