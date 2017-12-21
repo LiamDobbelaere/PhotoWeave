@@ -49,14 +49,11 @@ public class BindingFactory {
             allBindings.put(directory.getName(),localBindings);
         }
 
-        HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
+        optimizedBindings = getSortedBindings(allBindings.get("default")).toArray(new Binding[allBindings.get("default").size()]);
+    }
 
-        for (int j = 0; j < this.bindings.size(); j++) {
-            convertToRBGIntImages(this.bindings.get(j));
-            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
-        }
-
-        optimizedBindings = new ArrayList<>(getSortedIntensity(bindingIntensityMap)).toArray(new Binding[bindings.size()]);
+    public List<Binding> getBindings() {
+        return bindings;
     }
 
     private Binding getCustomBinding(String path) throws Exception {
@@ -72,13 +69,14 @@ public class BindingFactory {
         return optimizedBindings;
     }
 
-    public List<Binding> getSortedBindings() {
+    public List<Binding> getSortedBindings(List<Binding> bindingList) {
         HashMap<Binding, Integer> bindingIntensityMap = new HashMap<>();
 
-        for (int j = 0; j < this.bindings.size(); j++) {
-            convertToRBGIntImages(bindings.get(j));
-            setIntensityFromBindings(bindingIntensityMap, bindings.get(j));
+        for (int j = 0; j < bindingList.size(); j++) {
+            convertToRBGIntImages(bindingList.get(j));
+            setIntensityFromBindings(bindingIntensityMap, bindingList.get(j));
         }
+
         return new ArrayList<>(getSortedIntensity(bindingIntensityMap));
     }
 

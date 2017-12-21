@@ -152,4 +152,9 @@ public class BindingFilter implements RGBFilter {
     public void setBindingsMap(Map<Integer, Binding> bindingsMap) {
         this.bindingsMap = bindingsMap;
     }
+
+    @Override
+    public void resize(int newWidth, int newHeight) {
+        this.regions.clear();
+    }
 }
