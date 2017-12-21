@@ -8,6 +8,5 @@ public class Scale {
     public Scale(int width, int height) {
         this.width = width;
         this.height = height;
-        this.ratio = width/height;
     }
 }

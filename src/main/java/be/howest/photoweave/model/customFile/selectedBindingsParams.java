@@ -1,8 +1,5 @@
 package be.howest.photoweave.model.customFile;
 
-import be.howest.photoweave.model.customFile.data.BindingParams;
-import be.howest.photoweave.model.customFile.data.floatersParams;
-
 public class selectedBindingsParams {
     private int index;
     private boolean marked;

@@ -40,69 +40,8 @@ public class LoadFilteredImageController {
     }
 
     public LoadFilteredImageController(File customFile, ParametersInterface parent) throws IOException {
-        String json = new String(Files.readAllBytes(Paths.get(customFile.getAbsolutePath())));
-        Gson g = new Gson();
-        JsonObject jsonObject = g.fromJson(json, JsonObject.class);
-        this.jsonObject = jsonObject;
-        String base64 = jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("base64")
-                .getAsString();
-
-        Integer width = jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("width")
-                .getAsInt();
-
-
-        Integer height = jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("height")
-                .getAsInt();
-
-        Integer posterization = jsonObject
-                .get("mutation")
-                .getAsJsonObject()
-                .get("posterization")
-                .getAsInt();
-
-        JsonArray BindingArray = jsonObject
-                .get("mutation")
-                .getAsJsonObject()
-                .get("bindingpalette")
-                .getAsJsonArray();
-
-        Boolean inverted = jsonObject
-                .get("image")
-                .getAsJsonObject()
-                .get("inverted")
-                .getAsBoolean();
-
-        Map<Integer,Binding> bindingMap = new HashMap<>();
-        BindingArray.forEach(jsonElement -> {
-            String bName = jsonElement.getAsJsonObject().get("name").getAsString();
-            Integer bIndex = jsonElement.getAsJsonObject().get("index").getAsInt();
-            String bBase64 = jsonElement.getAsJsonObject().get("base64").getAsString();
-
-            try {
-                bindingMap.put(bIndex,new Binding(bBase64,bName));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-
-        //BASE64Decoder decoder = new BASE64Decoder();
-        //byte[] b64ImageBytes = decoder.decodeBuffer(base64);
-
-        //ArrayIndexOutOfBoundsException; image is to big
-        byte[] b64ImageBytes = DatatypeConverter.parseBase64Binary(base64);
-
-        BufferedImage image = ImageUtil.convertImageToRGBInt(ImageIO.read(new ByteArrayInputStream(b64ImageBytes)));
-
+        RawDataDecoder decoder = new RawDataDecoder(customFile);
+        decoder.decode();
         load(image,posterization,false,0,3,inverted,bindingMap,parent);
     }
 
@@ -122,7 +61,6 @@ public class LoadFilteredImageController {
 
         this.filteredImage.getFilters().add(new FloatersFilter(enableFloaters));
 
-
         ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
                 .setLevels(posterization);
 
@@ -132,10 +70,40 @@ public class LoadFilteredImageController {
     }
 
     public void loadDataInUserInterface(){
-        this.parent.setInvert(jsonObject
+        this.parent.setUIComponentInverted(this.jsonObject
                 .get("image")
                 .getAsJsonObject()
                 .get("inverted")
                 .getAsBoolean());
+        /*this.parent.setUIComponentMarked(this.jsonObject
+                .get("image")
+                .getAsJsonObject()
+                .get("marked")
+                .getAsBoolean());
+
+        this.parent.setUICompentenPosterize(this.jsonObject
+                .get("mutation")
+                .getAsJsonObject()
+                .get("posterization")
+                .getAsInt());
+
+
+        this.parent.setUIComponentHeight(this.jsonObject
+                .get("mutation")
+                .getAsJsonObject()
+                .get("scale")
+                .getAsJsonObject()
+                .get("height")
+                .getAsInt());
+
+        this.parent.setUIComponentWidth(this.jsonObject
+                .get("mutation")
+                .getAsJsonObject()
+                .get("scale")
+                .getAsJsonObject()
+                .get("width")
+                .getAsInt());
+        */
+
     }
 }

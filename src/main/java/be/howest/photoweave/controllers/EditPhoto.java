@@ -55,7 +55,6 @@ public class EditPhoto implements ParametersInterface {
     /* FXML User Interface */
     public AnchorPane anchorPaneWindow;
     public Label labelFileNameId;
-    public Label labelImageSizeId;
 
     public Slider sliderPosterizationScale;
     public Label labelAmountOfColors;
@@ -205,11 +204,17 @@ public class EditPhoto implements ParametersInterface {
     public void zoomIn() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() * 2));
         photoView.setFitHeight(photoView.getFitHeight() * 1.2);
+        System.out.println(photoView.getFitWidth());
+        System.out.println(imageScrollPane.getVvalue());
+        System.out.println(imageScrollPane.getHvalue());
     }
 
     public void zoomOut() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() / 2));
         photoView.setFitHeight(photoView.getFitHeight() / 1.2);
+        System.out.println(photoView.getFitWidth());
+        System.out.println(imageScrollPane.getVvalue());
+        System.out.println(imageScrollPane.getHvalue());
     }
 
     public void fitWindow(ActionEvent actionEvent) {
@@ -748,7 +753,27 @@ public class EditPhoto implements ParametersInterface {
     }
 
     @Override
-    public void setInvert(boolean bool) {
+    public void setUIComponentInverted(boolean bool) {
         checkBoxInvert.selectedProperty().setValue(bool);
+    }
+
+    @Override
+    public void setUIComponentMarked(boolean asBoolean) {
+
+    }
+
+    @Override
+    public void setUICompentenPosterize(int asInt) {
+
+    }
+
+    @Override
+    public void setUIComponentHeight(int asInt) {
+
+    }
+
+    @Override
+    public void setUIComponentWidth(int asInt) {
+
     }
 }

@@ -14,15 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class FilteredImageToRawDataConverter {
+public class RawDataEncoder {
     private FilteredImage filteredImage;
+    private UserInterfaceData userInterfaceData;
     private CustomFile rawData;
 
-    public FilteredImageToRawDataConverter(FilteredImage filteredImage) {
+    public RawDataEncoder(FilteredImage filteredImage, UserInterfaceData userInterfaceData) {
         this.filteredImage = filteredImage;
+        this.userInterfaceData = userInterfaceData;
     }
 
-    public void convert() throws IOException {
+    public void encode() throws IOException {
         /* Image */
         BufferedImage image = this.filteredImage.getOriginalImage();
         BufferedImage modImage = this.filteredImage.getModifiedImage();
@@ -36,7 +38,6 @@ public class FilteredImageToRawDataConverter {
 
         List<Region> sl = bf.getRegions();
 
-
         bm.forEach((index, binding) -> {
             try {
                 bindings.add(new BindingData(binding.getName(), index, ImageUtil.convertImageToBase64(binding.getBindingImage())));
@@ -44,17 +45,13 @@ public class FilteredImageToRawDataConverter {
                 e.printStackTrace();
             }
         });
+
         /* ------- */
 
 
         Mutation mutation = new Mutation(new Scale(modImage.getWidth(),modImage.getHeight()),((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount(),bindings);
-        UserInterface userInterface = null;
 
-        this.rawData = new CustomFile(imageData,mutation,userInterface);
-    }
-
-    public FilteredImage getFilteredImage() {
-        return filteredImage;
+        this.rawData = new CustomFile(imageData,mutation,userInterfaceData);
     }
 
     public CustomFile getRawData() {
