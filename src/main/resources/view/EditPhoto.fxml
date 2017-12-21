@@ -208,7 +208,7 @@
                                        styleClass="button-raised" text="Afplatting berekenen"/>
                             <Label fx:id="sizeWarning" visible="false"
                                    text="Waarschuwing: De breedte of hoogte van de afbeelding is groter dan 4096. De afbeelding kan er wazig uitzien tijdens het bewerken."
-                                   wrapText="true"/>
+                                   style="-fx-text-fill: red" wrapText="true"/>
                         </VBox>
                         <font>
                             <Font name="System Bold" size="14.0"/>
