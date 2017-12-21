@@ -1,5 +1,7 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.components.CreateFilePicker;
+import be.howest.photoweave.components.CreateWindow;
 import be.howest.photoweave.model.util.ConfigUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
@@ -9,11 +11,9 @@ import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
@@ -21,24 +21,15 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
-import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -83,7 +74,7 @@ public class OpenPhoto {
                 } else {
                     String fileName = new File(path).getName();
                     Text title = new Text(fileName);
-                    Text text = new Text(path.replaceAll(fileName,""));
+                    Text text = new Text(path.replaceAll(fileName, ""));
                     title.getStyleClass().add("vboxlistview-title");
 
                     VBox vBox = new VBox(title, text);
@@ -149,11 +140,9 @@ public class OpenPhoto {
 
     /* FXML Hooks */
     public void openFileDialog() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png", "*.bmp"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Choose File","user.home", this.stage, "Image Files", "*.jpg", "*.jpeg", "*.png", "*.bmp");
 
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fp.getFile();
 
         if (file != null) setImagePath(file);
     }
@@ -185,21 +174,21 @@ public class OpenPhoto {
 
     private void dragOverPane(DragEvent event) {
         if (event.getGestureSource() != paneDropFile && event.getDragboard().hasFiles()) {
-                if (!validExtensions.containsAll(
-                        event.getDragboard().getFiles().stream()
-                                .map(file -> getExtension(file.getName()))
-                                .collect(Collectors.toList()))) {
+            if (!validExtensions.containsAll(
+                    event.getDragboard().getFiles().stream()
+                            .map(file -> getExtension(file.getName()))
+                            .collect(Collectors.toList()))) {
 
-                    event.consume();
-                    return;
-                }
+                event.consume();
+                return;
+            }
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
         }
         event.consume();
     }
 
     // Method to to get extension of a file
-    private String getExtension(String fileName){
+    private String getExtension(String fileName) {
         String extension = "";
         int i = fileName.lastIndexOf('.');
 
@@ -232,33 +221,23 @@ public class OpenPhoto {
         Task<FXMLLoader> task = new Task<FXMLLoader>() {
             @Override
             public FXMLLoader call() throws InterruptedException {
-                //Thread.sleep(2000);
                 return new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml"));
             }
         };
         task.setOnSucceeded(event -> {
-            Scene scene = null;
+            CreateWindow newWindow = null;
             try {
-                scene = new Scene(task.getValue().load());
+                newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, task.getValue(), false, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            Stage stage = new Stage(StageStyle.DECORATED);
-            stage.setMinHeight(600.0);
-            stage.setMinWidth(800.0);
-            stage.setResizable(false);
-            stage.sizeToScene();
-            stage.setTitle("Verilin | PhotoWeave");
-            stage.getIcons().add(new Image("logo.png"));
-            stage.setScene(scene);
-            stage.show();
+            newWindow.showWindow();
 
             this.stage.close();
-            
-            EditPhoto controller = task.getValue().getController();
+
             try {
-                controller.initialize(imagePath);
+                ((EditPhoto) newWindow.getController()).initialize(imagePath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

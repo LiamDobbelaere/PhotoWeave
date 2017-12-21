@@ -69,7 +69,7 @@ public class ChangeSelectionBinding {
                     this.updatePosterizationLevel();
                 });
 
-        this.selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler(){
+        this.selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new BindingChangedEventHandler() {
             @Override
             public void onBindingChanged() {
                 updatePosterizationLevel();
