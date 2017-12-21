@@ -15,4 +15,9 @@ public class GrayscaleFilter implements RGBFilter {
 
         return a | (rgb << 16) | (rgb << 8) | rgb;
     }
+
+    @Override
+    public void resize(int newWidth, int newHeight) {
+
+    }
 }

@@ -45,9 +45,6 @@ public class ChangeSelectionBinding {
                 if (region.getRegion()[y - region.getMinY()][x - region.getMinX()]) {
                     byte[] metaData = PrimitiveUtil.decomposeIntToBytes(filteredImage.getMetaDataAt(x, y));
 
-
-
-
                     if (!levels.contains((int) metaData[0])) {
                         levels.add((int) metaData[0]);
                     }

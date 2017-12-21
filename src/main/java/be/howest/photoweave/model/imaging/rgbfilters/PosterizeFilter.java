@@ -39,4 +39,9 @@ public class PosterizeFilter implements RGBFilter {
 
         return a | (r << 16) | (g << 8) | b;
     }
+
+    @Override
+    public void resize(int newWidth, int newHeight) {
+
+    }
 }
