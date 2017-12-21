@@ -1,9 +1,6 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.components.BindingMaker;
-import be.howest.photoweave.components.ColorBindingLinker;
-import be.howest.photoweave.components.PixelatedImageView;
-import be.howest.photoweave.components.SelectBinding;
+import be.howest.photoweave.components.*;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
@@ -25,14 +22,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.*;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -42,7 +36,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -86,7 +79,6 @@ public class EditPhoto implements ThreadEventListener {
     private int imageHeight;
     private String filename;
     private BufferedImage image;
-    private BufferedImage originalImage;
     private FilteredImage filteredImage;
     private Stage stage;
 
@@ -116,7 +108,6 @@ public class EditPhoto implements ThreadEventListener {
     public void initialize(String path) throws IOException {
         // Logic
         this.image = ImageIO.read(new File(path));
-        this.originalImage = image;
         this.filteredImage = new FilteredImage(image);
         this.filteredImage.addThreadEventListener(this);
         this.filteredImage.getFilters().add(new GrayscaleFilter());
@@ -251,16 +242,12 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void saveImage(ActionEvent actionEvent) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Monochrome bitmap", "*.bmp")
-        );
-        fileChooser.setTitle("PhotoWeave | Save Image");
-        File file = fileChooser.showSaveDialog(stage);
+        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
+
+        File file = fp.saveFile();
+
         if (file != null) {
             try {
-                //Kan hier een confict zijn.
-
                 ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
             } catch (IOException ex) {
             }
@@ -268,36 +255,18 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/BindingMaker.fxml"));
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setScene(new Scene(loader.load()));
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(800.0);
-        stage.setTitle("PhotoWeave | Edit Photo");
-        stage.getIcons().add(new Image("logo.png"));
-
-        BindingMaker controller = loader.getController();
-        controller.initialize();
-        stage.show();
+        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
+        ((BindingMaker) newWindow.getController()).initialize();
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setScene(new Scene(loader.load()));
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(800.0);
-        stage.setTitle("PhotoWeave | Link colors to bindings");
-        stage.getIcons().add(new Image("logo.png"));
-
-        ColorBindingLinker controller = loader.getController();
-        controller.initialize(filteredImage);
-        stage.show();
+        CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
+        ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 
 
@@ -428,7 +397,11 @@ public class EditPhoto implements ThreadEventListener {
             pXPreviousSelection = -1;
             pYPreviousSelection = -1;
 
-            showChangeSelectionBindingWindow(new Region(selectionPoints));
+            try {
+                showChangeSelectionBindingWindow(new Region(selectionPoints));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             selectionCanvas.getGraphicsContext2D().clearRect(0, 0, selectionCanvas.getWidth(), selectionCanvas.getHeight());
         });
@@ -620,30 +593,13 @@ public class EditPhoto implements ThreadEventListener {
                 });
     }
 
-    public void ShowCalculateWindow(ActionEvent actionEvent) {
+
+    public void ShowCalculateWindow(ActionEvent actionEvent) throws IOException {
         if (!checkForSelections()) return;
 
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/CalculateFlattening.fxml"));
-
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        CalculateFlattening controller = loader.getController();
-        controller.initialize(this.filteredImage);
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("Afplatting berekenen");
-        stage.setScene(scene);
-        stage.initOwner(this.stage.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+        CreateWindow newWindow = new CreateWindow("Afplatting Berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
+        ((CalculateFlattening) newWindow.getController()).initialize(this.filteredImage);
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
 
         textFieldWidth.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getWidth()));
         textFieldHeight.textProperty().setValue(String.valueOf(filteredImage.getModifiedImage().getHeight()));
@@ -651,29 +607,12 @@ public class EditPhoto implements ThreadEventListener {
         filteredImage.redraw();
     }
 
-    public void showChangeSelectionBindingWindow(Region region) {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/ChangeSelectionBinding.fxml"));
+    public void showChangeSelectionBindingWindow(Region region) throws IOException {
 
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        ChangeSelectionBinding controller = loader.getController();
-        controller.initialize(this.filteredImage, region);
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("Verander specifieke binding in selectie");
-        stage.setScene(scene);
-        stage.initOwner(this.stage.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setOnCloseRequest(controller.getCloseEventHandler());
-        stage.showAndWait();
+        CreateWindow newWindow = new CreateWindow("Verander specifieke binding in selectie", 0, 0, "view/ChangeSelectionBinding.fxml", false, true);
+        ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region);
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+        newWindow.getStage().setOnCloseRequest(((ChangeSelectionBinding) newWindow.getController()).getCloseEventHandler());
 
         region.setMarked(false);
 
@@ -809,24 +748,8 @@ public class EditPhoto implements ThreadEventListener {
         }
     }
 
-    public void showAbout(ActionEvent actionEvent) {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/About.fxml"));
-
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("About");
-        stage.setScene(scene);
-        stage.initOwner(this.stage.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+    public void showAbout(ActionEvent actionEvent) throws IOException {
+        CreateWindow newWindow = new CreateWindow("About", 0.0, 0.0, "view/About.fxml", false, true);
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 }

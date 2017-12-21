@@ -1,10 +1,7 @@
 package be.howest.photoweave;
 
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Font;
+import be.howest.photoweave.components.CreateWindow;
+import be.howest.photoweave.controllers.OpenPhoto;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,14 +14,10 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        AnchorPane pane = FXMLLoader.load(getClass().getClassLoader().getResource("view/OpenPhoto.fxml"));
+        
+        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/OpenPhoto.fxml", false, true);
+        ((OpenPhoto)newWindow.getController()).initialize();
+        newWindow.showWindow();
 
-        Scene scene = new Scene(pane);
-        stage.setTitle("Verilin | PhotoWeave");
-        stage.getIcons().add(new Image("logo.png"));
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setScene(scene);
-        stage.show();
     }
 }
