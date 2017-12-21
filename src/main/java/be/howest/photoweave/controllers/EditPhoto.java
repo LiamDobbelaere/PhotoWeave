@@ -265,6 +265,9 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.setManualAssign(true);
+
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("components/ColorBindingLinker.fxml"));
 
         Stage stage = new Stage(StageStyle.DECORATED);

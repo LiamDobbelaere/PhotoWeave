@@ -4,9 +4,7 @@ import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
-import be.howest.photoweave.model.util.PrimitiveUtil;
 
-import java.awt.Point;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ public class BindingFilter implements RGBFilter {
 
     private boolean inverted;
     private boolean showMarkedBinding;
+    private boolean manualAssign;
     private Binding markedBinding;
 
     private FilteredImage filteredImage;
@@ -31,7 +30,7 @@ public class BindingFilter implements RGBFilter {
     private List<Region> regions;
 
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
-        this.bindingFactory = new BindingFactory();
+        this.bindingFactory = BindingFactory.getInstance();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
@@ -78,6 +77,16 @@ public class BindingFilter implements RGBFilter {
         return regions;
     }
 
+    public void setManualAssign(boolean value) {
+        this.manualAssign = value;
+
+        if (value) {
+            for (int i = 0; i < this.posterizeFilter.getLevelCount(); i++) {
+                this.getBindingsMap().put(i, null);
+            }
+        }
+    }
+
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
         int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
@@ -85,8 +94,18 @@ public class BindingFilter implements RGBFilter {
         int fullX = i % this.filteredImage.getModifiedImage().getWidth();
         int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));
 
-        Binding binding = this.bindingsMap.computeIfAbsent(
-                currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
+        Binding binding;
+
+        if (manualAssign) {
+            if (this.bindingsMap.get(currentLevel) != null) {
+                binding = this.bindingsMap.get(currentLevel);
+            } else {
+                return rgb;
+            }
+        } else {
+            binding = this.bindingsMap.computeIfAbsent(
+                    currentLevel, level -> bindingFactory.getOptimizedBindings()[findBestBindingForLevel(level)]);
+        }
 
         boolean markRegion = false;
 
@@ -132,5 +151,10 @@ public class BindingFilter implements RGBFilter {
 
     public void setBindingsMap(Map<Integer, Binding> bindingsMap) {
         this.bindingsMap = bindingsMap;
+    }
+
+    @Override
+    public void resize(int newWidth, int newHeight) {
+        this.regions.clear();
     }
 }

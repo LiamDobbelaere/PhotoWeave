@@ -77,4 +77,9 @@ public class FloatersFilter implements ImageFilter {
             }
         }
     }
+
+    @Override
+    public void resize(int newWidth, int newHeight) {
+
+    }
 }
