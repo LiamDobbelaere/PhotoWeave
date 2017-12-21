@@ -130,6 +130,9 @@
                     </HBox.margin>
                     <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
                                onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="Inzoomen"/>
+                        </tooltip>
                         <HBox.margin>
                             <Insets right="5.0"/>
                         </HBox.margin>
@@ -142,6 +145,9 @@
                     <JFXButton id="zoomOutButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0"
                                mnemonicParsing="false" onAction="#zoomOut" styleClass="button-raised"
                                textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="Uitzoomen"/>
+                        </tooltip>
                         <HBox.margin>
                             <Insets right="5.0"/>
                         </HBox.margin>
@@ -153,6 +159,9 @@
                     </JFXButton>
                     <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
                                onAction="#fitWindow" styleClass="button-raised" textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="Het zoomniveau passend maken"/>
+                        </tooltip>
                         <graphic>
                             <SVGPath
                                     content="M15 3l2.3 2.3-2.89 2.87 1.42 1.42L18.7 6.7 21 9V3zM3 9l2.3-2.3 2.87 2.89 1.42-1.42L6.7 5.3 9 3H3zm6 12l-2.3-2.3 2.89-2.87-1.42-1.42L5.3 17.3 3 15v6zm12-6l-2.3 2.3-2.87-2.89-1.42 1.42 2.89 2.87L15 21h6z"
@@ -168,6 +177,9 @@
                     <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false"
                                onAction="#saveImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised"
                                text="Exporteren" textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="De bewerkte afbeelding opslaan als bitmap (bmp)"/>
+                        </tooltip>
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -198,14 +210,26 @@
                             <Label fx:id="filePath" wrapText="true"/>
                             <JFXTextField fx:id="textFieldWidth"
                                           accessibleHelp="Geef een andere waarde in om de breedte te veranderen"
-                                          labelFloat="true" promptText="Breedte" text="1234 px"/>
+                                          labelFloat="true" promptText="Breedte" text="1234 px">
+                                <tooltip>
+                                    <Tooltip text="Voer een nieuwe breedte in voor de afbeelding"/>
+                                </tooltip>
+                            </JFXTextField>
                             <JFXTextField fx:id="textFieldHeight"
                                           accessibleHelp="Geef een andere waarde in om de hoogte te veranderen"
                                           accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2"
                                           accessibleText="Geef een andere waarde in om de hoogte te veranderen 1"
-                                          labelFloat="true" promptText="Hoogte" text="1234 px"/>
+                                          labelFloat="true" promptText="Hoogte" text="1234 px">
+                                <tooltip>
+                                    <Tooltip text="Voer een nieuwe hoogte in voor de afbeelding"/>
+                                </tooltip>
+                            </JFXTextField>
                             <JFXButton mnemonicParsing="false" onAction="#ShowCalculateWindow"
-                                       styleClass="button-raised" text="Afplatting berekenen"/>
+                                       styleClass="button-raised" text="Afplatting berekenen">
+                                <tooltip>
+                                    <Tooltip text="Bereken de nieuwe hoogte en breedte aan de hand van weefgetouwparameters"/>
+                                </tooltip>
+                            </JFXButton>
                             <Label fx:id="sizeWarning" visible="false"
                                    text="Waarschuwing: De breedte of hoogte van de afbeelding is groter dan 4096. De afbeelding kan er wazig uitzien tijdens het bewerken."
                                    style="-fx-text-fill: red" wrapText="true"/>
@@ -227,7 +251,11 @@
                             <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0"
                                        max="24.0" min="2.0" minorTickCount="24"
                                        showTickLabels="true" showTickMarks="true"
-                                       snapToTicks="true" value="10.0"/>
+                                       snapToTicks="true" value="10.0">
+                                <tooltip>
+                                    <Tooltip text="Verandert het aantal niveaus van de afbeelding waaraan bindings kunnen toegekend worden"/>
+                                </tooltip>
+                            </JFXSlider>
                             <Label wrapText="true" fx:id="labelAmountOfColors"
                                    text="Aantal tinten:"/>
                         </VBox>
@@ -241,9 +269,17 @@
                             <Label wrapText="true" text="Selecteer kleur dat je wilt aanpassen:"/>
                             <SelectBinding fx:id="vboxSelectBinding"/>
                             <JFXCheckBox fx:id="checkBoxMarkBinding"
-                                         text="Markeer geselecteerde binding"/>
+                                         text="Markeer geselecteerde binding">
+                                <tooltip>
+                                    <Tooltip text="Markeert de huidige gekozen binding op de afbeelding"/>
+                                </tooltip>
+                            </JFXCheckBox>
                             <JFXCheckBox fx:id="checkBoxInvert"
-                                         text="Inverteer bindings"/>
+                                         text="Inverteer bindings">
+                                <tooltip>
+                                    <Tooltip text="Inverteert de afbeelding"/>
+                                </tooltip>
+                            </JFXCheckBox>
                         </VBox>
                     </TitledPane>
                     <TitledPane expanded="false" text="Extra">
@@ -251,18 +287,38 @@
                             <Font name="System Bold" size="14.0"/>
                         </font>
                         <VBox spacing="24">
-                            <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters"/>
-                            <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" promptText="Inslag" text="5"/>
-                            <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" promptText="Draad" text="5"/>
+                            <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters">
+                                <tooltip>
+                                    <Tooltip text="Markeert floaters (vlotters) op de afbeelding"/>
+                                </tooltip>
+                            </JFXCheckBox>
+                            <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" promptText="Inslag" text="5">
+                                <tooltip>
+                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de inslag boven of onder mag zijn"/>
+                                </tooltip>
+                            </JFXTextField>
+                            <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" promptText="Draad" text="5">
+                                <tooltip>
+                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
+                                </tooltip>
+                            </JFXTextField>
 
                             <JFXButton fx:id="buttonBindingCreator"
                                        mnemonicParsing="false" onAction="#openBindingCreator"
                                        styleClass="button-raised"
-                                       text="Binding maken" textAlignment="CENTER"/>
+                                       text="Binding maken" textAlignment="CENTER">
+                                <tooltip>
+                                    <Tooltip text="Opent een editor waar je eigen bindings kan maken en opslaan"/>
+                                </tooltip>
+                            </JFXButton>
                             <JFXButton fx:id="buttonColorBindingLinker"
                                        mnemonicParsing="false" onAction="#openBindingColorSelector"
                                        styleClass="button-raised"
-                                       text="Link bindings met kleuren" textAlignment="CENTER"/>
+                                       text="Link bindings met kleuren" textAlignment="CENTER">
+                                <tooltip>
+                                    <Tooltip text="Opent een editor waar je handmatig vanaf nul bindings kan gaan toekennen"/>
+                                </tooltip>
+                            </JFXButton>
                         </VBox>
                     </TitledPane>
                 </panes>
