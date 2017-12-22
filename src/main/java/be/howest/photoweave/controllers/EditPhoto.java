@@ -160,7 +160,7 @@ public class EditPhoto implements ThreadEventListener {
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
         this.filename = path.substring(path.lastIndexOf("/") + 1);
-        this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage));
+        this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage, this));
         this.selectionsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) return;
 
@@ -612,7 +612,15 @@ public class EditPhoto implements ThreadEventListener {
     public void showChangeSelectionBindingWindow(Region region) throws IOException {
 
         CreateWindow newWindow = new CreateWindow("Verander specifieke binding in selectie", 0, 0, "view/ChangeSelectionBinding.fxml", false, true);
-        ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region);
+
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        if (bf.getRegions().contains(region)) { //We're editing rather than adding
+            ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region, true);
+        } else {
+            ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region, false);
+        }
+
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
         newWindow.getStage().setOnCloseRequest(((ChangeSelectionBinding) newWindow.getController()).getCloseEventHandler());
 
@@ -884,5 +892,16 @@ public class EditPhoto implements ThreadEventListener {
 
         selectionsList.getItems().removeAll(itemsToRemove);
         selectionsList.getItems().addAll(itemsToAdd);
+    }
+
+    public void removeSelections(ActionEvent actionEvent) {
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        for (Region region : bindingFilter.getRegions()) {
+            region.setMarked(false);
+        }
+
+        filteredImage.redraw();
+        selectionsList.getSelectionModel().clearSelection();
     }
 }
