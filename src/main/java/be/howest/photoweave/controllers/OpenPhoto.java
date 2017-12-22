@@ -156,19 +156,20 @@ public class OpenPhoto {
         File file = fileChooser.showOpenDialog(stage);
 
         if (file != null) setImagePath(file);
+
+        //recent files:
+        ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
+
+        if (recentFiles.contains(file.getAbsolutePath())) {
+            recentFiles.remove(file.getAbsolutePath());
+        }
+
+        recentFiles.add(file.getAbsolutePath());
+
+        ConfigUtil.getPropertiesConfig().setProperty("recentfiles", recentFiles);
     }
 
     public void editPicture() {
-        ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
-
-        if (recentFiles.contains(imagePath)) {
-            recentFiles.remove(imagePath);
-        }
-
-        recentFiles.add(imagePath);
-
-        ConfigUtil.getPropertiesConfig().setProperty("recentfiles", recentFiles);
-
         showLoading(true);
         Task<FXMLLoader> loadEditPhotoTask = getLoadEditPhotoTask();
 
