@@ -28,9 +28,11 @@
 <?import java.net.URL?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.canvas.Canvas?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.layout.BorderPane?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0"
-      xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
-      fx:controller="be.howest.photoweave.controllers.EditPhoto">
+            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
+            fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css"/>
         <URL value="@../style/accordion.css"/>
@@ -116,6 +118,22 @@
                                     fill="WHITE"/>
                         </graphic>
                     </JFXButton>
+                    <JFXButton fx:id="openColorBindingLinker" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
+                               onAction="#openBindingColorSelector" styleClass="button-raised" minWidth="30.0"
+                               mnemonicParsing="false" textAlignment="CENTER">
+                        <tooltip>
+                            <Tooltip text="Opent een editor waar je handmatig vanaf nul bindings kan gaan toekennen"/>
+                        </tooltip>
+                        <HBox.margin>
+                            <Insets right="5.0"/>
+                        </HBox.margin>
+                        <graphic>
+                            <SVGPath
+                                    content="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z"
+                                    fill="WHITE"/>
+                        </graphic>
+                    </JFXButton>
+
                 </HBox>
                 <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
                       minHeight="-Infinity" minWidth="200.0"
@@ -196,11 +214,12 @@
         </HBox>
         <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0"
               prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Accordion prefWidth="230.0" maxWidth="260.0" style="-fx-background-color: white;">
+            <Accordion minWidth="260.0" prefWidth="260.0" maxWidth="260.0" style="-fx-background-color: white;">
                 <panes>
                     <TitledPane fx:id="paneDefault" style="-fx-background-color: -app-color;" text="Afbeelding">
                         <VBox spacing="24">
-                            <Label wrapText="true" fx:id="labelFileNameId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM"
+                            <Label wrapText="true" fx:id="labelFileNameId" alignment="BOTTOM_LEFT"
+                                   contentDisplay="BOTTOM"
                                    text="FileName.jpg">
                                 <font>
                                     <Font size="26.0"/>
@@ -226,7 +245,8 @@
                             <JFXButton mnemonicParsing="false" onAction="#ShowCalculateWindow"
                                        styleClass="button-raised" text="Afplatting berekenen">
                                 <tooltip>
-                                    <Tooltip text="Bereken de nieuwe hoogte en breedte aan de hand van weefgetouwparameters"/>
+                                    <Tooltip
+                                            text="Bereken de nieuwe hoogte en breedte aan de hand van weefgetouwparameters"/>
                                 </tooltip>
                             </JFXButton>
                             <Label fx:id="sizeWarning" visible="false"
@@ -252,7 +272,8 @@
                                        showTickLabels="true" showTickMarks="true"
                                        snapToTicks="true" value="10.0">
                                 <tooltip>
-                                    <Tooltip text="Verandert het aantal niveaus van de afbeelding waaraan bindings kunnen toegekend worden"/>
+                                    <Tooltip
+                                            text="Verandert het aantal niveaus van de afbeelding waaraan bindings kunnen toegekend worden"/>
                                 </tooltip>
                             </JFXSlider>
                             <Label wrapText="true" fx:id="labelAmountOfColors"
@@ -281,6 +302,25 @@
                             </JFXCheckBox>
                         </VBox>
                     </TitledPane>
+                    <TitledPane expanded="false" style="-fx-background-color: -app-color;" text="Selecties">
+                        <font>
+                            <Font name="System Bold" size="14.0"/>
+                        </font>
+                        <BorderPane>
+                            <center>
+                                <JFXListView minHeight="100.0" styleClass="custom-list-view" fx:id="selectionsList">
+
+                                </JFXListView>
+                            </center>
+                            <top>
+                                <JFXButton onAction="#removeSelections" styleClass="button-raised" text="Selectie deselecteren">
+                                <BorderPane.margin>
+                                    <Insets bottom="8.0"/>
+                                </BorderPane.margin>
+                                </JFXButton>
+                            </top>
+                        </BorderPane>
+                    </TitledPane>
                     <TitledPane expanded="false" text="Extra">
                         <font>
                             <Font name="System Bold" size="14.0"/>
@@ -293,31 +333,16 @@
                             </JFXCheckBox>
                             <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" promptText="Inslag" text="5">
                                 <tooltip>
-                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de inslag boven of onder mag zijn"/>
+                                    <Tooltip
+                                            text="Dit bepaalt het maximaal aantal draden dat de inslag boven of onder mag zijn"/>
                                 </tooltip>
                             </JFXTextField>
                             <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" promptText="Draad" text="5">
                                 <tooltip>
-                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
+                                    <Tooltip
+                                            text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
                                 </tooltip>
                             </JFXTextField>
-
-                            <JFXButton fx:id="buttonBindingCreator"
-                                       mnemonicParsing="false" onAction="#openBindingCreator"
-                                       styleClass="button-raised"
-                                       text="Binding maken" textAlignment="CENTER">
-                                <tooltip>
-                                    <Tooltip text="Opent een editor waar je eigen bindings kan maken en opslaan"/>
-                                </tooltip>
-                            </JFXButton>
-                            <JFXButton fx:id="buttonColorBindingLinker"
-                                       mnemonicParsing="false" onAction="#openBindingColorSelector"
-                                       styleClass="button-raised"
-                                       text="Link bindings met kleuren" textAlignment="CENTER">
-                                <tooltip>
-                                    <Tooltip text="Opent een editor waar je handmatig vanaf nul bindings kan gaan toekennen"/>
-                                </tooltip>
-                            </JFXButton>
                         </VBox>
                     </TitledPane>
                 </panes>
