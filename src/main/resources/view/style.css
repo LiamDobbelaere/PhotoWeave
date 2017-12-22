@@ -201,3 +201,11 @@
     -fx-background-color: derive(gray,80%);
     -jfx-focus-color: black;
 }
+
+.custom-list-view {
+    -fx-text-fill: white;
+}
+
+.custom-list-view .list-cell:selected {
+    -fx-background-color: -app-color;
+}

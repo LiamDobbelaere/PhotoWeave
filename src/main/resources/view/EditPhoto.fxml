@@ -28,9 +28,10 @@
 <?import java.net.URL?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.canvas.Canvas?>
+<?import com.jfoenix.controls.JFXListView?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0"
-      xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
-      fx:controller="be.howest.photoweave.controllers.EditPhoto">
+            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
+            fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css"/>
         <URL value="@../style/accordion.css"/>
@@ -296,6 +297,17 @@
                                 </tooltip>
                             </JFXCheckBox>
                         </VBox>
+                    </TitledPane>
+                    <TitledPane expanded="false" style="-fx-background-color: -app-color;" text="Selecties">
+                        <font>
+                            <Font name="System Bold" size="14.0"/>
+                        </font>
+                        <AnchorPane>
+                            <JFXListView styleClass="custom-list-view" AnchorPane.topAnchor="0" AnchorPane.rightAnchor="0"
+                                         AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" fx:id="selectionsList">
+
+                            </JFXListView>
+                        </AnchorPane>
                     </TitledPane>
                     <TitledPane expanded="false" text="Extra">
                         <font>

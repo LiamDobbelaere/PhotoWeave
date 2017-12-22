@@ -1,6 +1,6 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.components.SelectionListCell;
 import be.howest.photoweave.components.ColorBindingLinker;
 import be.howest.photoweave.components.PixelatedImageView;
 import be.howest.photoweave.components.SelectBinding;
@@ -21,6 +21,7 @@ import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.util.PrimitiveUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.Observable;
@@ -47,7 +48,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 public class EditPhoto implements ThreadEventListener {
@@ -78,6 +81,7 @@ public class EditPhoto implements ThreadEventListener {
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
     public Label sizeWarning;
+    public JFXListView<Region> selectionsList;
 
     /*  */
     private int imageWidth;
@@ -156,6 +160,18 @@ public class EditPhoto implements ThreadEventListener {
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
         this.filename = path.substring(path.lastIndexOf("/") + 1);
+        this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage));
+        this.selectionsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) return;
+
+            BindingFilter bf = (BindingFilter) this.filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+            bf.getRegions().forEach(region -> region.setMarked(false));
+
+            newValue.setMarked(true);
+
+            filteredImage.redraw();
+        });
 
         // Global
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
@@ -575,6 +591,7 @@ public class EditPhoto implements ThreadEventListener {
                     vboxSelectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
 
                     redrawPhotoView();
+                    repopulateSelectionList();
                 });
     }
 
@@ -776,7 +793,7 @@ public class EditPhoto implements ThreadEventListener {
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
             fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
-        } else if (filterDescription == filterDescription.JSON){
+        } else if (filterDescription == filterDescription.JSON) {
             fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
         } else {
             fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);
@@ -835,5 +852,37 @@ public class EditPhoto implements ThreadEventListener {
         if (newWindow) {
             openStartWindow();
         }
+    }
+
+    private void repopulateSelectionList() {
+
+        //Delete regions that no longer exist
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        Iterator<Region> selectionListIterator = selectionsList.getItems().iterator();
+        ArrayList<Region> itemsToRemove = new ArrayList<>();
+
+        while (selectionListIterator.hasNext()) {
+            Region region = selectionListIterator.next();
+
+            if (!bf.getRegions().contains(region)) {
+                itemsToRemove.add(region);
+            }
+        }
+
+        //Add regions that don't exist yet
+        Iterator<Region> bindingRegionsIterator = bf.getRegions().iterator();
+        ArrayList<Region> itemsToAdd = new ArrayList<>();
+
+        while (bindingRegionsIterator.hasNext()) {
+            Region region = bindingRegionsIterator.next();
+
+            if (!selectionsList.getItems().contains(region)) {
+                itemsToAdd.add(region);
+            }
+        }
+
+        selectionsList.getItems().removeAll(itemsToRemove);
+        selectionsList.getItems().addAll(itemsToAdd);
     }
 }
