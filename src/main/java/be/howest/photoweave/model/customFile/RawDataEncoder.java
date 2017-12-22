@@ -62,8 +62,8 @@ public class RawDataEncoder {
         /* ---------*/
 
         /* Mutation */
-        Mutation mutation = new Mutation(new Scale(modImage.getWidth(),
-                                         modImage.getHeight()),
+        Mutation mutation = new Mutation(modImage.getWidth(),
+                                         modImage.getHeight(),
                                          ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount(),
                                          bindings,
                                          sd);

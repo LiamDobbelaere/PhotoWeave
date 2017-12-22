@@ -23,4 +23,6 @@ public class CustomFile {
     public UserInterfaceData getUserInterface() {
         return userInterface;
     }
+
+
 }

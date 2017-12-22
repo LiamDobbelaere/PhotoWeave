@@ -20,4 +20,8 @@ public interface ParametersInterface extends ThreadEventListener {
     void setUIComponentXFloater(int asInt);
 
     void setUIComponentYFloater(int asInt);
+
+    void setUIComponentWidth(int width);
+
+    void setUIComponentHeight(int height);
 }

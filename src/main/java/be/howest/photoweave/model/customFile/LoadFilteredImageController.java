@@ -21,6 +21,7 @@ import java.util.Map;
 public class LoadFilteredImageController {
 
     private UserInterfaceData userInterfaceData;
+    private int posterize;
 
     public FilteredImage getFilteredImage() {
         return filteredImage;
@@ -31,7 +32,7 @@ public class LoadFilteredImageController {
     private ParametersInterface parent;
 
     public LoadFilteredImageController(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,  ParametersInterface parent){
-        load(image,posterization,enableFloaters,xFloater,yFloater,false,null,null,parent);
+        load(image,posterization,enableFloaters,xFloater,yFloater,-1, -1,false,null,null,parent);
     }
 
     public LoadFilteredImageController(File jsonFile, ParametersInterface parent) throws IOException {
@@ -43,10 +44,10 @@ public class LoadFilteredImageController {
         UserInterfaceData userInterfaceData = file.getUserInterface();
         this.userInterfaceData = userInterfaceData;
 
-        load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),userInterfaceData.isInverted(),decoder.getBindingMap(), decoder.getRegions(), parent);
+        load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),mutation.getWidth(), mutation.getHeight(),userInterfaceData.isInverted(),decoder.getBindingMap(), decoder.getRegions(), parent);
     }
 
-    private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater, boolean inverted, Map<Integer,Binding> bindingMap, List<Region> regions,  ParametersInterface parent){
+    private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,int width, int height, boolean inverted, Map<Integer,Binding> bindingMap, List<Region> regions,  ParametersInterface parent){
         this.parent = parent;
 
         this.filteredImage = new FilteredImage(image);
@@ -70,6 +71,8 @@ public class LoadFilteredImageController {
         FloatersFilter floatersFilter = (FloatersFilter) this.filteredImage.getFilters().findImageFilter(FloatersFilter.class);
         floatersFilter.setFloaterTresholdX(xFloater);
         floatersFilter.setFloaterTresholdY(yFloater);
+
+        loadDataBeforeListenAreHooked(posterization,width,height);
     }
 
     /* WHAT WILL CAUSE A FILTEREDIMAGE RESET
@@ -99,15 +102,25 @@ public class LoadFilteredImageController {
     * -> UI: scrollX, scrollY
     * */
     public void loadDataInUserInterface(){
-        this.parent.setUIComponentInverted(this.userInterfaceData.isInverted()); //DURING INIT
-        //this.parent.setUICompentenPosterize(); // poseterization before hook //
-        this.parent.setUIComponentViewHeight(this.userInterfaceData.getViewHeight()); //DURING INIT
-        this.parent.setUIComponentViewWidth(this.userInterfaceData.getViewWidth()); //DURING INIT
-        this.parent.setUIComponentMarked(this.userInterfaceData.isMarked()); //
+        this.parent.setUIComponentInverted(this.userInterfaceData.isInverted());
+        this.parent.setUIComponentViewHeight(this.userInterfaceData.getViewHeight());
+        this.parent.setUIComponentViewWidth(this.userInterfaceData.getViewWidth());
+        this.parent.setUIComponentMarked(this.userInterfaceData.isMarked());
         this.parent.setUIComponentXFloater(this.userInterfaceData.getxFloater());
         this.parent.setUIComponentYFloater(this.userInterfaceData.getyFloater());
         this.parent.setUIComponentXScroll(this.userInterfaceData.getxScroll());
         this.parent.setUIComponentYScroll(this.userInterfaceData.getyScroll());
 
     }
+
+    public void loadDataBeforeListenAreHooked(int posterization, int width, int height){
+        this.filteredImage.resize(width, height);
+        this.parent.setUIComponentWidth(width);
+        this.parent.setUIComponentHeight(height);
+
+        ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(posterization);
+        this.parent.setUICompentenPosterize(posterization);
+
+    }
 }
+

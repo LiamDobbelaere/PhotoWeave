@@ -25,7 +25,6 @@ public class SaveFilteredImageController {
         CustomFile fileData = encoder.getRawData();
 
         String json = g.toJson(fileData);
-        System.out.println(json);
         try(  PrintWriter out = new PrintWriter( path )  ){
             out.println( json );
         }
