@@ -43,12 +43,11 @@
           AnchorPane.topAnchor="0.0">
         <MenuBar prefHeight="25.0" prefWidth="1143.0" style="-fx-background-color: #efefef;">
             <Menu mnemonicParsing="false" text="Bestand">
-                <MenuItem mnemonicParsing="false" text="Nieuw"/>
-                <MenuItem mnemonicParsing="false" text="Openen"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan als"/>
-                <MenuItem mnemonicParsing="false" text="Exporteren"/>
-                <MenuItem mnemonicParsing="false" text="Sluiten"/>
+                <MenuItem mnemonicParsing="false" text="Nieuw" onAction="#makeNewFile"/>
+                <MenuItem mnemonicParsing="false" text="Openen" onAction="#openFile"/>
+                <MenuItem mnemonicParsing="false" text="Opslaan" onAction="#saveFile"/>
+                <MenuItem mnemonicParsing="false" text="Exporteren" onAction="#exportImage"/>
+                <MenuItem mnemonicParsing="false" text="Sluiten" onAction="#closeWindow"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Bewerken">
                 <MenuItem mnemonicParsing="false" text="Ongedaan maken"/>
@@ -175,7 +174,7 @@
                         </HBox.margin>
                     </JFXButton>
                     <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false"
-                               onAction="#saveImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised"
+                               onAction="#exportImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised"
                                text="Exporteren" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="De bewerkte afbeelding opslaan als bitmap (bmp)"/>

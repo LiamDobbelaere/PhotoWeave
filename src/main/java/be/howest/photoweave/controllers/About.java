@@ -1,5 +1,6 @@
 package be.howest.photoweave.controllers;
 
+import be.howest.photoweave.model.util.CreateWindow;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,16 +18,9 @@ import java.util.Scanner;
 public class About {
     public AnchorPane anchorPane;
 
-    public void showApache20License(ActionEvent actionEvent) {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/License.fxml"));
-
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void showApache20License(ActionEvent actionEvent) throws IOException {
+        CreateWindow newWindow = new CreateWindow("Licence",0,0,"view/License.fxml", false, true);
+        Scene scene = newWindow.getScene();
 
         TextArea textArea = (TextArea) scene.lookup("#license");
 
@@ -48,13 +42,6 @@ public class About {
 
         textArea.setText(result.toString());
 
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("About");
-        stage.setScene(scene);
-        stage.initOwner(this.anchorPane.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+        newWindow.focusWaitAndShowWindow(this.anchorPane.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 }
