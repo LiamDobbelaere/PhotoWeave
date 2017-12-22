@@ -254,12 +254,6 @@ public class EditPhoto implements ThreadEventListener {
         }
     }
 
-    public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
-        ((BindingMaker) newWindow.getController()).initialize();
-        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
-    }
-
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
@@ -268,7 +262,6 @@ public class EditPhoto implements ThreadEventListener {
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
-
 
     /* Event Handlers */
     private void initializeListeners() {
