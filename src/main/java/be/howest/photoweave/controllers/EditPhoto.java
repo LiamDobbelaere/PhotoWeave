@@ -310,7 +310,7 @@ public class EditPhoto implements ParametersInterface {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
 
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
+        CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, true);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
@@ -825,7 +825,7 @@ public class EditPhoto implements ParametersInterface {
     }
 
     @Override
-    public void setUIComponentHeight(double asDouble) {
+    public void setUIComponentViewHeight(double asDouble) {
         System.out.println("== fit height ==");
         System.out.println(asDouble);
         System.out.println(photoView.getFitHeight());
@@ -836,7 +836,7 @@ public class EditPhoto implements ParametersInterface {
     }
 
     @Override
-    public void setUIComponentWidth(double asDouble) {
+    public void setUIComponentViewWidth(double asDouble) {
         System.out.println("== fit width ==");
         System.out.println(asDouble);
         System.out.println(photoView.getFitWidth());
@@ -864,17 +864,27 @@ public class EditPhoto implements ParametersInterface {
         this.YScroll = asDouble;
     }
 
+    @Override
+    public void setUIComponentXFloater(int asInt) {
+        this.textFieldXFloaters.setText(String.valueOf(asInt));
+    }
+
+    @Override
+    public void setUIComponentYFloater(int asInt) {
+        this.textFieldYFloaters.setText(String.valueOf(asInt));
+    }
+
 
     /* FXML Hook add button*/
     private void collectUserInterfaceData() {
         this.userInterfaceData = new UserInterfaceData();
         this.userInterfaceData.setInverted(this.checkBoxInvert.selectedProperty().getValue());
-        this.userInterfaceData.setMarked(this.checkBoxMarkBinding.selectedProperty().getValue());
-        this.userInterfaceData.setBindingIndex(0); //TODO change
+        //this.userInterfaceData.setMarked(this.checkBoxMarkBinding.selectedProperty().getValue());
+        //this.userInterfaceData.setBindingIndex(0); //TODO change
         this.userInterfaceData.setxFloater(Integer.parseInt(this.textFieldXFloaters.getText()));
         this.userInterfaceData.setyFloater(Integer.parseInt(this.textFieldYFloaters.getText()));
-        this.userInterfaceData.setHeight(this.photoView.getFitHeight());
-        this.userInterfaceData.setWidth(this.photoView.getFitWidth());
+        this.userInterfaceData.setViewHeight(this.photoView.getFitHeight());
+        this.userInterfaceData.setViewWidth(this.photoView.getFitWidth());
         this.userInterfaceData.setxScroll(this.imageScrollPane.getHvalue());
         this.userInterfaceData.setyScroll(this.imageScrollPane.getVvalue());
 

@@ -36,8 +36,6 @@ public class RawDataEncoder {
         List<BindingData> bindings = new ArrayList<BindingData>();
         Map<Integer, Binding> bm = bf.getBindingsMap();
 
-        List<Region> sl = bf.getRegions();
-
         bm.forEach((index, binding) -> {
             try {
                 bindings.add(new BindingData(binding.getName(), index, ImageUtil.convertImageToBase64(binding.getBindingImage())));
@@ -45,11 +43,31 @@ public class RawDataEncoder {
                 e.printStackTrace();
             }
         });
-
         /* ------- */
 
+        /* Regions */
+        List<Region> sl = bf.getRegions();
+        List<RegionData> sd = new ArrayList<>();
+        sl.forEach((region -> {
+            Binding newBinding = region.getTargetBinding();
+            BindingData bindingData = null;
+            try {
+                bindingData = new BindingData(newBinding.getName(), region.getTargetLevel(), ImageUtil.convertImageToBase64(newBinding.getBindingImage()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        Mutation mutation = new Mutation(new Scale(modImage.getWidth(),modImage.getHeight()),((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount(),bindings);
+            sd.add(new RegionData(bindingData, region.getSelection()));
+        }));
+        /* ---------*/
+
+        /* Mutation */
+        Mutation mutation = new Mutation(new Scale(modImage.getWidth(),
+                                         modImage.getHeight()),
+                                         ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount(),
+                                         bindings,
+                                         sd);
+        /* -------- */
 
         this.rawData = new CustomFile(imageData,mutation,userInterfaceData);
     }

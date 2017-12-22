@@ -6,11 +6,13 @@ public class Mutation{
     private Scale scale;
     private int posterization;
     private List<BindingData> bindingpalette;
+    private List<RegionData> regionData;
 
-    public Mutation(Scale scale, int posterization, List<BindingData> bindingpalette) {
+    public Mutation(Scale scale, int posterization, List<BindingData> bindingpalette, List<RegionData> regionData) {
         this.scale = scale;
         this.posterization = posterization;
         this.bindingpalette = bindingpalette;
+        this.regionData = regionData;
     }
 
     public Scale getScale() {
@@ -23,5 +25,9 @@ public class Mutation{
 
     public List<BindingData> getBindingpalette() {
         return bindingpalette;
+    }
+
+    public List<RegionData> getRegionData() {
+        return regionData;
     }
 }

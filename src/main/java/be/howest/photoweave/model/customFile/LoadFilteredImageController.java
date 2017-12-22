@@ -10,17 +10,17 @@ import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.GrayscaleFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
-import com.google.gson.JsonObject;
+import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class LoadFilteredImageController {
 
     private UserInterfaceData userInterfaceData;
-    private JsonObject jsonObject;
 
     public FilteredImage getFilteredImage() {
         return filteredImage;
@@ -31,7 +31,7 @@ public class LoadFilteredImageController {
     private ParametersInterface parent;
 
     public LoadFilteredImageController(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,  ParametersInterface parent){
-        load(image,posterization,enableFloaters,xFloater,yFloater,false,null,parent);
+        load(image,posterization,enableFloaters,xFloater,yFloater,false,null,null,parent);
     }
 
     public LoadFilteredImageController(File jsonFile, ParametersInterface parent) throws IOException {
@@ -43,10 +43,10 @@ public class LoadFilteredImageController {
         UserInterfaceData userInterfaceData = file.getUserInterface();
         this.userInterfaceData = userInterfaceData;
 
-        load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),userInterfaceData.isInverted(),decoder.getBindingMap(),parent);
+        load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),userInterfaceData.isInverted(),decoder.getBindingMap(), decoder.getRegions(), parent);
     }
 
-    private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,boolean inverted, Map<Integer,Binding> bindingMap,  ParametersInterface parent){
+    private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater, boolean inverted, Map<Integer,Binding> bindingMap, List<Region> regions,  ParametersInterface parent){
         this.parent = parent;
 
         this.filteredImage = new FilteredImage(image);
@@ -59,6 +59,8 @@ public class LoadFilteredImageController {
         BindingFilter bf = ((BindingFilter)this.filteredImage.getFilters().findRGBFilter(BindingFilter.class));
         Map<Integer, Binding> bm = bf.getBindingsMap();
         if (bindingMap != null) bm.putAll(bindingMap);
+        List<Region> rl = bf.getRegions();
+        if (regions != null) rl.addAll(regions);
 
         this.filteredImage.getFilters().add(new FloatersFilter(enableFloaters));
 
@@ -70,13 +72,42 @@ public class LoadFilteredImageController {
         floatersFilter.setFloaterTresholdY(yFloater);
     }
 
+    /* WHAT WILL CAUSE A FILTEREDIMAGE RESET
+    * ! Changing Posterize
+    * ! Changing FilterImage scale (not PixelatedImageView scale)
+    * */
+
+    /* SETTING UI PARAMETERS FROM CUSTOM FILE
+    * Constructor() -> UI nodes not loaded
+    * initialize() -> UI nodes being hooked to controller
+    * [During] initialize() -> Listeners are hooked to UI nodes
+    * [After] "Hooked Listeners" in initialize -> loadDataInUserInterface <-
+    * [After] initialize() -> Logic is applied
+    * */
+
+
+    /* WHEN IT (ACTUALLY) IS APPLIED
+    * Constructor() -> UI nodes not loaded
+    * initialize() -> UI nodes being hooked to controller
+    * -> posterization
+    * -> filterImage scale (width, height)
+    * [During] initialize() -> Listeners are hooked to UI nodes
+    * -> UI: inverted
+    * -> UI: PixelatedImageView width, height
+    * -> UI: Floater x,y
+    * [After] initialize() -> Logic is applied
+    * -> UI: scrollX, scrollY
+    * */
     public void loadDataInUserInterface(){
         this.parent.setUIComponentInverted(this.userInterfaceData.isInverted()); //DURING INIT
         //this.parent.setUICompentenPosterize(); // poseterization before hook //
-        this.parent.setUIComponentHeight(this.userInterfaceData.getHeight()); //DURING INIT
-        this.parent.setUIComponentWidth(this.userInterfaceData.getWidth()); //DURING INIT
+        this.parent.setUIComponentViewHeight(this.userInterfaceData.getViewHeight()); //DURING INIT
+        this.parent.setUIComponentViewWidth(this.userInterfaceData.getViewWidth()); //DURING INIT
         this.parent.setUIComponentMarked(this.userInterfaceData.isMarked()); //
+        this.parent.setUIComponentXFloater(this.userInterfaceData.getxFloater());
+        this.parent.setUIComponentYFloater(this.userInterfaceData.getyFloater());
         this.parent.setUIComponentXScroll(this.userInterfaceData.getxScroll());
         this.parent.setUIComponentYScroll(this.userInterfaceData.getyScroll());
+
     }
 }

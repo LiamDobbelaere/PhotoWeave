@@ -3,7 +3,7 @@ package be.howest.photoweave.model.customFile.data;
 public class UserInterfaceData {
     private boolean inverted, marked;
     private int bindingIndex, xFloater, yFloater;
-    private double height, width, xScroll, yScroll;
+    private double viewHeight, viewWidth, xScroll, yScroll;
 
     public UserInterfaceData() {
     }
@@ -48,22 +48,6 @@ public class UserInterfaceData {
         this.yFloater = yFloater;
     }
 
-    public double getHeight() {
-        return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
     public double getxScroll() {
         return xScroll;
     }
@@ -78,5 +62,21 @@ public class UserInterfaceData {
 
     public void setyScroll(double yScroll) {
         this.yScroll = yScroll;
+    }
+
+    public double getViewHeight() {
+        return viewHeight;
+    }
+
+    public void setViewHeight(double viewHeight) {
+        this.viewHeight = viewHeight;
+    }
+
+    public double getViewWidth() {
+        return viewWidth;
+    }
+
+    public void setViewWidth(double viewWidth) {
+        this.viewWidth = viewWidth;
     }
 }

@@ -5,29 +5,17 @@ import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
-import be.howest.photoweave.model.util.ImageUtil;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXListCell;
-import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-import java.awt.*;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ColorBindingLinker implements ThreadEventListener {
@@ -79,7 +67,15 @@ public class ColorBindingLinker implements ThreadEventListener {
 
         scrollpane.setContent(vbox);
 
+        Stage stage = (Stage) anchorpane.getScene().getWindow();
+        stage.setOnCloseRequest(this::onClose);
+
         filteredImage.redraw();
+
+    }
+
+    private void onClose(WindowEvent windowEvent) {
+       useOriginalBindings();
     }
 
     public void saveBindingLibrary(ActionEvent actionEvent) {
@@ -106,6 +102,10 @@ public class ColorBindingLinker implements ThreadEventListener {
     }
 
     public void cancel(ActionEvent actionEvent) {
+        useOriginalBindings();
+    }
+
+    private void useOriginalBindings(){
         bindingFilter.setManualAssign(false);
 
         for (Integer key : mapBackup.keySet()) {
