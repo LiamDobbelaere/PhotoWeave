@@ -45,6 +45,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class EditPhoto implements ParametersInterface {
     /* FXML User Interface */
@@ -73,6 +74,7 @@ public class EditPhoto implements ParametersInterface {
     public Canvas selectionCanvas;
     public JFXButton togglePickerButton;
     public Accordion properties;
+    public Label sizeWarning;
 
     /* User Interface Data */
     private int imageWidth;
@@ -174,14 +176,6 @@ public class EditPhoto implements ParametersInterface {
 
         paneDefault.setExpanded(true);
 
-        Platform.runLater(()->{
-            fuckingWerk();
-        });
-
-
-
-        //imageScrollPane.setVvalue(getYScroll());
-        //imageScrollPane.setHvalue(getXScroll());
     }
 
     public void fuckingWerk(){
@@ -221,16 +215,6 @@ public class EditPhoto implements ParametersInterface {
         this.vboxSelectBinding.setBindingsMap(bf.getBindingsMap(), bf);
     }
 
-    private void updateImage() {
-        filteredImage.redraw();
-        updateUserInterfaceText();
-    }
-
-    private void resizeImage() {
-        filteredImage.resize(imageWidth, imageHeight);
-        updateImage();
-    }
-
     private void redrawPhotoView() {
         writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
         photoView.setImage(writablePhotoview);
@@ -244,6 +228,35 @@ public class EditPhoto implements ParametersInterface {
         selectionCanvas.setHeight(overlayHeight);
         selectionCanvas.getGraphicsContext2D().setStroke(javafx.scene.paint.Paint.valueOf("red"));
     }
+
+
+    private boolean askForConfirmation(String body) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Waarschuwing!");
+        alert.setContentText(body);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void resizeImage() {
+        if (!checkForSelections()) return;
+
+        filteredImage.resize(imageWidth, imageHeight);
+        sizeWarning.setVisible(imageWidth > 4096 || imageHeight > 4096);
+
+        updateImage();
+    }
+
+    private void updateImage() {
+        filteredImage.redraw();
+        updateUserInterfaceText();
+    }
+
 
     /* FXML Hooks */
     public void zoomIn() {
@@ -437,16 +450,18 @@ public class EditPhoto implements ParametersInterface {
     }
 
     private void updatePosterizationLevelOnImage(MouseEvent mouseEvent) {
-        posterizeScale = sliderPosterizationScale.valueProperty().intValue();
-        labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
+        if (askForConfirmation("Als je het posterize-niveau aanpast gaan alle andere wijzigingen verloren, doorgaan?")) {
+            posterizeScale = sliderPosterizationScale.valueProperty().intValue();
+            labelAmountOfColors.setText("Amount of colors: " + posterizeScale);
 
-        PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
-        posterizeFilter.setLevels(posterizeScale);
+            PosterizeFilter posterizeFilter = (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class);
+            posterizeFilter.setLevels(posterizeScale);
 
-        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-        bf.getBindingsMap().clear();
+            BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+            bf.getBindingsMap().clear();
 
-        updateImage();
+            updateImage();
+        }
     }
 
     private boolean shouldUseCanvasLines() {
@@ -477,6 +492,7 @@ public class EditPhoto implements ParametersInterface {
                 imageWidth = Integer.parseInt(newValue);
             }
         }
+
     }
 
     private void ChangeImageHeight(Observable observable, String oldValue, String newValue) {
@@ -487,6 +503,7 @@ public class EditPhoto implements ParametersInterface {
                 imageHeight = Integer.parseInt(newValue);
             }
         }
+
     }
 
     public void showMarkingOnImageView() {
@@ -546,16 +563,27 @@ public class EditPhoto implements ParametersInterface {
         }
     }
 
-    private void ResizeImageWidth(Observable observable, Boolean oldValue, Boolean newValue) {
+    private boolean checkForSelections() {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        if (bf.getRegions().size() > 0) {
+            return askForConfirmation("De afbeelding bevat selecties! Als je doorgaat, worden deze selecties verwijderd.");
+        } else {
+            return true;
+        }
+    }
+
+    private void resizeImageIfOk(Boolean newValue) {
         if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
             resizeImage();
         }
     }
 
+    private void ResizeImageWidth(Observable observable, Boolean oldValue, Boolean newValue) {
+        resizeImageIfOk(newValue);
+    }
+
     private void ResizeImageHeight(Observable observable, Boolean oldValue, Boolean newValue) {
-        if (!newValue && (imageHeight != image.getHeight() || imageWidth != image.getWidth())) {
-            resizeImage();
-        }
+        resizeImageIfOk(newValue);
     }
 
     private BindingChangedEventHandler changeBindingInWovenImage() {
@@ -610,31 +638,9 @@ public class EditPhoto implements ParametersInterface {
     }
 
 
-    /* FXML Hooks */
-    /*public void openFlatteningOptions(ActionEvent actionEvent) {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("view/CalculateFlattening.fxml"));
-
-        Scene scene = null;
-
-        try {
-            scene = new Scene(loader.load());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        CalculateFlattening controller = loader.getController();
-        controller.initialize(this.filteredImage);
-
-        Stage stage = new Stage(StageStyle.DECORATED);
-        stage.setResizable(false);
-        stage.sizeToScene();
-        stage.setTitle("Afplatting berekenen");
-        stage.setScene(scene);
-        stage.initOwner(this.stage.getScene().getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
-=======*/
     public void ShowCalculateWindow(ActionEvent actionEvent) throws IOException {
+        if (!checkForSelections()) return;
+
         CreateWindow newWindow = new CreateWindow("Afplatting Berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
         ((CalculateFlattening) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
