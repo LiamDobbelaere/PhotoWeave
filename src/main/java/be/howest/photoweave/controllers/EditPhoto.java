@@ -35,10 +35,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
@@ -113,7 +111,21 @@ public class EditPhoto implements ParametersInterface {
     private java.util.List<Point> selectionPoints;
     private WritableImage writablePhotoview;
 
+    private double XScroll;
+    private double YScroll;
+
+    private boolean onLoad;
+
+    public double getXScroll() {
+        return XScroll;
+    }
+
+    public double getYScroll() {
+        return YScroll;
+    }
+
     public void initialize(String path) throws IOException {
+        this.onLoad=true;
         this.posterizeScale = 10;
         LoadFilteredImageController lfic;
         if (FilenameUtils.getExtension(path).toLowerCase().equals("json")) {
@@ -161,6 +173,28 @@ public class EditPhoto implements ParametersInterface {
         updateBindingSelection();
 
         paneDefault.setExpanded(true);
+
+        Platform.runLater(()->{
+            fuckingWerk();
+        });
+
+
+
+        //imageScrollPane.setVvalue(getYScroll());
+        //imageScrollPane.setHvalue(getXScroll());
+    }
+
+    public void fuckingWerk(){
+        imageScrollPane.layout();
+        anchorPaneWindow.layout();
+
+        imageScrollPane.setVvalue(getYScroll());
+        imageScrollPane.setHvalue(getXScroll());
+
+        System.out.println(imageScrollPane.getVvalue());
+        System.out.println(imageScrollPane.getHvalue());
+        System.out.println(imageScrollPane.getWidth());
+        System.out.println(imageScrollPane.getHeight());
     }
 
     /* UI */
@@ -201,6 +235,8 @@ public class EditPhoto implements ParametersInterface {
         writablePhotoview = SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null);
         photoView.setImage(writablePhotoview);
 
+        if(onLoad) {fuckingWerk();onLoad = false;}
+
         int overlayWidth = (int) imageScrollPane.getViewportBounds().getWidth();
         int overlayHeight = (int) imageScrollPane.getViewportBounds().getHeight();
 
@@ -213,6 +249,8 @@ public class EditPhoto implements ParametersInterface {
     public void zoomIn() {
         photoView.setFitWidth(Math.floor(photoView.getFitWidth() * 2));
         photoView.setFitHeight(photoView.getFitHeight() * 2);
+        System.out.println(imageScrollPane.getHvalue());
+        System.out.println(imageScrollPane.getVvalue());
     }
 
     public void zoomOut() {
@@ -244,6 +282,15 @@ public class EditPhoto implements ParametersInterface {
         CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
         ((BindingMaker) newWindow.getController()).initialize();
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+        System.out.println("BINDCREATOR");
+        System.out.println(getXScroll());
+        System.out.println(getYScroll());
+        imageScrollPane.setVvalue(getYScroll());
+        imageScrollPane.setHvalue(getXScroll());
+        System.out.println(imageScrollPane.getHvalue());
+        System.out.println(imageScrollPane.getVvalue());
+
+
     }
 
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
@@ -540,6 +587,7 @@ public class EditPhoto implements ParametersInterface {
     @Override
     public void onThreadComplete() {
         //You could add a waiting symbol here
+        //fuckingWerk();
         //redrawPhotoView(); //Optional, but shows the thread's progress in realtime
     }
 
@@ -549,7 +597,6 @@ public class EditPhoto implements ParametersInterface {
                 () -> {
 
                     updateBindingSelection();
-
 
                     vboxSelectBinding
                             .getComboBoxLevels()
@@ -777,7 +824,7 @@ public class EditPhoto implements ParametersInterface {
         System.out.println(asDouble);
         System.out.println(photoView.getFitHeight());
 
-        this.photoView.setFitHeight(asDouble * 1.5);
+        this.photoView.setFitHeight(asDouble);
 
         System.out.println(photoView.getFitHeight());
     }
@@ -788,7 +835,7 @@ public class EditPhoto implements ParametersInterface {
         System.out.println(asDouble);
         System.out.println(photoView.getFitWidth());
 
-        this.photoView.setFitWidth(asDouble * 1.5);
+        this.photoView.setFitWidth(asDouble);
 
         System.out.println(photoView.getFitWidth());
 
@@ -796,14 +843,19 @@ public class EditPhoto implements ParametersInterface {
 
     @Override
     public void setUIComponentXScroll(double asDouble) {
-        System.out.println("SCROLL X CALLED");
-        System.out.println(asDouble);
-        imageScrollPane.setHvalue(asDouble);
+        //System.out.println("SCROLL X CALLED");
+        //imageScrollPane.layout();
+        //System.out.println(asDouble);
+        //imageScrollPane.layout();
+        //imageScrollPane.setHvalue(asDouble);
+        this.XScroll = asDouble;
     }
 
     @Override
     public void setUIComponentYScroll(double asDouble) {
-        imageScrollPane.setVvalue(asDouble);
+        //imageScrollPane.layout();
+        //imageScrollPane.setVvalue(asDouble);
+        this.YScroll = asDouble;
     }
 
 
@@ -817,12 +869,17 @@ public class EditPhoto implements ParametersInterface {
         this.userInterfaceData.setyFloater(Integer.parseInt(this.textFieldYFloaters.getText()));
         this.userInterfaceData.setHeight(this.photoView.getFitHeight());
         this.userInterfaceData.setWidth(this.photoView.getFitWidth());
-        this.userInterfaceData.setxScroll(this.imageScrollPane.getVvalue());
+        this.userInterfaceData.setxScroll(this.imageScrollPane.getHvalue());
         this.userInterfaceData.setyScroll(this.imageScrollPane.getVvalue());
 
     }
     public void showAbout(ActionEvent actionEvent) throws IOException {
         CreateWindow newWindow = new CreateWindow("About", 0.0, 0.0, "view/About.fxml", false, true);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+    }
+
+
+    public ScrollPane getImageScrollPane(){
+        return imageScrollPane;
     }
 }
