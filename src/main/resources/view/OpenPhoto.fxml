@@ -70,7 +70,7 @@
                 <Font name="System Bold" size="16.0" />
             </font>
         </Label>
-        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0" mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="153.0" text="selecteer afbeelding" textAlignment="CENTER">
+        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0" mnemonicParsing="false" onAction="#openNewFileDialog" prefHeight="40.0" prefWidth="153.0" text="selecteer afbeelding" textAlignment="CENTER">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>

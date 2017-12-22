@@ -7,10 +7,7 @@ import be.howest.photoweave.components.SelectBinding;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.properties.bitmapProperties;
-import be.howest.photoweave.model.properties.filterDescription;
-import be.howest.photoweave.model.properties.jsonProperties;
-import be.howest.photoweave.model.properties.saveAsProperties;
+import be.howest.photoweave.model.properties.*;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.ThreadEventListener;
 import be.howest.photoweave.model.imaging.imagefilters.FloatersFilter;
@@ -233,7 +230,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
+        CreateWindow newWindow = new CreateWindow("Maak nieuwe ninding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
         ((BindingMaker) newWindow.getController()).initialize();
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
@@ -242,7 +239,7 @@ public class EditPhoto implements ThreadEventListener {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
 
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
+        CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
@@ -557,7 +554,7 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void ShowCalculateWindow(ActionEvent actionEvent) throws IOException {
-        CreateWindow newWindow = new CreateWindow("Afplatting Berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
+        CreateWindow newWindow = new CreateWindow("Afplatting berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
         ((CalculateFlattening) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
 
@@ -712,19 +709,29 @@ public class EditPhoto implements ThreadEventListener {
     }
 
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, false, true);
+        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+        File file = fp.getFile();
+
+        if (file != null) {
+            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+            newWindow.showWindow();
+        }
     }
 
     public void openFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, false, true);
+        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+        File file = fp.getFile();
+
+        if (file != null) {
+            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+            newWindow.showWindow();
+        }
     }
 
     public void saveFile(ActionEvent actionEvent) {
         openSaveWindow(filterDescription.JSON);
-    }
-
-    public void saveFileAs(ActionEvent actionEvent) {
-        openSaveWindow(filterDescription.ALL);
     }
 
     public void exportImage(ActionEvent actionEvent) {
@@ -738,11 +745,11 @@ public class EditPhoto implements ThreadEventListener {
     private void openSaveWindow(filterDescription filterDescription) {
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
-            fp = new CreateFilePicker(bitmapProperties.title, "user.home", this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtentions);
+            fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
         } else if (filterDescription == filterDescription.JSON){
-            fp = new CreateFilePicker(jsonProperties.title, "user.home", this.stage, jsonProperties.filterDescription, jsonProperties.filterExtentions);
+            fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
         } else {
-            fp = new CreateFilePicker(saveAsProperties.title, "user.home", this.stage, saveAsProperties.filterDescription, saveAsProperties.filterExtentions);
+            fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);
         }
 
         File file = fp.saveFile();
@@ -752,6 +759,8 @@ public class EditPhoto implements ThreadEventListener {
                 if (filterDescription.equals("Bitmap")) {
                     ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
                 } else if (filterDescription.equals("JSON File")) {
+
+                } else {
 
                 }
             } catch (IOException ex) {

@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.model.properties.loadImageProperties;
+import be.howest.photoweave.model.properties.imageProperties;
+import be.howest.photoweave.model.properties.jsonProperties;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ConfigUtil;
@@ -10,6 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
@@ -140,7 +142,15 @@ public class OpenPhoto {
 
     /* FXML Hooks */
     public void openFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(loadImageProperties.title,"user.home", this.stage, loadImageProperties.filterDescription, loadImageProperties.filterExtentions);
+        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+
+        File file = fp.getFile();
+
+        if (file != null) setImagePath(file);
+    }
+
+    public void openNewFileDialog(ActionEvent actionEvent) {
+        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
 
         File file = fp.getFile();
 

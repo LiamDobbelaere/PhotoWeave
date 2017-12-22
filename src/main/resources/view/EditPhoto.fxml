@@ -42,7 +42,6 @@
                 <MenuItem mnemonicParsing="false" text="Nieuw" onAction="#makeNewFile"/>
                 <MenuItem mnemonicParsing="false" text="Openen" onAction="#openFile"/>
                 <MenuItem mnemonicParsing="false" text="Opslaan" onAction="#saveFile"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan als" onAction="#saveFileAs"/>
                 <MenuItem mnemonicParsing="false" text="Exporteren" onAction="#exportImage"/>
                 <MenuItem mnemonicParsing="false" text="Sluiten" onAction="#closeWindow"/>
             </Menu>

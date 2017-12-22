@@ -107,7 +107,7 @@ public class BindingMaker {
     }
 
     public void saveBinding(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker(bitmapProperties.title, "user.home", (Stage) anchorPane.getScene().getWindow(), bitmapProperties.filterDescription, bitmapProperties.filterExtentions);
+        CreateFilePicker fp = new CreateFilePicker(bitmapProperties.title, (Stage) anchorPane.getScene().getWindow(), bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
         File file = fp.saveFile();
 
         if (file != null) {
