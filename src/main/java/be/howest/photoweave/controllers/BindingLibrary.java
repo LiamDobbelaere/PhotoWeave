@@ -2,7 +2,7 @@ package be.howest.photoweave.controllers;
 
 
 import be.howest.photoweave.components.BindingMaker;
-import be.howest.photoweave.components.CreateWindow;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.util.ImageUtil;
