@@ -35,7 +35,11 @@
                     <Insets top="24" bottom="24" left="24" right="24"/>
                 </padding>
                 <Label text="PhotoWeave" style="-fx-font-size: 38"/>
-                <Label text="Ontworpen voor Verilin door:" style="-fx-font-weight: bold"/>
+                <Label text="Ontworpen voor Verilin door:" style="-fx-font-weight: bold">
+                    <tooltip>
+                        <Tooltip text="Met dank aan René Schepers voor zijn feedback en vertrouwen in ons!"/>
+                    </tooltip>
+                </Label>
                 <Label text="Quinten Degraeve"/>
                 <Label text="Tom Dobbelaere"/>
                 <Label text="Ward Pauwels"/>
@@ -57,7 +61,11 @@
                 <AnchorPane>
                     <Label text="Apache License 2.0" style="-fx-font-weight: bold"/>
                     <JFXButton styleClass="button-raised" text="View license" AnchorPane.rightAnchor="0"
-                               AnchorPane.topAnchor="0" onAction="#showApache20License"/>
+                               AnchorPane.topAnchor="0" onAction="#showApache20License">
+                        <tooltip>
+                            <Tooltip text="Toon de volledige tekst van deze licentie"/>
+                        </tooltip>
+                    </JFXButton>
                 </AnchorPane>
                 <Label text="Apache Commons"/>
                 <Label text="JFoenix (http://www.jfoenix.com)"/>

@@ -16,84 +16,113 @@
 <?import javafx.scene.text.Font?>
 
 <?import javafx.scene.layout.BorderPane?>
-<AnchorPane fx:id="anchorPane" prefHeight="600" prefWidth="800" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.OpenPhoto">
-<stylesheets>
-    <URL value="@../style/style.css" />
-    <URL value="@../style/listview.css" />
-</stylesheets>
-<Pane prefHeight="600.0" prefWidth="256.0" style="-fx-background-color: teal;">
-    <children>
-        <ImageView fitHeight="105.0" fitWidth="236.0" layoutX="8.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" smooth="false">
-            <image>
-                <Image url="@../logo-verilin.png" />
-            </image>
-        </ImageView>
-        <Label layoutX="10.0" layoutY="103.0" text="RECENT AANGEMAAKTE ONTWERPEN" textFill="#fffffff7">
-            <font>
-                <Font name="System Bold" size="13.0" />
-            </font>
-        </Label>
+<?import javafx.scene.control.Tooltip?>
+<AnchorPane fx:id="anchorPane" prefHeight="600" prefWidth="800" style="-fx-background-color: white;"
+            stylesheets="@style.css"
+            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="be.howest.photoweave.controllers.OpenPhoto">
+    <stylesheets>
+        <URL value="@../style/style.css"/>
+        <URL value="@../style/listview.css"/>
+    </stylesheets>
+    <Pane prefHeight="600.0" prefWidth="256.0" style="-fx-background-color: -app-color;">
+        <children>
+            <ImageView fitHeight="105.0" fitWidth="236.0" layoutX="8.0" layoutY="6.0" pickOnBounds="true"
+                       preserveRatio="true" smooth="false">
+                <image>
+                    <Image url="@../logo-verilin.png"/>
+                </image>
+            </ImageView>
+            <Label layoutX="10.0" layoutY="103.0" text="RECENT AANGEMAAKTE ONTWERPEN" textFill="#fffffff7">
+                <font>
+                    <Font name="System Bold" size="13.0"/>
+                </font>
+            </Label>
 
-        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="60.0" layoutY="533.0" mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="160.0" style="-fx-background-color: white; -fx-text-fill: teal;" styleClass="button-raised" text="Open ander ontwerp" textAlignment="CENTER">
-            <cursor>
-                <Cursor fx:constant="HAND" />
-            </cursor>
-        </JFXButton>
-        <Label layoutX="37.0" layoutY="541.0" text="of" textFill="WHITE">
-            <font>
-                <Font name="System Bold Italic" size="16.0" />
-            </font>
-        </Label>
-        <ListView fx:id="listViewRecentFiles" layoutY="122.0" prefHeight="399.0" prefWidth="256.0" style="-fx-background-color:transparent;" styleClass="edge-to-edge,list-view-recent" />
-    </children>
-</Pane>
-<Pane fx:id="paneLoading" layoutX="291.0" layoutY="103.0" prefHeight="476.0" prefWidth="479.0" visible="false">
-    <children>
-        <JFXSpinner prefHeight="361.0" prefWidth="479.0" />
-        <Label layoutX="45.0" layoutY="-1.0" text="Afbeelding is aan het laden" textAlignment="CENTER" textFill="TEAL" translateX="50.0" translateY="400.0">
-            <font>
-                <Font size="24.0" />
-            </font>
-        </Label>
-    </children>
-</Pane>
-<Pane fx:id="paneDropFile" layoutX="291.0" layoutY="104.0" prefHeight="361.0" prefWidth="479.0" style="-fx-border-color: teal; -fx-border-width: 3px; -fx-border-radius: 4px; -fx-border-style: dashed; -fx-background-color: #ffffff;">
-    <children>
-        <SVGPath fx:id="fileIcon" content="M 6 2 c -1.1 0 -1.99 0.9 -1.99 2 L 4 20 c 0 1.1 0.89 2 1.99 2 H 18 c 1.1 0 2 -0.9 2 -2 V 8 l -6 -6 H 6 Z m 7 7 V 3.5 L 18.5 9 H 13 Z" fill="TEAL" layoutX="228.0" layoutY="119.0" style="-fx-scale-x: 5; -fx-scale-y: 5;" />
+            <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="60.0" layoutY="533.0" mnemonicParsing="false"
+                       onAction="#openFileDialog" prefHeight="40.0" prefWidth="160.0"
+                       style="-fx-background-color: white; -fx-text-fill: -app-color;" styleClass="button-raised"
+                       text="Open ander ontwerp" textAlignment="CENTER">
+                <cursor>
+                    <Cursor fx:constant="HAND"/>
+                </cursor>
+                <tooltip>
+                    <Tooltip text="Open een projectbestand op je computer"/>
+                </tooltip>
+            </JFXButton>
+            <Label layoutX="37.0" layoutY="541.0" text="of" textFill="WHITE">
+                <font>
+                    <Font name="System Bold Italic" size="16.0"/>
+                </font>
+            </Label>
+            <ListView fx:id="listViewRecentFiles" layoutY="122.0" prefHeight="399.0" prefWidth="256.0"
+                      style="-fx-background-color:transparent;" styleClass="edge-to-edge,list-view-recent"/>
+        </children>
+    </Pane>
+    <Pane fx:id="paneLoading" layoutX="291.0" layoutY="103.0" prefHeight="476.0" prefWidth="479.0" visible="false">
+        <children>
+            <JFXSpinner prefHeight="361.0" prefWidth="479.0"/>
+            <Label layoutX="45.0" layoutY="-1.0" text="Afbeelding is aan het laden" textAlignment="CENTER"
+                   textFill="TEAL" translateX="50.0" translateY="400.0">
+                <font>
+                    <Font size="24.0"/>
+                </font>
+            </Label>
+        </children>
+    </Pane>
+    <Pane fx:id="paneDropFile" layoutX="291.0" layoutY="104.0" prefHeight="361.0" prefWidth="479.0"
+          style="-fx-border-color: teal; -fx-border-width: 3px; -fx-border-radius: 4px; -fx-border-style: dashed; -fx-background-color: #ffffff;">
+        <SVGPath fx:id="fileIcon"
+                 content="M 6 2 c -1.1 0 -1.99 0.9 -1.99 2 L 4 20 c 0 1.1 0.89 2 1.99 2 H 18 c 1.1 0 2 -0.9 2 -2 V 8 l -6 -6 H 6 Z m 7 7 V 3.5 L 18.5 9 H 13 Z"
+                 fill="TEAL" layoutX="228.0" layoutY="119.0" style="-fx-scale-x: 5; -fx-scale-y: 5;"/>
         <BorderPane prefWidth="479.0" prefHeight="200">
             <center>
-                <ImageView layoutX="150.0" layoutY="10.0" fitWidth="200" fitHeight="175" preserveRatio="true" fx:id="viewPreviewImage"/>
+                <ImageView layoutX="150.0" layoutY="10.0" fitWidth="200" fitHeight="175" preserveRatio="true"
+                           fx:id="viewPreviewImage"/>
             </center>
         </BorderPane>
         <Label layoutX="88.0" layoutY="197.0" text="Sleep een afbeelding hier om in te laden" textFill="TEAL">
             <font>
-                <Font name="System Bold" size="16.0" />
+                <Font name="System Bold" size="16.0"/>
             </font>
         </Label>
-        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0" mnemonicParsing="false" onAction="#openNewFileDialog" prefHeight="40.0" prefWidth="153.0" text="selecteer afbeelding" textAlignment="CENTER">
+        <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0"
+                   mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="153.0"
+                   text="selecteer afbeelding" textAlignment="CENTER">
+            <tooltip>
+                <Tooltip text="Selecteer een afbeelding op je computer"/>
+            </tooltip>
             <cursor>
-                <Cursor fx:constant="HAND" />
+                <Cursor fx:constant="HAND"/>
             </cursor>
             <styleClass>
-                <String fx:value="inverted" />
-                <String fx:value="button-raised" />
+                <String fx:value="inverted"/>
+                <String fx:value="button-raised"/>
             </styleClass>
         </JFXButton>
         <Label layoutX="153.0" layoutY="236.0" text="of" textFill="TEAL">
             <font>
-                <Font name="System Bold Italic" size="16.0" />
+                <Font name="System Bold Italic" size="16.0"/>
             </font>
         </Label>
-    </children>
-</Pane>
-<JFXTextField fx:id="textFieldImagePath" disable="true" editable="false" labelFloat="true" layoutX="291.0" layoutY="547.0" prefHeight="25.0" prefWidth="332.0" promptText="Geen afbeelding ingeladen">
-    <font>
-        <Font size="13.0" />
-    </font>
-</JFXTextField>
-<JFXButton fx:id="buttonEdit" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" disable="true" layoutX="635.0" layoutY="493.0" mnemonicParsing="false" onAction="#editPicture" prefHeight="82.0" prefWidth="135.0" styleClass="button-raised" text="Bewerken" textAlignment="CENTER">
-    <cursor>
-        <Cursor fx:constant="HAND" />
-    </cursor>
-</JFXButton>
+    </Pane>
+    <JFXTextField fx:id="textFieldImagePath" disable="true" editable="false" labelFloat="true" layoutX="291.0"
+                  layoutY="547.0" prefHeight="25.0" prefWidth="332.0" promptText="Geen afbeelding ingeladen">
+        <font>
+            <Font size="13.0"/>
+        </font>
+        <tooltip>
+            <Tooltip text="Het pad van de geselecteerde afbeelding"/>
+        </tooltip>
+    </JFXTextField>
+    <JFXButton fx:id="buttonEdit" alignment="CENTER" contentDisplay="CENTER" defaultButton="true" disable="true"
+               layoutX="635.0" layoutY="493.0" mnemonicParsing="false" onAction="#editPicture" prefHeight="82.0"
+               prefWidth="135.0" styleClass="button-raised" text="Bewerken" textAlignment="CENTER">
+        <cursor>
+            <Cursor fx:constant="HAND"/>
+        </cursor>
+        <tooltip>
+            <Tooltip text="Bevestig de gekozen afbeelding en begin met bewerken"/>
+        </tooltip>
+    </JFXButton>
 </AnchorPane>
