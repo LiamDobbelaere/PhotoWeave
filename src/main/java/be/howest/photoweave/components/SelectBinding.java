@@ -120,7 +120,7 @@ public class SelectBinding extends VBox {
         this.bindingFilter = bindingFilter;
         if (SELECTED_BINDING == null){
             this.SELECTED_BINDING = bindings.get(bindings.keySet().iterator().next());
-            this.bindingPicker.setBinding(SELECTED_BINDING);
+            if (SELECTED_BINDING != null) this.bindingPicker.setBinding(SELECTED_BINDING);
         }
 
 
