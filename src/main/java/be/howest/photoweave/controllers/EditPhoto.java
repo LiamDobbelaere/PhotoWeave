@@ -278,8 +278,6 @@ public class EditPhoto implements ParametersInterface {
 
 =======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
-        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-        bf.setManualAssign(true);
         CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);

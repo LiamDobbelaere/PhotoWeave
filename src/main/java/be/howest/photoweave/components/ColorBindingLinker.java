@@ -39,6 +39,8 @@ public class ColorBindingLinker implements ThreadEventListener {
         this.bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         mapBackup = new HashMap<>(this.bindingFilter.getBindingsMap());
 
+        this.bindingFilter.setManualAssign(true);
+
         this.vbox = new VBox();
 
         for (Integer key : this.bindingFilter.getBindingsMap().keySet()) {
