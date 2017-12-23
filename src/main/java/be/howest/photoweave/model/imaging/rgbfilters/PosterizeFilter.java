@@ -44,4 +44,5 @@ public class PosterizeFilter implements RGBFilter {
     public void resize(int newWidth, int newHeight) {
 
     }
+
 }

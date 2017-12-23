@@ -5,10 +5,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 
+import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 
 public class ImageUtil {
 
@@ -52,6 +56,15 @@ public class ImageUtil {
     public static int[] getDataBufferIntData(BufferedImage image){
         DataBufferInt dbb = (DataBufferInt) image.getRaster().getDataBuffer();
         return dbb.getData();
+    }
+
+    public static String convertImageToBase64(BufferedImage image) throws IOException {
+        Graphics graphics = image.getGraphics();
+        graphics.drawImage(image, 0, 0, null);
+        graphics.dispose();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(image,"bmp",output);
+        return DatatypeConverter.printBase64Binary(output.toByteArray());
     }
 
     public static Image resample(Image input, int scaleFactor) {

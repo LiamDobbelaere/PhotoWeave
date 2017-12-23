@@ -2,9 +2,9 @@ package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.model.properties.imageProperties;
 import be.howest.photoweave.model.properties.jsonProperties;
+import be.howest.photoweave.model.util.ConfigUtil;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
-import be.howest.photoweave.model.util.ConfigUtil;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -16,6 +16,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -26,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
@@ -157,17 +159,28 @@ public class OpenPhoto {
         if (file != null) setImagePath(file);
     }
 
-    public void editPicture() {
+    public void openCustomFileDialog() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Verilin PhotoWeave", "*.json"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) setImagePath(file);
+
+        //recent files:
         ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
 
-        if (recentFiles.contains(imagePath)) {
-            recentFiles.remove(imagePath);
+        if (recentFiles.contains(file.getAbsolutePath())) {
+            recentFiles.remove(file.getAbsolutePath());
         }
 
-        recentFiles.add(imagePath);
+        recentFiles.add(file.getAbsolutePath());
 
         ConfigUtil.getPropertiesConfig().setProperty("recentfiles", recentFiles);
+    }
 
+    public void editPicture() {
         showLoading(true);
         Task<FXMLLoader> loadEditPhotoTask = getLoadEditPhotoTask();
 
@@ -241,6 +254,7 @@ public class OpenPhoto {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            CreateWindow finalNewWindow = newWindow;
 
             newWindow.showWindow();
 
@@ -251,6 +265,13 @@ public class OpenPhoto {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            ScrollPane sp = ((EditPhoto)  newWindow.getController()).getImageScrollPane();
+            sp.layout();
+
+            //sp.setVvalue(((EditPhoto)  newWindow.getController()).getYScroll());
+            //sp.setHvalue(((EditPhoto)  newWindow.getController()).getXScroll());
+
+
         });
         task.setOnFailed(event -> task.getException().printStackTrace());
 

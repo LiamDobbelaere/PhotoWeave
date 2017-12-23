@@ -77,6 +77,10 @@ public class BindingFilter implements RGBFilter {
         return regions;
     }
 
+    public void setRegions(List<Region> regions) {
+        this.regions = regions;
+    }
+
     public void setManualAssign(boolean value) {
         this.manualAssign = value;
 

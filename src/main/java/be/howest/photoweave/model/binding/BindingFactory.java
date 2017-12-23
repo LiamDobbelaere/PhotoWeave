@@ -6,7 +6,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,14 +55,6 @@ public class BindingFactory {
         return bindings;
     }
 
-    private Binding getCustomBinding(String path) throws Exception {
-        URI uri = this
-                .getClass()
-                .getClassLoader()
-                .getResource(path)
-                .toURI();
-        return null;
-    }
 
     public Binding[] getOptimizedBindings() {
         return optimizedBindings;
