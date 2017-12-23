@@ -1,21 +1,27 @@
 package be.howest.photoweave.controllers;
 
 
+import be.howest.photoweave.components.BindingMaker;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.util.ImageUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +38,8 @@ public class BindingLibrary {
     //Pass on to the parent controller
     public Binding PASSED_BINDING;
     public boolean applyBinding;
+    public AnchorPane anchorPaneWindow;
+    private Stage stage;
 
 
     private ObservableList<Binding> tempBinding = FXCollections.observableArrayList();
@@ -48,6 +56,8 @@ public class BindingLibrary {
 
         this.tempBinding.clear();
         this.tempBinding.addAll(BindingFactory.getInstance().getBindings());
+
+        this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
 
         HashMap<String, List<Binding>> allBindings = BindingFactory.getInstance().getAllBindings();
         allBindings.forEach(this::generateAccordion);
@@ -122,6 +132,13 @@ public class BindingLibrary {
             generateSearchAccordion();
         }
     }
+
+    public void openBindingCreator(ActionEvent actionEvent) throws IOException {
+        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
+        ((BindingMaker) newWindow.getController()).initialize();
+        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+    }
+
 
     private class BindingRepresentation extends StackPane {
         private int x, y;

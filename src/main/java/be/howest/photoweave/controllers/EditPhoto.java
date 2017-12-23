@@ -1,6 +1,9 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.components.*;
+import be.howest.photoweave.components.ColorBindingLinker;
+import be.howest.photoweave.components.PixelatedImageView;
+import be.howest.photoweave.components.SelectBinding;
+import be.howest.photoweave.components.SelectionListCell;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.ParametersInterface;
@@ -11,9 +14,13 @@ import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
+import be.howest.photoweave.model.properties.*;
+import be.howest.photoweave.model.util.CreateFilePicker;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -33,6 +40,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 
 public class EditPhoto implements ParametersInterface {
@@ -44,6 +53,9 @@ public class EditPhoto implements ParametersInterface {
     public VBox vboxPhotoView;
     public Accordion properties;
     public Canvas selectionCanvas;
+
+    public JFXListView<Region> selectionsList;
+
 
     public Label labelFileNameId, labelAmountOfColors, sizeWarning, filePath;
 
@@ -101,6 +113,7 @@ public class EditPhoto implements ParametersInterface {
             isCustomFile = true;
             lfic = new LoadFilteredImageController(new File(path), this);
             this.image = lfic.getFilteredImage().getOriginalImage();
+            System.out.println("IF " + ((BindingFilter)lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
@@ -109,16 +122,28 @@ public class EditPhoto implements ParametersInterface {
 
         this.filteredImage = lfic.getFilteredImage();
 
+        //Forcing again....
+        //((BindingFilter)this.filteredImage.getFilters().findRGBFilter(BindingFilter.class)).setRegions(lfic.getRegions());
+
         // UI
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
         this.filename = path.substring(path.lastIndexOf("/") + 1);
+        this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage, this));
+        this.selectionsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) return;
+
+            BindingFilter bf = (BindingFilter) this.filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+            bf.getRegions().forEach(region -> region.setMarked(false));
+
+            newValue.setMarked(true);
+
+            filteredImage.redraw();
+        });
 
         // Global
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
-
-        //if (isCustomFile) lfic.loadDataBeforeListenAreHooked();
-
         this.editPhotoEventHandlers = new EditPhotoEventHandlers(this);
         this.editPhotoEventHandlers.initializeListeners();
 
@@ -224,6 +249,7 @@ public class EditPhoto implements ParametersInterface {
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
     }
 
+/*<<<<<<< HEAD
     public void saveImage(ActionEvent actionEvent) {
         CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
 
@@ -250,11 +276,11 @@ public class EditPhoto implements ParametersInterface {
         System.out.println(imageScrollPane.getVvalue());
     }
 
+=======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
-
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Link Kleuren met Bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, true);
+        CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
@@ -262,6 +288,7 @@ public class EditPhoto implements ParametersInterface {
     /* INTERFACE
      * ThreadListener
      */
+
     @Override
     public void OnRedrawBegin() {
         vboxSelectBinding
@@ -294,6 +321,7 @@ public class EditPhoto implements ParametersInterface {
                     vboxSelectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, this.bindingChangedEventHandler);
 
                     redrawPhotoView();
+                    repopulateSelectionList();
                 });
     }
 
@@ -301,7 +329,7 @@ public class EditPhoto implements ParametersInterface {
     public void ShowCalculateWindow(ActionEvent actionEvent) throws IOException {
         if (!checkForSelections()) return;
 
-        CreateWindow newWindow = new CreateWindow("Afplatting Berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
+        CreateWindow newWindow = new CreateWindow("Afplatting berekenen", 0.0, 0.0, "view/CalculateFlattening.fxml", false, true);
         ((CalculateFlattening) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
 
@@ -323,7 +351,15 @@ public class EditPhoto implements ParametersInterface {
 
     public void showChangeSelectionBindingWindow(Region region) throws IOException {
         CreateWindow newWindow = new CreateWindow("Verander specifieke binding in selectie", 0, 0, "view/ChangeSelectionBinding.fxml", false, true);
-        ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region);
+
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        if (bf.getRegions().contains(region)) { //We're editing rather than adding
+            ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region, true);
+        } else {
+            ((ChangeSelectionBinding) newWindow.getController()).initialize(this.filteredImage, region, false);
+        }
+
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
         newWindow.getStage().setOnCloseRequest(((ChangeSelectionBinding) newWindow.getController()).getCloseEventHandler());
 
@@ -344,13 +380,6 @@ public class EditPhoto implements ParametersInterface {
 
     /* FXML Hook */
     public void togglePicker(ActionEvent actionEvent) {
-        try {
-            collectUserInterfaceData();
-            new SaveFilteredImageController(this.filteredImage, this.userInterfaceData).save("C:\\Users\\Quinten\\Pictures\\verilin\\SavedFile\\verilin.json");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         if (editing) toggleEdit(null);
 
         picking = !picking;
@@ -474,8 +503,157 @@ public class EditPhoto implements ParametersInterface {
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
     }
 
-
     public ScrollPane getImageScrollPane() {
         return imageScrollPane;
+    }
+
+    public void makeNewFile(ActionEvent actionEvent) throws IOException {
+    CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+        File file = fp.getFile();
+
+        if (file != null) {
+            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+            newWindow.showWindow();
+        }
+    }
+
+    public void openFile(ActionEvent actionEvent) throws IOException {
+        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+        File file = fp.getFile();
+
+        if (file != null) {
+            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+            newWindow.showWindow();
+        }
+    }
+
+    public void saveFile(ActionEvent actionEvent) {
+        openSaveWindow(filterDescription.JSON);
+    }
+
+    public void exportImage(ActionEvent actionEvent) {
+        openSaveWindow(filterDescription.BITMAP);
+    }
+
+    public void closeWindow(ActionEvent actionEvent) throws IOException {
+        openSaveWarningWindow(filterDescription.JSON, true, false);
+    }
+
+    private void openSaveWindow(filterDescription filterDescription) {
+        System.out.println("SAVE FILE");
+        CreateFilePicker fp;
+        if (filterDescription == filterDescription.BITMAP) {
+            fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
+        } else if (filterDescription == filterDescription.JSON) {
+            System.out.println("JSON FILE");
+            fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+        } else {
+            fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);
+        }
+
+        File file = fp.saveFile();
+
+        if (file != null) {
+            try {
+                if (filterDescription == filterDescription.BITMAP) {
+                    ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
+                } else if (filterDescription == filterDescription.JSON) {
+                    try {
+                        collectUserInterfaceData();
+                        System.out.println(file.getAbsolutePath());
+                        new SaveFilteredImageController(this.filteredImage, this.userInterfaceData).save(file.getAbsolutePath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                }
+            } catch (IOException ex) {
+            }
+        }
+    }
+
+    private void openStartWindow() throws IOException {
+        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
+        ((OpenPhoto) newWindow.getController()).initialize();
+        newWindow.showWindow();
+    }
+
+    private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Waarschuwing!");
+        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken. Wilt u uw bestand eerst opslaan?");
+        alert.setContentText("Druk op opslaan om uw bestand op te slaan, negeren om uw wijzigingen te annuleren en annuleren om verder te gaan met uw huidige bestand.");
+
+        ButtonType buttonSave = new ButtonType("Opslaan");
+        ButtonType buttonIgnore = new ButtonType("Negeren");
+        ButtonType buttonCancel = new ButtonType("Annuleer", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        alert.getButtonTypes().setAll(buttonSave, buttonIgnore, buttonCancel);
+
+        Optional<ButtonType> result = alert.showAndWait();
+
+        if (result.get() == buttonSave) {
+            openSaveWindow(filterDescription);
+            whatWithWindow(closeWindow, newWindow);
+        } else if (result.get() == buttonIgnore) {
+            whatWithWindow(closeWindow, newWindow);
+        } else if (result.get() == buttonCancel) {
+            alert.close();
+        }
+    }
+
+    private void whatWithWindow(boolean closeWindow, boolean newWindow) throws IOException {
+        if (closeWindow) {
+            this.stage.close();
+        }
+        if (newWindow) {
+            openStartWindow();
+        }
+    }
+
+    private void repopulateSelectionList() {
+
+        //Delete regions that no longer exist
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        Iterator<Region> selectionListIterator = selectionsList.getItems().iterator();
+        ArrayList<Region> itemsToRemove = new ArrayList<>();
+
+        while (selectionListIterator.hasNext()) {
+            Region region = selectionListIterator.next();
+
+            if (!bf.getRegions().contains(region)) {
+                itemsToRemove.add(region);
+            }
+        }
+
+        //Add regions that don't exist yet
+        Iterator<Region> bindingRegionsIterator = bf.getRegions().iterator();
+        ArrayList<Region> itemsToAdd = new ArrayList<>();
+
+        while (bindingRegionsIterator.hasNext()) {
+            Region region = bindingRegionsIterator.next();
+
+            if (!selectionsList.getItems().contains(region)) {
+                itemsToAdd.add(region);
+            }
+        }
+
+        selectionsList.getItems().removeAll(itemsToRemove);
+        selectionsList.getItems().addAll(itemsToAdd);
+    }
+
+    public void removeSelections(ActionEvent actionEvent) {
+        BindingFilter bindingFilter = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        for (Region region : bindingFilter.getRegions()) {
+            region.setMarked(false);
+        }
+
+        filteredImage.redraw();
+        selectionsList.getSelectionModel().clearSelection();
     }
 }

@@ -7,6 +7,7 @@ import be.howest.photoweave.controllers.BindingLibrary;
 import be.howest.photoweave.model.binding.Binding;
 import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
+import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -24,7 +25,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.IOException;

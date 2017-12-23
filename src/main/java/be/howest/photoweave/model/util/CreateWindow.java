@@ -1,4 +1,4 @@
-package be.howest.photoweave.components;
+package be.howest.photoweave.model.util;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -85,7 +85,12 @@ public class CreateWindow {
         return stage;
     }
 
+    public Scene getScene() {
+        return scene;
+    }
+    
     private void setFXMLLoader(FXMLLoader loader) {
         this.loader = loader;
     }
+
 }

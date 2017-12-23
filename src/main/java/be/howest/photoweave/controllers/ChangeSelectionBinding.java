@@ -30,13 +30,16 @@ public class ChangeSelectionBinding {
     private BindingFilter bindingFilter;
     private Region region;
 
-    public void initialize(FilteredImage filteredImage, Region region) {
+    private boolean editing;
+
+    public void initialize(FilteredImage filteredImage, Region region, boolean editing) {
         this.filteredImage = filteredImage;
         this.bindingFilter = (BindingFilter) this.filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         this.region = region;
+        this.editing = editing;
 
         region.setMarked(true);
-        this.bindingFilter.addRegion(region);
+        if (!editing) this.bindingFilter.addRegion(region);
 
         List<Integer> levels = new ArrayList<>();
 
@@ -92,7 +95,7 @@ public class ChangeSelectionBinding {
     }
 
     public void cancelChanges(ActionEvent actionEvent) {
-        bindingFilter.removeRegion(region);
+        if (!editing) bindingFilter.removeRegion(region);
 
         Stage stage = (Stage) buttonConfirm.getScene().getWindow();
         stage.close();

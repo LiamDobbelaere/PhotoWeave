@@ -20,8 +20,8 @@ import java.util.Map;
 
 public class LoadFilteredImageController {
 
+    private List<Region> regions;
     private UserInterfaceData userInterfaceData;
-    private int posterize;
 
     public FilteredImage getFilteredImage() {
         return filteredImage;
@@ -31,7 +31,11 @@ public class LoadFilteredImageController {
 
     private ParametersInterface parent;
 
-    public LoadFilteredImageController(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,  ParametersInterface parent){
+    public List<Region> getRegions() {
+        return regions;
+    }
+
+    public LoadFilteredImageController(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater, ParametersInterface parent){
         load(image,posterization,enableFloaters,xFloater,yFloater,-1, -1,false,null,null,parent);
     }
 
@@ -44,35 +48,42 @@ public class LoadFilteredImageController {
         UserInterfaceData userInterfaceData = file.getUserInterface();
         this.userInterfaceData = userInterfaceData;
 
+        System.out.println("LOAD JSON" + decoder.getRegions());
+
         load(decoder.getImage(),mutation.getPosterization(),false,userInterfaceData.getxFloater(),userInterfaceData.getyFloater(),mutation.getWidth(), mutation.getHeight(),userInterfaceData.isInverted(),decoder.getBindingMap(), decoder.getRegions(), parent);
     }
 
     private void load(BufferedImage image, int posterization, boolean enableFloaters, int xFloater, int yFloater,int width, int height, boolean inverted, Map<Integer,Binding> bindingMap, List<Region> regions,  ParametersInterface parent){
+        /* EditPhoto Controller */
         this.parent = parent;
 
+        /* FilteredImage Filters */
         this.filteredImage = new FilteredImage(image);
         this.filteredImage.addThreadEventListener(parent);
         this.filteredImage.getFilters().add(new GrayscaleFilter());
         this.filteredImage.getFilters().add(new PosterizeFilter());
-        this.filteredImage.getFilters().add(new BindingFilter(
-                (PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
+        this.filteredImage.getFilters().add(new BindingFilter((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class), filteredImage));
+        this.filteredImage.getFilters().add(new FloatersFilter(enableFloaters));
 
+        /* Inserting some data before hooking listeners */
+        if (regions != null) loadDataBeforeListenAreHooked(posterization,width,height);
+
+        /* Inserting Custom Bindings */
         BindingFilter bf = ((BindingFilter)this.filteredImage.getFilters().findRGBFilter(BindingFilter.class));
         Map<Integer, Binding> bm = bf.getBindingsMap();
         if (bindingMap != null) bm.putAll(bindingMap);
+
+        /* Inserting Custom Regions */
         List<Region> rl = bf.getRegions();
-        if (regions != null) rl.addAll(regions);
+        if (regions != null) rl.addAll(regions);this.regions = regions;
 
-        this.filteredImage.getFilters().add(new FloatersFilter(enableFloaters));
+        /* Inserting Custom Posterization */
+        ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).setLevels(posterization);
 
-        ((PosterizeFilter) this.filteredImage.getFilters().findRGBFilter(PosterizeFilter.class))
-                .setLevels(posterization);
-
+        /* Inserting Custom Floaters data */
         FloatersFilter floatersFilter = (FloatersFilter) this.filteredImage.getFilters().findImageFilter(FloatersFilter.class);
         floatersFilter.setFloaterTresholdX(xFloater);
         floatersFilter.setFloaterTresholdY(yFloater);
-
-        loadDataBeforeListenAreHooked(posterization,width,height);
     }
 
     /* WHAT WILL CAUSE A FILTEREDIMAGE RESET
