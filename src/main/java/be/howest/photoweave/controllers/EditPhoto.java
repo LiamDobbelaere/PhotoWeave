@@ -19,10 +19,7 @@ import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
 import be.howest.photoweave.model.util.PrimitiveUtil;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -82,6 +79,8 @@ public class EditPhoto implements ThreadEventListener {
     public JFXButton togglePickerButton;
     public Label sizeWarning;
     public JFXListView<Region> selectionsList;
+    public JFXColorPicker weftColorPicker;
+    public JFXColorPicker warpColorPicker;
 
     /*  */
     private int imageWidth;
@@ -903,5 +902,16 @@ public class EditPhoto implements ThreadEventListener {
 
         filteredImage.redraw();
         selectionsList.getSelectionModel().clearSelection();
+    }
+
+    public void changeWeftColor(ActionEvent actionEvent) {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+        bf.setWeftColor(new Color((int) (weftColorPicker.getValue().getRed() * 255), (int) (weftColorPicker.getValue().getGreen() * 255), (int) (weftColorPicker.getValue().getBlue() * 255)));
+    }
+
+    public void changeWarpColor(ActionEvent actionEvent) {
+        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
+
+        System.out.println( warpColorPicker.getValue());
     }
 }

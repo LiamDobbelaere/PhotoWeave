@@ -29,12 +29,17 @@ public class BindingFilter implements RGBFilter {
 
     private List<Region> regions;
 
+    private Color weftColor;
+    private Color warpColor;
+
     public BindingFilter(PosterizeFilter posterizeFilter, FilteredImage filteredImage) {
         this.bindingFactory = BindingFactory.getInstance();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
         this.regions = new ArrayList<>();
+        this.weftColor = Color.BLACK;
+        this.warpColor = Color.WHITE;
     }
 
     public BindingFactory getBindingFactory() {
@@ -146,6 +151,9 @@ public class BindingFilter implements RGBFilter {
             else color = Color.LIGHT_GRAY.getRGB();
         }
 
+        if (color == Color.BLACK.getRGB()) color = weftColor.getRGB();
+        else color = warpColor.getRGB();
+
         return color;
     }
 
@@ -156,5 +164,13 @@ public class BindingFilter implements RGBFilter {
     @Override
     public void resize(int newWidth, int newHeight) {
         this.regions.clear();
+    }
+
+    public void setWeftColor(Color weftColor) {
+        this.weftColor = weftColor;
+    }
+
+    public void setWarpColor(Color warpColor) {
+        this.warpColor = warpColor;
     }
 }

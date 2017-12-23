@@ -30,6 +30,7 @@
 <?import javafx.scene.canvas.Canvas?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.layout.BorderPane?>
+<?import com.jfoenix.controls.JFXColorPicker?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0"
             xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
             fx:controller="be.howest.photoweave.controllers.EditPhoto">
@@ -343,6 +344,14 @@
                                             text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
                                 </tooltip>
                             </JFXTextField>
+                            <AnchorPane>
+                                <Label AnchorPane.leftAnchor="0" text="Kleur inslag:"/>
+                                <JFXColorPicker fx:id="weftColorPicker" AnchorPane.rightAnchor="0" onAction="#changeWeftColor"/>
+                            </AnchorPane>
+                            <AnchorPane>
+                                <Label AnchorPane.leftAnchor="0" text="Kleur draad:" />
+                                <JFXColorPicker fx:id="warpColorPicker" AnchorPane.rightAnchor="0" onAction="#changeWarpColor"/>
+                            </AnchorPane>
                         </VBox>
                     </TitledPane>
                 </panes>
