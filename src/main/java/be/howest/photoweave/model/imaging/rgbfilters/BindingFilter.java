@@ -93,7 +93,7 @@ public class BindingFilter implements RGBFilter {
 
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
-        int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
+        int currentLevel = imageMetaData[0];
 
         int fullX = i % this.filteredImage.getModifiedImage().getWidth();
         int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));

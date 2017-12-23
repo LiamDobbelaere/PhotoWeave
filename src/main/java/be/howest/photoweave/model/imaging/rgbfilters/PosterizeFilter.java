@@ -35,7 +35,7 @@ public class PosterizeFilter implements RGBFilter {
         g = levels[g];
         b = levels[b];
 
-        imageMetaData[0] = (byte) Math.floor(r / (255.0 / (levelCount - 1)));
+        imageMetaData[0] = (byte) Math.floor(r / (256.0 / levelCount));
 
         return a | (r << 16) | (g << 8) | b;
     }

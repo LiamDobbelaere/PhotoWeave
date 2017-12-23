@@ -151,7 +151,7 @@ public class SelectBinding extends VBox {
             setText(null);
 
             if (item != null) {
-                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount() - 1)));
+                int colorInt = (int) Math.round(item * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount())));
                 Color color = new Color(colorInt, colorInt, colorInt);
 
                 VBox colorInfo = new VBox();
