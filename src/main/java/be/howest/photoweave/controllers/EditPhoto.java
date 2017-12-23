@@ -12,7 +12,6 @@ import be.howest.photoweave.model.customFile.SaveFilteredImageController;
 import be.howest.photoweave.model.customFile.data.UserInterfaceData;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
-import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.properties.*;
 import be.howest.photoweave.model.util.CreateFilePicker;
@@ -155,17 +154,12 @@ public class EditPhoto implements ParametersInterface {
         paneDefault.setExpanded(true);
     }
 
-    public void fuckingWerk() {
+    public void setScrollPane() {
         imageScrollPane.layout();
         anchorPaneWindow.layout();
 
         imageScrollPane.setVvalue(getYScroll());
         imageScrollPane.setHvalue(getXScroll());
-
-        System.out.println(imageScrollPane.getVvalue());
-        System.out.println(imageScrollPane.getHvalue());
-        System.out.println(imageScrollPane.getWidth());
-        System.out.println(imageScrollPane.getHeight());
     }
 
     /* UI */
@@ -189,7 +183,7 @@ public class EditPhoto implements ParametersInterface {
         filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(this.filteredImage.getModifiedImage().getWidth()));
         textFieldHeight.setText(String.valueOf(this.filteredImage.getModifiedImage().getHeight()));
-        labelAmountOfColors.setText("Aantal tinten: " + ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount());
+        labelAmountOfColors.setText("Aantal tinten: " + ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap().size());
     }
 
     private void updateBindingSelection() {
@@ -202,7 +196,7 @@ public class EditPhoto implements ParametersInterface {
         photoView.setImage(writablePhotoview);
 
         if (onLoad) {
-            fuckingWerk();
+            setScrollPane();
             onLoad = false;
         }
 

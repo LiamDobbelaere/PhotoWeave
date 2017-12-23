@@ -5,7 +5,6 @@ package be.howest.photoweave.components;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.controllers.BindingLibrary;
 import be.howest.photoweave.model.binding.Binding;
-import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
@@ -44,8 +43,8 @@ public class SelectBinding extends VBox {
     private Map<Integer, Binding> bindings;
 
     //new code
-    private Binding SELECTED_BINDING = BindingFactory.getInstance().getOptimizedBindings()[0]; //temp
-    private BindingPicker bindingPicker = new BindingPicker(0,0,false,false,SELECTED_BINDING);
+    private Binding SELECTED_BINDING; //temp
+    private BindingPicker bindingPicker = new BindingPicker(0,0,SELECTED_BINDING);
     private BindingFilter bindingFilter;
     private ChangeListener levelsChangeListener;
 
@@ -91,11 +90,11 @@ public class SelectBinding extends VBox {
         //b.getStylesheets().setAll("@../style/style.css");
         b.getStyleClass().setAll("button-raised");
         b.setTooltip(new Tooltip("Opent de binding library waar je een nieuwe binding kan selecteren"));
-        b.setOnMouseClicked(this::testOpenib);
+        b.setOnMouseClicked(this::openBindingLibrary);
         gridPane.add(b, 0, 2);
     }
 
-    private void testOpenib(MouseEvent mouseEvent) {
+    private void openBindingLibrary(MouseEvent mouseEvent) {
         CreateWindow newWindow = null;
         try {
             newWindow = new CreateWindow("Binding Library", 0, 0, "view/BindingLibrary.fxml", false, true);
@@ -119,10 +118,16 @@ public class SelectBinding extends VBox {
     public void setBindingsMap(Map<Integer,Binding> bindings, BindingFilter bindingFilter) {
         this.bindings = bindings;
         this.bindingFilter = bindingFilter;
+        if (SELECTED_BINDING == null){
+            this.SELECTED_BINDING = bindings.get(bindings.keySet().iterator().next());
+            this.bindingPicker.setBinding(SELECTED_BINDING);
+        }
+
 
         Integer selectedItem = comboBoxLevels.getSelectionModel().getSelectedItem();
 
         toggleLevelsChangeListener(false);
+
 
         bindingsList.clear();
         levelsList.clear();
@@ -171,23 +176,19 @@ public class SelectBinding extends VBox {
 
     private class BindingPicker extends VBox {
         private int x, y;
-        private Binding binding;
         private int BINDING_SIZE = 60;
         private Label label1, label2;
         private Tooltip tooltip;
 
-        BindingPicker(int x, int y, boolean isFilled, boolean hasStroke, Binding binding) {
+        BindingPicker(int x, int y, Binding binding) {
             this.x = x;
             this.y = y;
-            this.binding = binding;
 
             label1 = new Label();
             label1.relocate(this.x * BINDING_SIZE, this.y * BINDING_SIZE);
 
-            label1.setGraphic(new ImageView(ImageUtil.resample(SwingFXUtils.toFXImage(this.binding.getBindingImage(), null), 4)));
-
-            label2 = new Label(binding.getName());
-            tooltip = new Tooltip(binding.getName());
+            label2 = new Label();
+            tooltip = new Tooltip();
 
             Tooltip.install(this, tooltip);
 
@@ -198,7 +199,6 @@ public class SelectBinding extends VBox {
         }
 
         void setBinding(Binding binding) {
-            this.binding = binding;
             label1.setGraphic(new ImageView(ImageUtil.resample(SwingFXUtils.toFXImage(binding.getBindingImage(), null), 4)));
             label2.setText(binding.getName());
             tooltip.setText(binding.getName());
