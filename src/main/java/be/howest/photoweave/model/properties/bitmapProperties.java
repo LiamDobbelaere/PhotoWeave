@@ -6,5 +6,5 @@ import java.util.List;
 public class bitmapProperties {
     public static final String title = "PhotoWeave | Export Image";
     public static final String filterDescription = "Bitmap";
-    public static final List<String> filterExtensions = Arrays.asList(".bmp");
+    public static final List<String> filterExtensions = Arrays.asList("*.bmp");
 }
