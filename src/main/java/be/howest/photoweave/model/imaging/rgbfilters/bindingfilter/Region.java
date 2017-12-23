@@ -20,7 +20,10 @@ public class Region {
     private int targetLevel;
     private Binding targetBinding;
 
+    private List<Point> selection;
+
     public Region(List<Point> selection) {
+        this.selection = selection;
         int minX = Integer.MAX_VALUE;
         int maxX = 0;
         int minY = Integer.MAX_VALUE;
@@ -46,6 +49,10 @@ public class Region {
 
         addSelectionToRegion(selection);
         autoFill();
+    }
+
+    public List<Point> getSelection() {
+        return selection;
     }
 
     private void addSelectionToRegion(List<Point> selection) {

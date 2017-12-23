@@ -116,7 +116,7 @@ public class SelectBinding extends VBox {
         return SELECTED_BINDING;
     }
 
-    public void setBindingsMap(Map<Integer, Binding> bindings, BindingFilter bindingFilter) {
+    public void setBindingsMap(Map<Integer,Binding> bindings, BindingFilter bindingFilter) {
         this.bindings = bindings;
         this.bindingFilter = bindingFilter;
 

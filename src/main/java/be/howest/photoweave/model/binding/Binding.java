@@ -1,9 +1,13 @@
 package be.howest.photoweave.model.binding;
 
+import be.howest.photoweave.model.util.ImageUtil;
+
 import javax.imageio.ImageIO;
+import javax.xml.bind.DatatypeConverter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,6 +21,13 @@ public class Binding {
         this.bindingImage = ImageIO.read(is);
         this.name = name;
     }
+
+    public Binding(String b64Image, String name) throws IOException {
+        byte[] b64ImageBytes = DatatypeConverter.parseBase64Binary(b64Image);
+        this.bindingImage = ImageUtil.convertImageToRGBInt(ImageIO.read(new ByteArrayInputStream(b64ImageBytes)));
+        this.name = name;
+    }
+
 
     //A copy of the original bindingImage will be returned with the given color
     //Only for UI purposes
