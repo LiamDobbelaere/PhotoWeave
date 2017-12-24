@@ -9,39 +9,35 @@
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="anchorpane" id="anchorpane" prefHeight="600.0" prefWidth="800.0"
             stylesheets="@../view/style.css"
             xmlns="http://javafx.com/javafx/8.0.121" fx:controller="be.howest.photoweave.components.ColorBindingLinker">
-    <children>
-        <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <children>
-                <PixelatedImageView fx:id="imageview" fitHeight="600.0" fitWidth="800.0" pickOnBounds="true"
-                                    preserveRatio="true">
-                    <image>
-                        <Image url="@../logo.png"/>
-                    </image>
-                </PixelatedImageView>
-                <VBox alignment="CENTER" prefHeight="200.0" prefWidth="200.0">
-                    <children>
-                        <ScrollPane fx:id="scrollpane" fitToHeight="true" prefHeight="600.0" prefWidth="200.0">
-                            <content>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="600.0" prefWidth="200.0">
-                                    <children>
-                                        <ComboBox prefWidth="150.0"/>
-                                    </children>
-                                </AnchorPane>
-                            </content>
-                        </ScrollPane>
 
-                        <HBox>
-                            <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
-                                       mnemonicParsing="false" onAction="#saveBindingLibrary" prefHeight="40.0"
-                                       prefWidth="200.0"
-                                       styleClass="button-raised" text="Toepassen" textAlignment="CENTER"/>
-                            <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER"
-                                       mnemonicParsing="false" onAction="#cancel" prefHeight="40.0"
-                                       prefWidth="200.0" text="Annuleren" textAlignment="CENTER"/>
-                        </HBox>
-                    </children>
-                </VBox>
-            </children>
-        </HBox>
-    </children>
+    <BorderPane AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0">
+        <center>
+            <PixelatedImageView fx:id="imageview" pickOnBounds="true" fitHeight="600.0" fitWidth="550.0"
+                                preserveRatio="true">
+                <Image url="@../logo.png"/>
+            </PixelatedImageView>
+        </center>
+        <right>
+            <VBox alignment="CENTER" prefWidth="250.0" spacing="24">
+                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true">
+                    <AnchorPane>
+                        <ComboBox prefWidth="150.0"/>
+                    </AnchorPane>
+                </ScrollPane>
+
+                <BorderPane>
+                    <left>
+                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
+                                   mnemonicParsing="false" onAction="#saveBindingLibrary"
+                                   styleClass="button-raised" text="Toepassen" textAlignment="CENTER"/>
+                    </left>
+                    <right>
+                        <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER"
+                                   mnemonicParsing="false" onAction="#cancel"
+                                   text="Annuleren" textAlignment="CENTER"/>
+                    </right>
+                </BorderPane>
+            </VBox>
+        </right>
+    </BorderPane>
 </AnchorPane>

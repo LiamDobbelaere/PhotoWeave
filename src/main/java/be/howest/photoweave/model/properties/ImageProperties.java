@@ -3,7 +3,7 @@ package be.howest.photoweave.model.properties;
 import java.util.Arrays;
 import java.util.List;
 
-public class imageProperties {
+public class ImageProperties {
     public static final String loadTitle = "PhotoWeave | Load Image";
     public static final String saveTitle = "PhotoWeave | Save Image";
     public static final String filterDescription = "Image Files";

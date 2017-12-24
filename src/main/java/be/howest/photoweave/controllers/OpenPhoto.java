@@ -1,7 +1,7 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.model.properties.imageProperties;
-import be.howest.photoweave.model.properties.jsonProperties;
+import be.howest.photoweave.model.properties.ImageProperties;
+import be.howest.photoweave.model.properties.JsonProperties;
 import be.howest.photoweave.model.util.ConfigUtil;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -101,13 +102,16 @@ public class OpenPhoto {
 
                 setImagePath(file);
 
-                try {
-                    setImagePreview(ImageIO.read(file));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if (!FilenameUtils.getExtension(file.getPath()).toLowerCase().equals("json")) {
+                    try {
+                        setImagePreview(ImageIO.read(file));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
+
         initializeListeners();
     }
 
@@ -141,8 +145,20 @@ public class OpenPhoto {
         textFieldImagePath.setVisible(!bool);
     }
 
-    public void openMakeNewFileDialog(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+    /* FXML Hooks */
+    public void openFileDialog() {
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+
+        File file = fp.getFile();
+
+        if (file != null) {
+            setImagePath(file);
+            updateImageInGUI(file);
+        }
+    }
+
+    public void openNewFileDialog(ActionEvent actionEvent) {
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
 
         File file = fp.getFile();
 
@@ -158,13 +174,17 @@ public class OpenPhoto {
     }
 
     public void openCustomFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
 
         File file = fp.getFile();
 
-        if (file != null) setImagePath(file);
+        if (file != null) {
+            updateRecentFiles(file);
+            setImagePath(file);
+        }
+    }
 
-        //recent files:
+    private void updateRecentFiles(File file) {
         ArrayList<String> recentFiles = ConfigUtil.getRecentFiles();
 
         if (recentFiles.contains(file.getAbsolutePath())) {
@@ -220,18 +240,21 @@ public class OpenPhoto {
         boolean success = false;
         if (event.getGestureSource() != paneDropFile && event.getDragboard().hasFiles()) {
             setImagePath(event.getDragboard().getFiles().get(0));
-
-            try {
-                BufferedImage bi = ImageIO.read(event.getDragboard().getFiles().get(0));
-                setImagePreview(bi);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            updateImageInGUI(event.getDragboard().getFiles().get(0));
 
             success = true;
         }
         event.setDropCompleted(success);
         event.consume();
+    }
+
+    private void updateImageInGUI(File file) {
+        try {
+            BufferedImage bi = ImageIO.read(file);
+            setImagePreview(bi);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -246,7 +269,7 @@ public class OpenPhoto {
         task.setOnSucceeded(event -> {
             CreateWindow newWindow = null;
             try {
-                newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, task.getValue(), false, true);
+                newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, task.getValue(), true, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }

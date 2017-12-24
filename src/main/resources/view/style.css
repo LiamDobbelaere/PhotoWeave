@@ -209,3 +209,10 @@
 .custom-list-view .list-cell:selected {
     -fx-background-color: -app-color;
 }
+
+.tooltip {
+    -fx-background-color: -app-color-secondary;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-background-radius: 0;
+}
