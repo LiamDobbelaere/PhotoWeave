@@ -113,7 +113,7 @@ public class EditPhoto implements ParametersInterface {
             isCustomFile = true;
             lfic = new LoadFilteredImageController(new File(path), this);
             this.image = lfic.getFilteredImage().getOriginalImage();
-            System.out.println("IF " + ((BindingFilter)lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
+            System.out.println("IF " + ((BindingFilter) lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
@@ -147,7 +147,9 @@ public class EditPhoto implements ParametersInterface {
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
         this.stage.setOnCloseRequest(event -> {
             try {
-                openSaveWarningWindow(FilterDescription.JSON, true, false);
+                SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
+
+                if (saveWarningResult == SaveWarningResult.CANCEL) event.consume();
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -1,6 +1,7 @@
 package be.howest.photoweave.controllers;
 
 import be.howest.photoweave.model.properties.ImageProperties;
+import be.howest.photoweave.model.properties.JsonProperties;
 import be.howest.photoweave.model.util.ConfigUtil;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
@@ -26,11 +27,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +111,7 @@ public class OpenPhoto {
                 }
             }
         });
+
         initializeListeners();
     }
 
@@ -143,7 +145,6 @@ public class OpenPhoto {
         textFieldImagePath.setVisible(!bool);
     }
 
-
     /* FXML Hooks */
     public void openFileDialog() {
         CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
@@ -161,15 +162,21 @@ public class OpenPhoto {
 
         File file = fp.getFile();
 
-        if (file != null) setImagePath(file);
+        if (file != null) {
+            setImagePath(file);
+            try {
+                System.out.println(file);
+                setImagePreview(ImageIO.read(file));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void openCustomFileDialog() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Verilin PhotoWeave", "*.json"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
 
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fp.getFile();
 
         if (file != null) {
             updateRecentFiles(file);
