@@ -247,7 +247,7 @@ public class OpenPhoto {
         task.setOnSucceeded(event -> {
             CreateWindow newWindow = null;
             try {
-                newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, task.getValue(), false, true);
+                newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, task.getValue(), true, true);
             } catch (IOException e) {
                 e.printStackTrace();
             }

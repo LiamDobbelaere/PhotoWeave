@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by tomdo on 9/11/2017.
@@ -33,7 +34,7 @@ public class BindingFilter implements RGBFilter {
         this.bindingFactory = BindingFactory.getInstance();
         this.posterizeFilter = posterizeFilter;
         this.filteredImage = filteredImage;
-        this.bindingsMap = new HashMap<>();
+        this.bindingsMap = new ConcurrentHashMap<>();
         this.regions = new ArrayList<>();
     }
 
@@ -85,15 +86,15 @@ public class BindingFilter implements RGBFilter {
         this.manualAssign = value;
 
         if (value) {
-            for (int i = 0; i < this.posterizeFilter.getLevelCount(); i++) {
-                this.getBindingsMap().put(i, null);
+            for (Integer key : this.getBindingsMap().keySet()) {
+                this.getBindingsMap().remove(key);
             }
         }
     }
 
     @Override
     public int applyTo(int rgb, int i, byte[] imageMetaData) {
-        int currentLevel = (int) Math.floor(((rgb >> 16) & 0xff) / (255.0 / (this.posterizeFilter.getLevelCount() - 1)));
+        int currentLevel = imageMetaData[0];
 
         int fullX = i % this.filteredImage.getModifiedImage().getWidth();
         int fullY = ((int) Math.floor(i / this.filteredImage.getModifiedImage().getWidth()));

@@ -12,7 +12,6 @@ import be.howest.photoweave.model.customFile.SaveFilteredImageController;
 import be.howest.photoweave.model.customFile.data.UserInterfaceData;
 import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
-import be.howest.photoweave.model.imaging.rgbfilters.PosterizeFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.properties.*;
 import be.howest.photoweave.model.util.CreateFilePicker;
@@ -117,7 +116,7 @@ public class EditPhoto implements ParametersInterface {
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
-            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, 0, 0, this);
+            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, Integer.parseInt(textFieldXFloaters.getText()), Integer.parseInt(textFieldYFloaters.getText()), this);
         }
 
         this.filteredImage = lfic.getFilteredImage();
@@ -155,17 +154,12 @@ public class EditPhoto implements ParametersInterface {
         paneDefault.setExpanded(true);
     }
 
-    public void fuckingWerk() {
+    public void setScrollPane() {
         imageScrollPane.layout();
         anchorPaneWindow.layout();
 
         imageScrollPane.setVvalue(getYScroll());
         imageScrollPane.setHvalue(getXScroll());
-
-        System.out.println(imageScrollPane.getVvalue());
-        System.out.println(imageScrollPane.getHvalue());
-        System.out.println(imageScrollPane.getWidth());
-        System.out.println(imageScrollPane.getHeight());
     }
 
     /* UI */
@@ -189,7 +183,7 @@ public class EditPhoto implements ParametersInterface {
         filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(this.filteredImage.getModifiedImage().getWidth()));
         textFieldHeight.setText(String.valueOf(this.filteredImage.getModifiedImage().getHeight()));
-        labelAmountOfColors.setText("Aantal tinten: " + ((PosterizeFilter) filteredImage.getFilters().findRGBFilter(PosterizeFilter.class)).getLevelCount());
+        labelAmountOfColors.setText("Aantal tinten: " + ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap().keySet().size());
     }
 
     private void updateBindingSelection() {
@@ -202,7 +196,7 @@ public class EditPhoto implements ParametersInterface {
         photoView.setImage(writablePhotoview);
 
         if (onLoad) {
-            fuckingWerk();
+            setScrollPane();
             onLoad = false;
         }
 
@@ -278,8 +272,6 @@ public class EditPhoto implements ParametersInterface {
 
     =======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
-        BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
-        bf.setManualAssign(true);
         CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
         newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
@@ -585,8 +577,8 @@ public class EditPhoto implements ParametersInterface {
     private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Waarschuwing!");
-        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken. Wilt u uw bestand eerst opslaan?");
-        alert.setContentText("Druk op opslaan om uw bestand op te slaan, negeren om uw wijzigingen te annuleren en annuleren om verder te gaan met uw huidige bestand.");
+        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken.\nWilt u uw bestand eerst opslaan?");
+        alert.setContentText("Druk op opslaan om uw bestand op te slaan of negeren om uw wijzigingen te annuleren.\nDruk annuleren om verder te gaan met uw huidige bestand.");
 
         ButtonType buttonSave = new ButtonType("Opslaan");
         ButtonType buttonIgnore = new ButtonType("Negeren");
