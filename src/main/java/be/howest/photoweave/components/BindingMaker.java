@@ -1,6 +1,6 @@
 package be.howest.photoweave.components;
 
-import be.howest.photoweave.model.properties.bitmapProperties;
+import be.howest.photoweave.model.properties.BitmapProperties;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.beans.value.ChangeListener;
@@ -107,7 +107,7 @@ public class BindingMaker {
     }
 
     public void saveBinding(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker(bitmapProperties.title, (Stage) anchorPane.getScene().getWindow(), bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(BitmapProperties.title, (Stage) anchorPane.getScene().getWindow(), BitmapProperties.filterDescription, BitmapProperties.filterExtensions);
         File file = fp.saveFile();
 
         if (file != null) {

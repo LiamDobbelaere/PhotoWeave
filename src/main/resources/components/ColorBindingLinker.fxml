@@ -12,7 +12,7 @@
 
     <BorderPane AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0">
         <center>
-            <PixelatedImageView fx:id="imageview" pickOnBounds="true" fitWidth="550.0"
+            <PixelatedImageView fx:id="imageview" pickOnBounds="true" fitHeight="600.0" fitWidth="550.0"
                                 preserveRatio="true">
                 <Image url="@../logo.png"/>
             </PixelatedImageView>

@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
@@ -127,6 +128,7 @@ public class EditPhoto implements ParametersInterface {
         // UI
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
+
         this.filename = path.substring(path.lastIndexOf("/") + 1);
         this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage, this));
         this.selectionsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -143,6 +145,15 @@ public class EditPhoto implements ParametersInterface {
 
         // Global
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
+        this.stage.setOnCloseRequest(event -> {
+            try {
+                SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
+
+                if (saveWarningResult == SaveWarningResult.CANCEL) event.consume();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         this.editPhotoEventHandlers = new EditPhotoEventHandlers(this);
         this.editPhotoEventHandlers.initializeListeners();
 
@@ -243,34 +254,6 @@ public class EditPhoto implements ParametersInterface {
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
     }
 
-    /*<<<<<<< HEAD
-        public void saveImage(ActionEvent actionEvent) {
-            CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
-
-            File file = fp.saveFile();
-
-            if (file != null) {
-                try {
-                    ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
-                } catch (IOException ex) {
-                }
-            }
-        }
-
-        public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-            CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
-            ((BindingMaker) newWindow.getController()).initialize();
-            newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
-            System.out.println("BINDCREATOR");
-            System.out.println(getXScroll());
-            System.out.println(getYScroll());
-            imageScrollPane.setVvalue(getYScroll());
-            imageScrollPane.setHvalue(getXScroll());
-            System.out.println(imageScrollPane.getHvalue());
-            System.out.println(imageScrollPane.getVvalue());
-        }
-
-    =======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
@@ -500,50 +483,76 @@ public class EditPhoto implements ParametersInterface {
     }
 
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.BITMAP, true, true);
+        SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
 
-//        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
-//        File file = fp.getFile();
-//
-//        if (file != null) {
-//            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-//            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-//            newWindow.showWindow();
-//        }
+        if (saveWarningResult != SaveWarningResult.CANCEL)
+        {
+            Platform.runLater(() -> {
+                try {
+                    CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+                    File file = fp.getFile();
+
+                    if (file != null) {
+                        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml")), true, true);
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+
+                        newWindow.showWindow();
+                    }
+
+                    this.stage.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
+        }
     }
 
     public void openFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.BITMAP, true, true);
-//        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
-//        File file = fp.getFile();
-//
-//        if (file != null) {
-//            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-//            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-//            newWindow.showWindow();
-//        }
+        SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
+
+        if (saveWarningResult != SaveWarningResult.CANCEL) {
+            Platform.runLater(() -> {
+                CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
+                File file = fp.getFile();
+
+                if (file != null) {
+                    CreateWindow newWindow = null;
+
+                    try {
+                        newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+                        newWindow.showWindow();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    this.stage.close();
+                }
+            });
+        }
     }
 
     public void saveFile(ActionEvent actionEvent) {
-        openSaveWindow(filterDescription.JSON);
+        openSaveWindow(FilterDescription.JSON);
     }
 
     public void exportImage(ActionEvent actionEvent) {
-        openSaveWindow(filterDescription.BITMAP);
+        openSaveWindow(FilterDescription.BITMAP);
     }
 
     public void closeWindow(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, true, false);
+        openSaveWarningWindow(FilterDescription.JSON, true, false);
     }
 
-    private void openSaveWindow(filterDescription filterDescription) {
+    private void openSaveWindow(FilterDescription filterDescription) {
+        System.out.println("SAVE FILE");
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
-            fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
+            fp = new CreateFilePicker(BitmapProperties.title, this.stage, BitmapProperties.filterDescription, BitmapProperties.filterExtensions);
         } else if (filterDescription == filterDescription.JSON) {
-            fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+            System.out.println("JSON FILE");
+            fp = new CreateFilePicker(JsonProperties.saveTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
         } else {
-            fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);
+            fp = new CreateFilePicker(AllFilesProperties.saveTitle, this.stage, AllFilesProperties.filterDescription, AllFilesProperties.filterExtensions);
         }
 
         File file = fp.saveFile();
@@ -569,12 +578,25 @@ public class EditPhoto implements ParametersInterface {
     }
 
     private void openStartWindow() throws IOException {
-        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
-        ((OpenPhoto) newWindow.getController()).initialize();
-        newWindow.showWindow();
+        Platform.runLater(() -> {
+            CreateWindow newWindow = null;
+            try {
+                newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
+                ((OpenPhoto) newWindow.getController()).initialize();
+                newWindow.showWindow();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
+    private enum SaveWarningResult {
+        SAVE,
+        IGNORE,
+        CANCEL
+    }
+
+    private SaveWarningResult openSaveWarningWindow(FilterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Waarschuwing!");
         alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken.\nWilt u uw bestand eerst opslaan?");
@@ -588,14 +610,21 @@ public class EditPhoto implements ParametersInterface {
 
         Optional<ButtonType> result = alert.showAndWait();
 
+        SaveWarningResult saveWarningResult = SaveWarningResult.SAVE;
+
         if (result.get() == buttonSave) {
             openSaveWindow(filterDescription);
             whatWithWindow(closeWindow, newWindow);
+            saveWarningResult = SaveWarningResult.SAVE;
         } else if (result.get() == buttonIgnore) {
             whatWithWindow(closeWindow, newWindow);
+            saveWarningResult = SaveWarningResult.IGNORE;
         } else if (result.get() == buttonCancel) {
             alert.close();
+            saveWarningResult = SaveWarningResult.CANCEL;
         }
+
+        return saveWarningResult;
     }
 
     private void whatWithWindow(boolean closeWindow, boolean newWindow) throws IOException {

@@ -1,6 +1,6 @@
 package be.howest.photoweave.model.properties;
 
-public enum filterDescription {
+public enum FilterDescription {
     JSON,
     BITMAP,
     ALL

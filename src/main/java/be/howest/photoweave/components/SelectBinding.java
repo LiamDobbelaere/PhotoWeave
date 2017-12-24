@@ -1,7 +1,5 @@
 package be.howest.photoweave.components;
 
-//TODO Rechts klikken op ComboBoxBindings open je de BindingLibrary; Links is default combobox.
-
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.controllers.BindingLibrary;
 import be.howest.photoweave.model.binding.Binding;
@@ -28,6 +26,7 @@ import javafx.stage.Modality;
 import java.awt.*;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -119,8 +118,12 @@ public class SelectBinding extends VBox {
         this.bindings = bindings;
         this.bindingFilter = bindingFilter;
         if (SELECTED_BINDING == null){
-            this.SELECTED_BINDING = bindings.get(bindings.keySet().iterator().next());
-            if (SELECTED_BINDING != null) this.bindingPicker.setBinding(SELECTED_BINDING);
+            Iterator<Integer> bindingsIterator = bindings.keySet().iterator();
+
+            if (bindingsIterator.hasNext()) {
+                this.SELECTED_BINDING = bindings.get(bindingsIterator.next());
+                if (SELECTED_BINDING != null) this.bindingPicker.setBinding(SELECTED_BINDING);
+            }
         }
 
 
