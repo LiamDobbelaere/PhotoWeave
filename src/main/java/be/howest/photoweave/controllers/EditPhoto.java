@@ -25,7 +25,6 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -35,7 +34,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
@@ -149,7 +147,7 @@ public class EditPhoto implements ParametersInterface {
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
         this.stage.setOnCloseRequest(event -> {
             try {
-                openSaveWarningWindow(filterDescription.JSON, true, false);
+                openSaveWarningWindow(FilterDescription.JSON, true, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -483,71 +481,76 @@ public class EditPhoto implements ParametersInterface {
     }
 
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, true, false);
+        SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
 
-        Platform.runLater(() -> {
-            try {
-                CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
-                File file = fp.getFile();
+        if (saveWarningResult != SaveWarningResult.CANCEL)
+        {
+            Platform.runLater(() -> {
+                try {
+                    CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+                    File file = fp.getFile();
 
-                if (file != null) {
-                    CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml")), true, true);
-                    ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+                    if (file != null) {
+                        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml")), true, true);
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
 
-                    newWindow.showWindow();
+                        newWindow.showWindow();
+                    }
 
                     this.stage.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+            });
+        }
     }
 
     public void openFile(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, true, false);
+        SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
 
-        Platform.runLater(() -> {
-            CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
-            File file = fp.getFile();
+        if (saveWarningResult != SaveWarningResult.CANCEL) {
+            Platform.runLater(() -> {
+                CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
+                File file = fp.getFile();
 
-            if (file != null) {
-                CreateWindow newWindow = null;
+                if (file != null) {
+                    CreateWindow newWindow = null;
 
-                try {
-                    newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-                    ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-                    newWindow.showWindow();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+                        newWindow.showWindow();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    this.stage.close();
                 }
-                this.stage.close();
-            }
-        });
+            });
+        }
     }
 
     public void saveFile(ActionEvent actionEvent) {
-        openSaveWindow(filterDescription.JSON);
+        openSaveWindow(FilterDescription.JSON);
     }
 
     public void exportImage(ActionEvent actionEvent) {
-        openSaveWindow(filterDescription.BITMAP);
+        openSaveWindow(FilterDescription.BITMAP);
     }
 
     public void closeWindow(ActionEvent actionEvent) throws IOException {
-        openSaveWarningWindow(filterDescription.JSON, true, false);
+        openSaveWarningWindow(FilterDescription.JSON, true, false);
     }
 
-    private void openSaveWindow(filterDescription filterDescription) {
+    private void openSaveWindow(FilterDescription filterDescription) {
         System.out.println("SAVE FILE");
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
-            fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
+            fp = new CreateFilePicker(BitmapProperties.title, this.stage, BitmapProperties.filterDescription, BitmapProperties.filterExtensions);
         } else if (filterDescription == filterDescription.JSON) {
             System.out.println("JSON FILE");
-            fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+            fp = new CreateFilePicker(JsonProperties.saveTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
         } else {
-            fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);
+            fp = new CreateFilePicker(AllFilesProperties.saveTitle, this.stage, AllFilesProperties.filterDescription, AllFilesProperties.filterExtensions);
         }
 
         File file = fp.saveFile();
@@ -585,7 +588,13 @@ public class EditPhoto implements ParametersInterface {
         });
     }
 
-    private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
+    private enum SaveWarningResult {
+        SAVE,
+        IGNORE,
+        CANCEL
+    }
+
+    private SaveWarningResult openSaveWarningWindow(FilterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Waarschuwing!");
         alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken.\nWilt u uw bestand eerst opslaan?");
@@ -599,14 +608,21 @@ public class EditPhoto implements ParametersInterface {
 
         Optional<ButtonType> result = alert.showAndWait();
 
+        SaveWarningResult saveWarningResult = SaveWarningResult.SAVE;
+
         if (result.get() == buttonSave) {
             openSaveWindow(filterDescription);
             whatWithWindow(closeWindow, newWindow);
+            saveWarningResult = SaveWarningResult.SAVE;
         } else if (result.get() == buttonIgnore) {
             whatWithWindow(closeWindow, newWindow);
+            saveWarningResult = SaveWarningResult.IGNORE;
         } else if (result.get() == buttonCancel) {
             alert.close();
+            saveWarningResult = SaveWarningResult.CANCEL;
         }
+
+        return saveWarningResult;
     }
 
     private void whatWithWindow(boolean closeWindow, boolean newWindow) throws IOException {

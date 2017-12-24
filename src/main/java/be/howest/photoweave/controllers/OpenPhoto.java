@@ -1,7 +1,6 @@
 package be.howest.photoweave.controllers;
 
-import be.howest.photoweave.model.properties.imageProperties;
-import be.howest.photoweave.model.properties.jsonProperties;
+import be.howest.photoweave.model.properties.ImageProperties;
 import be.howest.photoweave.model.util.ConfigUtil;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
@@ -147,7 +146,7 @@ public class OpenPhoto {
 
     /* FXML Hooks */
     public void openFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
 
         File file = fp.getFile();
 
@@ -158,7 +157,7 @@ public class OpenPhoto {
     }
 
     public void openNewFileDialog(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
 
         File file = fp.getFile();
 
