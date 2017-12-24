@@ -43,12 +43,17 @@ public class ColorBindingLinker implements ThreadEventListener {
 
         this.vbox = new VBox();
 
+        boolean greyBackground = false;
+
         for (Integer key : this.mapBackup.keySet()) {
             try {
                 SelectBinding selectBinding = new SelectBinding();
 
                 Map<Integer, Binding> bindingMap = new HashMap<>();
                 bindingMap.put(key, this.mapBackup.get(key));
+
+                if (greyBackground)
+                    selectBinding.setStyle("-fx-background-color: #ddd");
 
                 selectBinding.setBindingsMap(bindingMap, this.bindingFilter);
 
@@ -62,6 +67,8 @@ public class ColorBindingLinker implements ThreadEventListener {
                 });
 
                 vbox.getChildren().add(selectBinding);
+
+                greyBackground = !greyBackground;
             } catch (IOException e) {
                 e.printStackTrace();
             }
