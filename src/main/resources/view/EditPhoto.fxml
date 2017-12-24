@@ -29,6 +29,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
+<?import com.jfoenix.controls.JFXSpinner?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css" />
@@ -45,10 +46,6 @@
                 <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Opslaan" />
                 <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Exporteren" />
                 <MenuItem mnemonicParsing="false" onAction="#closeWindow" text="Sluiten" />
-            </Menu>
-            <Menu mnemonicParsing="false" text="Bewerken">
-                <MenuItem mnemonicParsing="false" text="Ongedaan maken" />
-                <MenuItem mnemonicParsing="false" text="Herhalen" />
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
                 <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About" />
@@ -110,7 +107,6 @@
                             <SVGPath content="M16.56 8.94L7.62 0 6.21 1.41l2.38 2.38-5.15 5.15c-.59.59-.59 1.54 0 2.12l5.5 5.5c.29.29.68.44 1.06.44s.77-.15 1.06-.44l5.5-5.5c.59-.58.59-1.53 0-2.12zM5.21 10L10 5.21 14.79 10H5.21zM19 11.5s-2 2.17-2 3.5c0 1.1.9 2 2 2s2-.9 2-2c0-1.33-2-3.5-2-3.5z" fill="WHITE" />
                         </graphic>
                     </JFXButton>
-
                 </HBox>
                 <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0" style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;" HBox.hgrow="ALWAYS">
                     <padding>
@@ -119,6 +115,15 @@
                     <HBox.margin>
                         <Insets />
                     </HBox.margin>
+                    <HBox>
+                        <HBox.margin>
+                            <Insets right="10.0" />
+                        </HBox.margin>
+                        <AnchorPane minWidth="70.0">
+                            <Label visible="false" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" text="0/0" textAlignment="CENTER" alignment="CENTER" fx:id="threadCompleteCount" minWidth="30.0" minHeight="30.0"/>
+                            <JFXSpinner radius="10.0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0" fx:id="loadingSpinner" visible="false" minWidth="30.0"/>
+                        </AnchorPane>
+                    </HBox>
                     <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Inzoomen" />

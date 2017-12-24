@@ -183,4 +183,12 @@ public class FilteredImage {
     public FilterList getFilters() {
         return filters;
     }
+
+    public int getThreadCount() {
+        return threadCount;
+    }
+
+    public int getThreadsDone() {
+        return threadsDone;
+    }
 }

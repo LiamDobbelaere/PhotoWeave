@@ -17,10 +17,7 @@ import be.howest.photoweave.model.properties.*;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
@@ -95,6 +92,8 @@ public class EditPhoto implements ParametersInterface {
     public double YScroll;
 
     public boolean onLoad;
+    public JFXSpinner loadingSpinner;
+    public Label threadCompleteCount;
     private EditPhotoEventHandlers editPhotoEventHandlers;
 
     public double getXScroll() {
@@ -128,6 +127,8 @@ public class EditPhoto implements ParametersInterface {
         // UI
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
+
+        this.threadCompleteCount.setText(String.format("%s/%s", filteredImage.getThreadCount(), filteredImage.getThreadCount()));
 
         this.filename = path.substring(path.lastIndexOf("/") + 1);
         this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage, this));
@@ -266,6 +267,9 @@ public class EditPhoto implements ParametersInterface {
 
     @Override
     public void OnRedrawBegin() {
+        loadingSpinner.setVisible(true);
+        this.threadCompleteCount.setVisible(true);
+        this.threadCompleteCount.setText("0/0");
         vboxSelectBinding
                 .getComboBoxLevels()
                 .getSelectionModel()
@@ -276,6 +280,9 @@ public class EditPhoto implements ParametersInterface {
 
     @Override
     public void onThreadComplete() {
+        Platform.runLater(() -> {
+            this.threadCompleteCount.setText(String.format("%s/%s", filteredImage.getThreadsDone(), filteredImage.getThreadCount()));
+        });
         //You could add a waiting symbol here
         //fuckingWerk();
         //redrawPhotoView(); //Optional, but shows the thread's progress in realtime
@@ -285,7 +292,8 @@ public class EditPhoto implements ParametersInterface {
     public void onRedrawComplete() {
         Platform.runLater(
                 () -> {
-
+                    loadingSpinner.setVisible(false);
+                    this.threadCompleteCount.setVisible(false);
                     updateBindingSelection();
 
                     vboxSelectBinding
