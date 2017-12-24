@@ -102,7 +102,6 @@ public class OpenPhoto {
                 setImagePath(file);
 
                 try {
-                    System.out.println(file);
                     setImagePreview(ImageIO.read(file));
                 } catch (IOException e) {
                     e.printStackTrace();

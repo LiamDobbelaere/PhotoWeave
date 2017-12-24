@@ -2,36 +2,17 @@
 
 <?import be.howest.photoweave.components.PixelatedImageView?>
 <?import be.howest.photoweave.components.SelectBinding?>
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXSlider?>
-<?import com.jfoenix.controls.JFXTextField?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Accordion?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TitledPane?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.SVGPath?>
-<?import javafx.scene.text.Font?>
-
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import javafx.scene.control.Tooltip?>
-<?import java.net.URL?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.canvas.Canvas?>
-<?import com.jfoenix.controls.JFXListView?>
-<?import javafx.scene.layout.BorderPane?>
-<AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0"
-            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@style.css"
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.*?>
+<AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css"/>
@@ -40,32 +21,28 @@
         <URL value="@../style/menu.css"/>
         <URL value="@../style/scrollpane.css"/>
     </stylesheets>
-    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0"
-          prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="800.0" prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
           AnchorPane.topAnchor="0.0">
         <MenuBar prefHeight="25.0" prefWidth="1143.0" style="-fx-background-color: #efefef;">
             <Menu mnemonicParsing="false" text="Bestand">
-                <MenuItem mnemonicParsing="false" text="Nieuw" onAction="#makeNewFile"/>
-                <MenuItem mnemonicParsing="false" text="Openen" onAction="#openFile"/>
-                <MenuItem mnemonicParsing="false" text="Opslaan" onAction="#saveFile"/>
-                <MenuItem mnemonicParsing="false" text="Exporteren" onAction="#exportImage"/>
-                <MenuItem mnemonicParsing="false" text="Sluiten" onAction="#closeWindow"/>
+                <MenuItem mnemonicParsing="false" onAction="#makeNewFile" text="Nieuw"/>
+                <MenuItem mnemonicParsing="false" onAction="#openFile" text="Openen"/>
+                <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Opslaan"/>
+                <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Exporteren"/>
+                <MenuItem mnemonicParsing="false" onAction="#closeWindow" text="Sluiten"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Bewerken">
                 <MenuItem mnemonicParsing="false" text="Ongedaan maken"/>
                 <MenuItem mnemonicParsing="false" text="Herhalen"/>
             </Menu>
             <Menu mnemonicParsing="false" text="Help">
-                <MenuItem mnemonicParsing="false" text="About" onAction="#showAbout"/>
+                <MenuItem mnemonicParsing="false" onAction="#showAbout" text="About"/>
             </Menu>
         </MenuBar>
-        <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0"
-              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Pane prefHeight="77.0" prefWidth="260.0"
-                  style="-fx-border-width: 2 0 2 0; -fx-background-color: teal; -fx-border-color: white; -fx-border-style: dashed;">
+        <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Pane prefHeight="77.0" prefWidth="260.0" style="-fx-border-width: 2 0 2 0; -fx-background-color: teal; -fx-border-color: white; -fx-border-style: dashed;">
                 <children>
-                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="260.0" layoutX="34.0"
-                               layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="260.0" layoutX="34.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                             <Image url="@../logo-verilin-fat.png"/>
                         </image>
@@ -78,19 +55,15 @@
                 </children>
             </Pane>
             <HBox maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
-                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                      minHeight="-Infinity" minWidth="200.0"
-                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;"
-                      HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0"
+                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;" HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets left="10.0"/>
                     </padding>
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
-                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
-                               onAction="#toggleEdit" styleClass="button-raised" minWidth="30.0" mnemonicParsing="false"
-                               textAlignment="CENTER">
+                    <JFXButton fx:id="toggleEditButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#toggleEdit" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Selecteer vrije-vormgebied en verander bepaalde binding"/>
                         </tooltip>
@@ -103,9 +76,7 @@
                                     fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton fx:id="togglePickerButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
-                               onAction="#togglePicker" styleClass="button-raised" minWidth="30.0"
-                               mnemonicParsing="false" textAlignment="CENTER">
+                    <JFXButton fx:id="togglePickerButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#togglePicker" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Selecteer bepaalde binding door te klikken op de foto"/>
                         </tooltip>
@@ -118,9 +89,7 @@
                                     fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton fx:id="openColorBindingLinker" alignment="CENTER" contentDisplay="GRAPHIC_ONLY"
-                               onAction="#openBindingColorSelector" styleClass="button-raised" minWidth="30.0"
-                               mnemonicParsing="false" textAlignment="CENTER">
+                    <JFXButton fx:id="openColorBindingLinker" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#openBindingColorSelector" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Opent een editor waar je handmatig vanaf nul bindings kan gaan toekennen"/>
                         </tooltip>
@@ -135,18 +104,15 @@
                     </JFXButton>
 
                 </HBox>
-                <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                      minHeight="-Infinity" minWidth="200.0"
-                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;"
-                      HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="200.0"
+                      style="-fx-background-color: white; -fx-border-width: 2 0 2 0; -fx-border-color: teal; -fx-border-style: dashed;" HBox.hgrow="ALWAYS">
                     <padding>
                         <Insets right="10.0"/>
                     </padding>
                     <HBox.margin>
                         <Insets/>
                     </HBox.margin>
-                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
-                               onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
+                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Inzoomen"/>
                         </tooltip>
@@ -159,9 +125,7 @@
                                     fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton id="zoomOutButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0"
-                               mnemonicParsing="false" onAction="#zoomOut" styleClass="button-raised"
-                               textAlignment="CENTER">
+                    <JFXButton id="zoomOutButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomOut" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Uitzoomen"/>
                         </tooltip>
@@ -174,8 +138,7 @@
                                     fill="WHITE"/>
                         </graphic>
                     </JFXButton>
-                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false"
-                               onAction="#fitWindow" styleClass="button-raised" textAlignment="CENTER">
+                    <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#fitWindow" styleClass="button-raised" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="Het zoomniveau passend maken"/>
                         </tooltip>
@@ -191,9 +154,7 @@
                             <Insets right="5.0"/>
                         </HBox.margin>
                     </JFXButton>
-                    <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false"
-                               onAction="#exportImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised"
-                               text="Exporteren" textAlignment="CENTER">
+                    <JFXButton fx:id="buttonExport" alignment="BASELINE_RIGHT" mnemonicParsing="false" onAction="#exportImage" prefHeight="59.0" prefWidth="109.0" styleClass="button-raised" text="Exporteren" textAlignment="CENTER">
                         <tooltip>
                             <Tooltip text="De bewerkte afbeelding opslaan als bitmap (bmp)"/>
                         </tooltip>
@@ -212,46 +173,35 @@
                 </HBox>
             </HBox>
         </HBox>
-        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0"
-              prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-            <Accordion minWidth="260.0" prefWidth="260.0" maxWidth="260.0" style="-fx-background-color: white;">
+        <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="321.0" minWidth="459.0" prefHeight="560.0" prefWidth="800.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <Accordion maxWidth="260.0" minWidth="260.0" prefWidth="260.0" style="-fx-background-color: white;">
                 <panes>
                     <TitledPane fx:id="paneDefault" style="-fx-background-color: -app-color;" text="Afbeelding">
                         <VBox spacing="24">
-                            <Label wrapText="true" fx:id="labelFileNameId" alignment="BOTTOM_LEFT"
-                                   contentDisplay="BOTTOM"
-                                   text="FileName.jpg">
+                            <Label fx:id="labelFileNameId" alignment="BOTTOM_LEFT" contentDisplay="BOTTOM" text="FileName.jpg" wrapText="true">
                                 <font>
                                     <Font size="26.0"/>
                                 </font>
                             </Label>
                             <Label fx:id="filePath" wrapText="true"/>
-                            <JFXTextField fx:id="textFieldWidth"
-                                          accessibleHelp="Geef een andere waarde in om de breedte te veranderen"
-                                          labelFloat="true" promptText="Breedte" text="1234 px">
+                            <JFXTextField fx:id="textFieldWidth" accessibleHelp="Geef een andere waarde in om de breedte te veranderen" labelFloat="true" promptText="Breedte" text="1234 px">
                                 <tooltip>
                                     <Tooltip text="Voer een nieuwe breedte in voor de afbeelding"/>
                                 </tooltip>
                             </JFXTextField>
-                            <JFXTextField fx:id="textFieldHeight"
-                                          accessibleHelp="Geef een andere waarde in om de hoogte te veranderen"
-                                          accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2"
-                                          accessibleText="Geef een andere waarde in om de hoogte te veranderen 1"
-                                          labelFloat="true" promptText="Hoogte" text="1234 px">
+                            <JFXTextField fx:id="textFieldHeight" accessibleHelp="Geef een andere waarde in om de hoogte te veranderen" accessibleRoleDescription="Geef een andere waarde in om de hoogte te veranderen 2"
+                                          accessibleText="Geef een andere waarde in om de hoogte te veranderen 1" labelFloat="true" promptText="Hoogte" text="1234 px">
                                 <tooltip>
                                     <Tooltip text="Voer een nieuwe hoogte in voor de afbeelding"/>
                                 </tooltip>
                             </JFXTextField>
-                            <JFXButton mnemonicParsing="false" onAction="#ShowCalculateWindow"
-                                       styleClass="button-raised" text="Afplatting berekenen">
+                            <JFXButton mnemonicParsing="false" onAction="#ShowCalculateWindow" styleClass="button-raised" text="Afplatting berekenen">
                                 <tooltip>
-                                    <Tooltip
-                                            text="Bereken de nieuwe hoogte en breedte aan de hand van weefgetouwparameters"/>
+                                    <Tooltip text="Bereken de nieuwe hoogte en breedte aan de hand van weefgetouwparameters"/>
                                 </tooltip>
                             </JFXButton>
-                            <Label fx:id="sizeWarning" visible="false"
-                                   text="Waarschuwing: De breedte of hoogte van de afbeelding is groter dan 4096. De afbeelding kan er wazig uitzien tijdens het bewerken."
-                                   style="-fx-text-fill: red" wrapText="true"/>
+                            <Label fx:id="sizeWarning" style="-fx-text-fill: red" text="Waarschuwing: De breedte of hoogte van de afbeelding is groter dan 4096. De afbeelding kan er wazig uitzien tijdens het bewerken." visible="false"
+                                   wrapText="true"/>
                         </VBox>
                         <font>
                             <Font name="System Bold" size="14.0"/>
@@ -262,22 +212,17 @@
                             <Font name="System Bold" size="14.0"/>
                         </font>
                         <VBox spacing="24">
-                            <Label wrapText="true" text="Aantal tinten">
+                            <Label text="Aantal tinten" wrapText="true">
                                 <font>
                                     <Font size="14.0"/>
                                 </font>
                             </Label>
-                            <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0"
-                                       max="24.0" min="2.0" minorTickCount="24"
-                                       showTickLabels="true" showTickMarks="true"
-                                       snapToTicks="true" value="10.0">
+                            <JFXSlider fx:id="sliderPosterizationScale" blockIncrement="1.0" max="24.0" min="2.0" minorTickCount="24" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0">
                                 <tooltip>
-                                    <Tooltip
-                                            text="Verandert het aantal niveaus van de afbeelding waaraan bindings kunnen toegekend worden"/>
+                                    <Tooltip text="Verandert het aantal niveaus van de afbeelding waaraan bindings kunnen toegekend worden"/>
                                 </tooltip>
                             </JFXSlider>
-                            <Label wrapText="true" fx:id="labelAmountOfColors"
-                                   text="Aantal tinten:"/>
+                            <Label fx:id="labelAmountOfColors" text="Aantal tinten:" wrapText="true"/>
                         </VBox>
                     </TitledPane>
                     <TitledPane expanded="false" text="Bindings">
@@ -285,21 +230,33 @@
                             <Font name="System Bold" size="14.0"/>
                         </font>
 
+
                         <VBox spacing="24">
-                            <Label wrapText="true" text="Selecteer kleur dat je wilt aanpassen:"/>
+                            <Label text="Selecteer kleur dat je wilt aanpassen:" wrapText="true"/>
                             <SelectBinding fx:id="vboxSelectBinding"/>
-                            <JFXCheckBox fx:id="checkBoxMarkBinding"
-                                         text="Markeer geselecteerde binding">
+                            <JFXCheckBox fx:id="checkBoxMarkBinding" text="Markeer geselecteerde binding">
                                 <tooltip>
                                     <Tooltip text="Markeert de huidige gekozen binding op de afbeelding"/>
                                 </tooltip>
                             </JFXCheckBox>
-                            <JFXCheckBox fx:id="checkBoxInvert"
-                                         text="Inverteer bindings">
+                            <JFXCheckBox fx:id="checkBoxInvert" text="Inverteer bindings">
                                 <tooltip>
                                     <Tooltip text="Inverteert de afbeelding"/>
                                 </tooltip>
                             </JFXCheckBox>
+                        </VBox>
+                    </TitledPane>
+                    <TitledPane expanded="false" text="Kleuren">
+                        <font>
+                            <Font name="System Bold" size="14.0"/>
+                        </font>
+
+
+                        <VBox spacing="24">
+                            <Label text="Kleur pixels:"/>
+                            <JFXColorPicker fx:id="colorPixels" minHeight="25.0" onAction="#changeColor"/>
+                            <Label text="Kleur achtergrond:"/>
+                            <JFXColorPicker fx:id="colorMain" minHeight="25.0" onAction="#changeColor"/>
                         </VBox>
                     </TitledPane>
                     <TitledPane expanded="false" style="-fx-background-color: -app-color;" text="Selecties">
@@ -308,15 +265,15 @@
                         </font>
                         <BorderPane>
                             <center>
-                                <JFXListView minHeight="100.0" styleClass="custom-list-view" fx:id="selectionsList">
+                                <JFXListView fx:id="selectionsList" minHeight="100.0" styleClass="custom-list-view">
 
                                 </JFXListView>
                             </center>
                             <top>
                                 <JFXButton onAction="#removeSelections" styleClass="button-raised" text="Selectie deselecteren">
-                                <BorderPane.margin>
-                                    <Insets bottom="8.0"/>
-                                </BorderPane.margin>
+                                    <BorderPane.margin>
+                                        <Insets bottom="8.0"/>
+                                    </BorderPane.margin>
                                 </JFXButton>
                             </top>
                         </BorderPane>
@@ -333,14 +290,12 @@
                             </JFXCheckBox>
                             <JFXTextField fx:id="textFieldXFloaters" labelFloat="true" promptText="Inslag" text="5">
                                 <tooltip>
-                                    <Tooltip
-                                            text="Dit bepaalt het maximaal aantal draden dat de inslag boven of onder mag zijn"/>
+                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de inslag boven of onder mag zijn"/>
                                 </tooltip>
                             </JFXTextField>
                             <JFXTextField fx:id="textFieldYFloaters" labelFloat="true" promptText="Draad" text="5">
                                 <tooltip>
-                                    <Tooltip
-                                            text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
+                                    <Tooltip text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn"/>
                                 </tooltip>
                             </JFXTextField>
                         </VBox>
@@ -349,17 +304,15 @@
             </Accordion>
             <VBox fx:id="vboxPhotoView" prefHeight="560.0" prefWidth="906.0">
                 <StackPane fx:id="contentStackpane">
-                    <ScrollPane StackPane.alignment="TOP_LEFT" fx:id="imageScrollPane" fitToHeight="true"
-                                fitToWidth="true" pannable="true" style="-fx-background-color: white;"
-                                styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0" VBox.vgrow="ALWAYS">
+                    <ScrollPane fx:id="imageScrollPane" fitToHeight="true" fitToWidth="true" pannable="true" style="-fx-background-color: white;" styleClass="scrollpane,edge-to-edge" AnchorPane.bottomAnchor="0.0"
+                                StackPane.alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
                         <AnchorPane id="anchorpane" fx:id="anchorPanePhotoView" style="-fx-background-color: white;">
-                            <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true"
-                                                preserveRatio="true" style="-fx-background-color: white;">
+                            <PixelatedImageView id="photoview" fx:id="photoView" pickOnBounds="true" preserveRatio="true" style="-fx-background-color: white;">
                                 <Image url="@../logo-verilin-black.png"/>
                             </PixelatedImageView>
                         </AnchorPane>
                     </ScrollPane>
-                    <Canvas fx:id="selectionCanvas" StackPane.alignment="TOP_LEFT" mouseTransparent="true">
+                    <Canvas fx:id="selectionCanvas" mouseTransparent="true" StackPane.alignment="TOP_LEFT">
 
                     </Canvas>
                 </StackPane>

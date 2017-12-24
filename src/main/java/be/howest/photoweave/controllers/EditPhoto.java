@@ -18,16 +18,16 @@ import be.howest.photoweave.model.properties.*;
 import be.howest.photoweave.model.util.CreateFilePicker;
 import be.howest.photoweave.model.util.CreateWindow;
 import be.howest.photoweave.model.util.ImageUtil;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,8 @@ public class EditPhoto implements ParametersInterface {
     public VBox vboxPhotoView;
     public Accordion properties;
     public Canvas selectionCanvas;
+    public JFXColorPicker colorPixels;
+    public JFXColorPicker colorMain;
 
     public JFXListView<Region> selectionsList;
 
@@ -141,6 +144,8 @@ public class EditPhoto implements ParametersInterface {
 
             filteredImage.redraw();
         });
+        this.colorPixels.setValue(javafx.scene.paint.Color.BLACK);
+        this.colorMain.setValue(javafx.scene.paint.Color.WHITE);
 
         // Global
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
@@ -656,5 +661,19 @@ public class EditPhoto implements ParametersInterface {
 
         filteredImage.redraw();
         selectionsList.getSelectionModel().clearSelection();
+    }
+
+    public void changeColor(ActionEvent actionEvent) {
+        java.awt.Color color1 = new java.awt.Color((float) colorMain.getValue().getRed(),
+                (float) colorMain.getValue().getGreen(),
+                (float) colorMain.getValue().getBlue(),
+                (float) colorMain.getValue().getOpacity());
+        java.awt.Color color2 = new java.awt.Color((float) colorPixels.getValue().getRed(),
+                (float) colorPixels.getValue().getGreen(),
+                (float) colorPixels.getValue().getBlue(),
+                (float) colorPixels.getValue().getOpacity());
+
+        ((BindingFilter) this.filteredImage.getFilters().findRGBFilter(BindingFilter.class)).setColors(color1, color2);
+        filteredImage.redraw();
     }
 }

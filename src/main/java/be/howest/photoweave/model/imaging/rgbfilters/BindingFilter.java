@@ -24,6 +24,9 @@ public class BindingFilter implements RGBFilter {
     private boolean showMarkedBinding;
     private boolean manualAssign;
     private Binding markedBinding;
+    private Color colorBackground;
+
+    private Color colorPixels;
 
     private FilteredImage filteredImage;
 
@@ -35,6 +38,9 @@ public class BindingFilter implements RGBFilter {
         this.filteredImage = filteredImage;
         this.bindingsMap = new HashMap<>();
         this.regions = new ArrayList<>();
+
+        this.colorBackground = Color.WHITE;
+        this.colorPixels = Color.BLACK;
     }
 
     public BindingFactory getBindingFactory() {
@@ -59,6 +65,11 @@ public class BindingFilter implements RGBFilter {
 
     public void setMarkedBinding(Binding markedBinding) {
         this.markedBinding = markedBinding;
+    }
+
+    public void setColors(Color colorBackground, Color colorPixels) {
+        this.colorBackground = colorBackground;
+        this.colorPixels = colorPixels;
     }
 
     public PosterizeFilter getPosterizeFilter() {
@@ -141,12 +152,15 @@ public class BindingFilter implements RGBFilter {
 
 
         if (inverted) {
-            if (color == Color.BLACK.getRGB()) color = Color.WHITE.getRGB();
-            else color = Color.BLACK.getRGB();
+            if (color == Color.BLACK.getRGB()) color = colorBackground.getRGB();
+            else color = colorPixels.getRGB();
+        } else {
+            if (color == Color.BLACK.getRGB()) color = colorPixels.getRGB();
+            else color = colorBackground.getRGB();
         }
 
         if ((markedBinding != null && showMarkedBinding && binding == markedBinding) || markRegion) {
-            if (color == Color.BLACK.getRGB()) color = Color.YELLOW.getRGB();
+            if (color == colorPixels.getRGB()) color = Color.YELLOW.getRGB();
             else color = Color.LIGHT_GRAY.getRGB();
         }
 
