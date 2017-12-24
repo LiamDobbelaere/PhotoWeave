@@ -576,8 +576,8 @@ public class EditPhoto implements ParametersInterface {
     private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Waarschuwing!");
-        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken. Wilt u uw bestand eerst opslaan?");
-        alert.setContentText("Druk op opslaan om uw bestand op te slaan, negeren om uw wijzigingen te annuleren en annuleren om verder te gaan met uw huidige bestand.");
+        alert.setHeaderText("U zal de huidige pagina verlaten. Wijzigingen aan uw bestand kunnen mogelijks verloren raken.\nWilt u uw bestand eerst opslaan?");
+        alert.setContentText("Druk op opslaan om uw bestand op te slaan of negeren om uw wijzigingen te annuleren.\nDruk annuleren om verder te gaan met uw huidige bestand.");
 
         ButtonType buttonSave = new ButtonType("Opslaan");
         ButtonType buttonIgnore = new ButtonType("Negeren");
