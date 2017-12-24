@@ -27,10 +27,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -102,6 +102,7 @@ public class OpenPhoto {
                 setImagePath(file);
 
                 try {
+                    System.out.println(file);
                     setImagePreview(ImageIO.read(file));
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -141,30 +142,26 @@ public class OpenPhoto {
         textFieldImagePath.setVisible(!bool);
     }
 
-
-    /* FXML Hooks */
-    public void openFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
-
-        File file = fp.getFile();
-
-        if (file != null) setImagePath(file);
-    }
-
     public void openMakeNewFileDialog(ActionEvent actionEvent) {
         CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
 
         File file = fp.getFile();
 
-        if (file != null) setImagePath(file);
+        if (file != null) {
+            setImagePath(file);
+            try {
+                System.out.println(file);
+                setImagePreview(ImageIO.read(file));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void openCustomFileDialog() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Verilin PhotoWeave", "*.json"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
 
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fp.getFile();
 
         if (file != null) setImagePath(file);
 
@@ -265,7 +262,7 @@ public class OpenPhoto {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ScrollPane sp = ((EditPhoto)  newWindow.getController()).getImageScrollPane();
+            ScrollPane sp = ((EditPhoto) newWindow.getController()).getImageScrollPane();
             sp.layout();
 
             //sp.setVvalue(((EditPhoto)  newWindow.getController()).getYScroll());
