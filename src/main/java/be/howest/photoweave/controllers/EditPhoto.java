@@ -25,6 +25,8 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.WritableImage;
@@ -33,6 +35,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
@@ -127,6 +130,7 @@ public class EditPhoto implements ParametersInterface {
         // UI
         this.imageWidth = image.getWidth();
         this.imageHeight = image.getHeight();
+
         this.filename = path.substring(path.lastIndexOf("/") + 1);
         this.selectionsList.setCellFactory(param -> new SelectionListCell<>(filteredImage, this));
         this.selectionsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -143,6 +147,13 @@ public class EditPhoto implements ParametersInterface {
 
         // Global
         this.stage = (Stage) anchorPaneWindow.getScene().getWindow();
+        this.stage.setOnCloseRequest(event -> {
+            try {
+                openSaveWarningWindow(filterDescription.JSON, true, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         this.editPhotoEventHandlers = new EditPhotoEventHandlers(this);
         this.editPhotoEventHandlers.initializeListeners();
 
@@ -243,34 +254,6 @@ public class EditPhoto implements ParametersInterface {
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
     }
 
-/*<<<<<<< HEAD
-    public void saveImage(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
-
-        File file = fp.saveFile();
-
-        if (file != null) {
-            try {
-                ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
-            } catch (IOException ex) {
-            }
-        }
-    }
-
-    public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
-        ((BindingMaker) newWindow.getController()).initialize();
-        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
-        System.out.println("BINDCREATOR");
-        System.out.println(getXScroll());
-        System.out.println(getYScroll());
-        imageScrollPane.setVvalue(getYScroll());
-        imageScrollPane.setHvalue(getXScroll());
-        System.out.println(imageScrollPane.getHvalue());
-        System.out.println(imageScrollPane.getVvalue());
-    }
-
-=======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         CreateWindow newWindow = new CreateWindow("Link kleuren met bindingen", 800.0, 600.0, "components/ColorBindingLinker.fxml", false, false);
         ((ColorBindingLinker) newWindow.getController()).initialize(this.filteredImage);
@@ -500,25 +483,47 @@ public class EditPhoto implements ParametersInterface {
     }
 
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
-    CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
-        File file = fp.getFile();
+        openSaveWarningWindow(filterDescription.JSON, true, false);
 
-        if (file != null) {
-            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-            newWindow.showWindow();
-        }
+        Platform.runLater(() -> {
+            try {
+                CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+                File file = fp.getFile();
+
+                if (file != null) {
+                    CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml")), true, true);
+                    ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+
+                    newWindow.showWindow();
+
+                    this.stage.close();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     public void openFile(ActionEvent actionEvent) throws IOException {
-        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
-        File file = fp.getFile();
+        openSaveWarningWindow(filterDescription.JSON, true, false);
 
-        if (file != null) {
-            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-            newWindow.showWindow();
-        }
+        Platform.runLater(() -> {
+            CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+            File file = fp.getFile();
+
+            if (file != null) {
+                CreateWindow newWindow = null;
+
+                try {
+                    newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+                    ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+                    newWindow.showWindow();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                this.stage.close();
+            }
+        });
     }
 
     public void saveFile(ActionEvent actionEvent) {
@@ -568,9 +573,16 @@ public class EditPhoto implements ParametersInterface {
     }
 
     private void openStartWindow() throws IOException {
-        CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
-        ((OpenPhoto) newWindow.getController()).initialize();
-        newWindow.showWindow();
+        Platform.runLater(() -> {
+            CreateWindow newWindow = null;
+            try {
+                newWindow = new CreateWindow("Verilin | PhotoWeave", 0, 0, "view/OpenPhoto.fxml", false, true);
+                ((OpenPhoto) newWindow.getController()).initialize();
+                newWindow.showWindow();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void openSaveWarningWindow(filterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {

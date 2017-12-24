@@ -1,7 +1,5 @@
 package be.howest.photoweave.components;
 
-//TODO Rechts klikken op ComboBoxBindings open je de BindingLibrary; Links is default combobox.
-
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.controllers.BindingLibrary;
 import be.howest.photoweave.model.binding.Binding;
