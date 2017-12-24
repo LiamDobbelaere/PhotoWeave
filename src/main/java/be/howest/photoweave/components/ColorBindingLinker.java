@@ -43,12 +43,12 @@ public class ColorBindingLinker implements ThreadEventListener {
 
         this.vbox = new VBox();
 
-        for (Integer key : this.bindingFilter.getBindingsMap().keySet()) {
+        for (Integer key : this.mapBackup.keySet()) {
             try {
                 SelectBinding selectBinding = new SelectBinding();
 
                 Map<Integer, Binding> bindingMap = new HashMap<>();
-                bindingMap.put(key, this.bindingFilter.getBindingsMap().get(key));
+                bindingMap.put(key, this.mapBackup.get(key));
 
                 selectBinding.setBindingsMap(bindingMap, this.bindingFilter);
 

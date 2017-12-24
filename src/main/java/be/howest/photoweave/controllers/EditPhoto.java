@@ -116,7 +116,7 @@ public class EditPhoto implements ParametersInterface {
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
-            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, 0, 0, this);
+            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, Integer.parseInt(textFieldXFloaters.getText()), Integer.parseInt(textFieldYFloaters.getText()), this);
         }
 
         this.filteredImage = lfic.getFilteredImage();
@@ -183,7 +183,7 @@ public class EditPhoto implements ParametersInterface {
         filePath.setText(filename);
         textFieldWidth.setText(String.valueOf(this.filteredImage.getModifiedImage().getWidth()));
         textFieldHeight.setText(String.valueOf(this.filteredImage.getModifiedImage().getHeight()));
-        labelAmountOfColors.setText("Aantal tinten: " + ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap().size());
+        labelAmountOfColors.setText("Aantal tinten: " + ((BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getBindingsMap().keySet().size());
     }
 
     private void updateBindingSelection() {
