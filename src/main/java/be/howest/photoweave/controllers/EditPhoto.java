@@ -113,7 +113,7 @@ public class EditPhoto implements ParametersInterface {
             isCustomFile = true;
             lfic = new LoadFilteredImageController(new File(path), this);
             this.image = lfic.getFilteredImage().getOriginalImage();
-            System.out.println("IF " + ((BindingFilter)lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
+            System.out.println("IF " + ((BindingFilter) lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
@@ -249,34 +249,34 @@ public class EditPhoto implements ParametersInterface {
             photoView.setFitHeight(vboxPhotoView.getHeight() - 2);
     }
 
-/*<<<<<<< HEAD
-    public void saveImage(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
+    /*<<<<<<< HEAD
+        public void saveImage(ActionEvent actionEvent) {
+            CreateFilePicker fp = new CreateFilePicker("PhotoWeave | Save Image", "user.home", this.stage, "Bitmap", ".bmp");
 
-        File file = fp.saveFile();
+            File file = fp.saveFile();
 
-        if (file != null) {
-            try {
-                ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
-            } catch (IOException ex) {
+            if (file != null) {
+                try {
+                    ImageIO.write(ImageUtil.convertImageToByteBinary(filteredImage.getModifiedImage()), "bmp", file);
+                } catch (IOException ex) {
+                }
             }
         }
-    }
 
-    public void openBindingCreator(ActionEvent actionEvent) throws IOException {
-        CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
-        ((BindingMaker) newWindow.getController()).initialize();
-        newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
-        System.out.println("BINDCREATOR");
-        System.out.println(getXScroll());
-        System.out.println(getYScroll());
-        imageScrollPane.setVvalue(getYScroll());
-        imageScrollPane.setHvalue(getXScroll());
-        System.out.println(imageScrollPane.getHvalue());
-        System.out.println(imageScrollPane.getVvalue());
-    }
+        public void openBindingCreator(ActionEvent actionEvent) throws IOException {
+            CreateWindow newWindow = new CreateWindow("PhotoWeave | Maak Binding", 800.0, 600.0, "components/BindingMaker.fxml", false, false);
+            ((BindingMaker) newWindow.getController()).initialize();
+            newWindow.focusWaitAndShowWindow(this.stage.getScene().getWindow(), Modality.APPLICATION_MODAL);
+            System.out.println("BINDCREATOR");
+            System.out.println(getXScroll());
+            System.out.println(getYScroll());
+            imageScrollPane.setVvalue(getYScroll());
+            imageScrollPane.setHvalue(getXScroll());
+            System.out.println(imageScrollPane.getHvalue());
+            System.out.println(imageScrollPane.getVvalue());
+        }
 
-=======*/
+    =======*/
     public void openBindingColorSelector(ActionEvent actionEvent) throws IOException {
         BindingFilter bf = (BindingFilter) filteredImage.getFilters().findRGBFilter(BindingFilter.class);
         bf.setManualAssign(true);
@@ -508,25 +508,28 @@ public class EditPhoto implements ParametersInterface {
     }
 
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
-    CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
-        File file = fp.getFile();
+        openSaveWarningWindow(filterDescription.BITMAP, true, true);
 
-        if (file != null) {
-            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-            newWindow.showWindow();
-        }
+//        CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
+//        File file = fp.getFile();
+//
+//        if (file != null) {
+//            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+//            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+//            newWindow.showWindow();
+//        }
     }
 
     public void openFile(ActionEvent actionEvent) throws IOException {
-        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
-        File file = fp.getFile();
-
-        if (file != null) {
-            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-            newWindow.showWindow();
-        }
+        openSaveWarningWindow(filterDescription.BITMAP, true, true);
+//        CreateFilePicker fp = new CreateFilePicker(jsonProperties.loadTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
+//        File file = fp.getFile();
+//
+//        if (file != null) {
+//            CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
+//            ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
+//            newWindow.showWindow();
+//        }
     }
 
     public void saveFile(ActionEvent actionEvent) {
@@ -542,12 +545,10 @@ public class EditPhoto implements ParametersInterface {
     }
 
     private void openSaveWindow(filterDescription filterDescription) {
-        System.out.println("SAVE FILE");
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
             fp = new CreateFilePicker(bitmapProperties.title, this.stage, bitmapProperties.filterDescription, bitmapProperties.filterExtensions);
         } else if (filterDescription == filterDescription.JSON) {
-            System.out.println("JSON FILE");
             fp = new CreateFilePicker(jsonProperties.saveTitle, this.stage, jsonProperties.filterDescription, jsonProperties.filterExtensions);
         } else {
             fp = new CreateFilePicker(allFilesProperties.saveTitle, this.stage, allFilesProperties.filterDescription, allFilesProperties.filterExtensions);

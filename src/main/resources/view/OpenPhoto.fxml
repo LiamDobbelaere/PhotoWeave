@@ -86,7 +86,7 @@
             </font>
         </Label>
         <JFXButton alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="228.0"
-                   mnemonicParsing="false" onAction="#openFileDialog" prefHeight="40.0" prefWidth="153.0"
+                   mnemonicParsing="false" onAction="#openMakeNewFileDialog" prefHeight="40.0" prefWidth="153.0"
                    text="selecteer afbeelding" textAlignment="CENTER">
             <tooltip>
                 <Tooltip text="Selecteer een afbeelding op je computer"/>

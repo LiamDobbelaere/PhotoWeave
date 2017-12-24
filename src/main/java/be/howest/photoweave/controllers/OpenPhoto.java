@@ -151,7 +151,7 @@ public class OpenPhoto {
         if (file != null) setImagePath(file);
     }
 
-    public void openNewFileDialog(ActionEvent actionEvent) {
+    public void openMakeNewFileDialog(ActionEvent actionEvent) {
         CreateFilePicker fp = new CreateFilePicker(imageProperties.loadTitle, this.stage, imageProperties.filterDescription, imageProperties.filterExtensions);
 
         File file = fp.getFile();
