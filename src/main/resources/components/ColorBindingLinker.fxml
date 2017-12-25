@@ -13,44 +13,61 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="anchorpane" fx:id="anchorpane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../view/style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.components.ColorBindingLinker">
+<?import javafx.geometry.Insets?>
+<AnchorPane id="anchorpane" fx:id="anchorpane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../view/style.css"
+            xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="be.howest.photoweave.components.ColorBindingLinker">
     <stylesheets>
-        <URL value="@../style/style.css" />
-        <URL value="@../style/scrollpane.css" />
+        <URL value="@../style/style.css"/>
+        <URL value="@../style/scrollpane.css"/>
     </stylesheets>
-    <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+    <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                AnchorPane.topAnchor="0">
         <center>
-            <PixelatedImageView fx:id="imageview" fitHeight="600.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true">
-                <Image url="@../logo.png" />
+            <PixelatedImageView fx:id="imageview" fitHeight="600.0" fitWidth="550.0" pickOnBounds="true"
+                                preserveRatio="true">
+                <Image url="@../logo.png"/>
             </PixelatedImageView>
         </center>
         <right>
-            <VBox alignment="CENTER" prefWidth="250.0" spacing="24">
+            <VBox alignment="CENTER" prefWidth="300.0" spacing="24">
+                <padding>
+                    <Insets top="8.0" left="8.0" right="8.0" bottom="8.0"/>
+                </padding>
                 <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true" styleClass="scrollpane">
                     <AnchorPane>
-                        <ComboBox prefWidth="150.0" />
+                        <ComboBox prefWidth="150.0"/>
                     </AnchorPane>
                 </ScrollPane>
 
                 <BorderPane>
+                    <padding>
+                        <Insets bottom="8.0"/>
+                    </padding>
                     <left>
-                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#saveBindingLibrary" styleClass="button-raised" text="Toepassen" textAlignment="CENTER" />
+                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
+                                   mnemonicParsing="false" onAction="#saveBindingLibrary" styleClass="button-raised"
+                                   text="Toepassen" textAlignment="CENTER"/>
                     </left>
                     <right>
-                        <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="71.0" style="-fx-background-color: #ccc;" text="Annuleren" textAlignment="CENTER" />
+                        <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER"
+                                   mnemonicParsing="false" onAction="#cancel" style="-fx-background-color: #ccc;"
+                                   text="Annuleren" textAlignment="CENTER"/>
                     </right>
                 </BorderPane>
             </VBox>
         </right>
-      <top>
-         <Pane prefHeight="41.0" prefWidth="800.0" style="-fx-background-color: teal;" BorderPane.alignment="CENTER_LEFT">
-            <children>
-               <Label layoutX="10.0" prefHeight="42.0" prefWidth="771.0" text="Link de verschillende tinten met een binding" textFill="WHITE">
-                  <font>
-                     <Font size="18.0" />
-                  </font></Label>
-            </children>
-         </Pane>
-      </top>
+        <top>
+            <AnchorPane style="-fx-background-color: teal;">
+                <padding>
+                    <Insets top="8.0" bottom="8.0" left="8.0" right="8.0"/>
+                </padding>
+                <Label AnchorPane.rightAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" text="Link de verschillende tinten met een binding" textFill="WHITE">
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Label>
+            </AnchorPane>
+        </top>
     </BorderPane>
 </AnchorPane>

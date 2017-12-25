@@ -36,7 +36,7 @@ public class BindingFactory {
 
         for (File directory : directories){
             Collection<File> files = FileUtils.listFiles(
-                    directory, new String[] {"png"}, true);
+                    directory, new String[] {"bmp"}, true);
 
             List<Binding> localBindings = new ArrayList<>();
             for (File file : files) {
