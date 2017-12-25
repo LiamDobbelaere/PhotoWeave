@@ -17,7 +17,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: -app-color;
     -fx-border-width: 1px;
-    -fx-border-color: #008080;
+    -fx-border-color: -app-color;
     -jfx-focus-color: transparent;
     -jfx-faint-focus-color: transparent;
 }
@@ -53,7 +53,7 @@
 /* fix */
 .jfx-combo-box{
 
-    -jfx-focus-color: teal;
+    -jfx-focus-color: -app-color;
     -jfx-unfocus-color: #4d4d4d;
     -fx-prompt-text-fill: #4d4d4d;
 }
@@ -77,12 +77,12 @@
 }
 
 .jfx-combo-box .combo-box-popup .list-cell:hover,.jfx-combo-box .combo-box-popup .list-cell:showing, .jfx-combo-box .combo-box-popup .list-cell:selected {
-    -fx-background-color: teal ;
+    -fx-background-color: -app-color ;
 }
 
 .jfx-check-box {
     -jfx-unchecked-color: #5A5A5A;
-    -jfx-checked-color: teal;
+    -jfx-checked-color: -app-color;
 }
 
 .jfx-combo-box > .arrow-button,
@@ -92,11 +92,30 @@
 }
 
 
+.jfx-combo-box .disabled-dropdown {
+    -fx-opacity: 1;
+    -fx-background-color: red;
+}
+
+
+.disabled-dropdown{
+    -fx-opacity: 1;
+    -fx-background-color: blue;
+}
+
+
+.disabled-dropdown > .arrow-button,
+.disabled-dropdown:editable > .arrow-button,
+.disabled-dropdown:editable:focused > .arrow-button{
+    -fx-background-color: red;
+    -fx-color: TRANSPARENT;
+}
+
 
 /* LABEL */
 .label-text {
     -fx-background-color: #f4f4f4;
-    -fx-border-color: teal;
+    -fx-border-color: -app-color;
     -fx-border-width: 0 0 0 2;
     -fx-padding: 5 5 5 5;
 }

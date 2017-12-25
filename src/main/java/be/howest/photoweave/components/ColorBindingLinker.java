@@ -48,14 +48,15 @@ public class ColorBindingLinker implements ThreadEventListener {
         for (Integer key : this.mapBackup.keySet()) {
             try {
                 SelectBinding selectBinding = new SelectBinding();
-
                 Map<Integer, Binding> bindingMap = new HashMap<>();
                 bindingMap.put(key, this.mapBackup.get(key));
+
 
                 if (greyBackground)
                     selectBinding.setStyle("-fx-background-color: #ddd");
 
                 selectBinding.setBindingsMap(bindingMap, this.bindingFilter);
+                selectBinding.setSingleLevel(key);
 
                 selectBinding.addEventHandler(BindingChanged.BINDING_CHANGED, new EventHandler<BindingChanged>() {
                     @Override

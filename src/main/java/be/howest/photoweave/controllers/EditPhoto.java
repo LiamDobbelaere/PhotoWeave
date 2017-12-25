@@ -67,34 +67,36 @@ public class EditPhoto implements ParametersInterface {
     public JFXButton toggleEditButton, togglePickerButton;
 
     /* User Interface Data */
-    public int imageWidth, imageHeight, posterizeScale;
-    public String filename;
+    int imageWidth, imageHeight, posterizeScale;
+    private String filename;
     public BufferedImage image;
     public FilteredImage filteredImage;
     public Stage stage;
 
-    public UserInterfaceData userInterfaceData;
-    public boolean isCustomFile;
+    private UserInterfaceData userInterfaceData;
+    private boolean isCustomFile;
     /* Handlers hier nodig?*/
 
-    public BindingChangedEventHandler bindingChangedEventHandler;
-    public ChangeListener<Integer> markedColorChangeListener;
-    public ChangeListener<Boolean> showMarkingChangeListener;
+    private EditPhotoEventHandlers editPhotoEventHandlers;
+    BindingChangedEventHandler bindingChangedEventHandler;
+    ChangeListener<Integer> markedColorChangeListener;
+    ChangeListener<Boolean> showMarkingChangeListener;
+
 
     /* SELECTION */
 
-    public boolean editing = false;
-    public boolean picking = false;
+    boolean editing = false;
+    boolean picking = false;
 
-    public WritableImage writablePhotoview;
+    WritableImage writablePhotoview;
 
-    public double XScroll;
-    public double YScroll;
+    private double XScroll;
+    private double YScroll;
 
-    public boolean onLoad;
+    private boolean onLoad;
+
     public JFXSpinner loadingSpinner;
     public Label threadCompleteCount;
-    private EditPhotoEventHandlers editPhotoEventHandlers;
 
     public double getXScroll() {
         return XScroll;
@@ -107,19 +109,20 @@ public class EditPhoto implements ParametersInterface {
     public void initialize(String path) throws IOException {
         this.onLoad = true;
         this.posterizeScale = 10;
-        LoadFilteredImageController lfic;
+        LoadFilteredImageController loader;
+
         if (FilenameUtils.getExtension(path).toLowerCase().equals("json")) {
             isCustomFile = true;
-            lfic = new LoadFilteredImageController(new File(path), this);
-            this.image = lfic.getFilteredImage().getOriginalImage();
-            System.out.println("IF " + ((BindingFilter) lfic.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
+            loader = new LoadFilteredImageController(new File(path), this);
+            this.image = loader.getFilteredImage().getOriginalImage();
+            System.out.println("IF " + ((BindingFilter) loader.getFilteredImage().getFilters().findRGBFilter(BindingFilter.class)).getRegions());
         } else {
             isCustomFile = false;
             this.image = ImageIO.read(new File(path));
-            lfic = new LoadFilteredImageController(this.image, this.posterizeScale, false, Integer.parseInt(textFieldXFloaters.getText()), Integer.parseInt(textFieldYFloaters.getText()), this);
+            loader = new LoadFilteredImageController(this.image, this.posterizeScale, false, Integer.parseInt(textFieldXFloaters.getText()), Integer.parseInt(textFieldYFloaters.getText()), this);
         }
 
-        this.filteredImage = lfic.getFilteredImage();
+        this.filteredImage = loader.getFilteredImage();
 
         //Forcing again....
         //((BindingFilter)this.filteredImage.getFilters().findRGBFilter(BindingFilter.class)).setRegions(lfic.getRegions());
@@ -159,7 +162,7 @@ public class EditPhoto implements ParametersInterface {
         this.editPhotoEventHandlers.initializeListeners();
 
         initializePhotoScale();
-        if (isCustomFile) lfic.loadDataInUserInterface();
+        if (isCustomFile) loader.loadDataInUserInterface();
         updateUserInterfaceText();
         updateBindingSelection();
 
@@ -493,8 +496,7 @@ public class EditPhoto implements ParametersInterface {
     public void makeNewFile(ActionEvent actionEvent) throws IOException {
         SaveWarningResult saveWarningResult = openSaveWarningWindow(FilterDescription.JSON, true, false);
 
-        if (saveWarningResult != SaveWarningResult.CANCEL)
-        {
+        if (saveWarningResult != SaveWarningResult.CANCEL) {
             Platform.runLater(() -> {
                 try {
                     CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
@@ -502,9 +504,8 @@ public class EditPhoto implements ParametersInterface {
 
                     if (file != null) {
                         CreateWindow newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, new FXMLLoader(getClass().getClassLoader().getResource("view/EditPhoto.fxml")), true, true);
-                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
-
                         newWindow.showWindow();
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
                     }
 
                     this.stage.close();
@@ -528,8 +529,8 @@ public class EditPhoto implements ParametersInterface {
 
                     try {
                         newWindow = new CreateWindow("Verilin | PhotoWeave", 800.0, 600.0, "view/EditPhoto.fxml", false, true);
-                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
                         newWindow.showWindow();
+                        ((EditPhoto) newWindow.getController()).initialize(file.getAbsolutePath());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -596,12 +597,6 @@ public class EditPhoto implements ParametersInterface {
                 e.printStackTrace();
             }
         });
-    }
-
-    private enum SaveWarningResult {
-        SAVE,
-        IGNORE,
-        CANCEL
     }
 
     private SaveWarningResult openSaveWarningWindow(FilterDescription filterDescription, boolean closeWindow, boolean newWindow) throws IOException {
@@ -685,5 +680,11 @@ public class EditPhoto implements ParametersInterface {
 
         filteredImage.redraw();
         selectionsList.getSelectionModel().clearSelection();
+    }
+
+    private enum SaveWarningResult {
+        SAVE,
+        IGNORE,
+        CANCEL
     }
 }

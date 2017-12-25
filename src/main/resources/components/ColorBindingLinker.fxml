@@ -2,42 +2,55 @@
 
 <?import be.howest.photoweave.components.PixelatedImageView?>
 <?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
-<?import javafx.scene.layout.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:id="anchorpane" id="anchorpane" prefHeight="600.0" prefWidth="800.0"
-            stylesheets="@../view/style.css"
-            xmlns="http://javafx.com/javafx/8.0.121" fx:controller="be.howest.photoweave.components.ColorBindingLinker">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-    <BorderPane AnchorPane.rightAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.topAnchor="0">
+<AnchorPane id="anchorpane" fx:id="anchorpane" prefHeight="600.0" prefWidth="800.0" stylesheets="@../view/style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.components.ColorBindingLinker">
+    <stylesheets>
+        <URL value="@../style/style.css" />
+        <URL value="@../style/scrollpane.css" />
+    </stylesheets>
+    <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
         <center>
-            <PixelatedImageView fx:id="imageview" pickOnBounds="true" fitHeight="600.0" fitWidth="550.0"
-                                preserveRatio="true">
-                <Image url="@../logo.png"/>
+            <PixelatedImageView fx:id="imageview" fitHeight="600.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../logo.png" />
             </PixelatedImageView>
         </center>
         <right>
             <VBox alignment="CENTER" prefWidth="250.0" spacing="24">
-                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true">
+                <ScrollPane fx:id="scrollpane" fitToHeight="true" fitToWidth="true" styleClass="scrollpane">
                     <AnchorPane>
-                        <ComboBox prefWidth="150.0"/>
+                        <ComboBox prefWidth="150.0" />
                     </AnchorPane>
                 </ScrollPane>
 
                 <BorderPane>
                     <left>
-                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER"
-                                   mnemonicParsing="false" onAction="#saveBindingLibrary"
-                                   styleClass="button-raised" text="Toepassen" textAlignment="CENTER"/>
+                        <JFXButton fx:id="buttonSaveBindigns" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#saveBindingLibrary" styleClass="button-raised" text="Toepassen" textAlignment="CENTER" />
                     </left>
                     <right>
-                        <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER"
-                                   mnemonicParsing="false" onAction="#cancel"
-                                   text="Annuleren" textAlignment="CENTER"/>
+                        <JFXButton fx:id="buttonCancel" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#cancel" prefHeight="40.0" prefWidth="71.0" style="-fx-background-color: #ccc;" text="Annuleren" textAlignment="CENTER" />
                     </right>
                 </BorderPane>
             </VBox>
         </right>
+      <top>
+         <Pane prefHeight="41.0" prefWidth="800.0" style="-fx-background-color: teal;" BorderPane.alignment="CENTER_LEFT">
+            <children>
+               <Label layoutX="10.0" prefHeight="42.0" prefWidth="771.0" text="Link de verschillende tinten met een binding" textFill="WHITE">
+                  <font>
+                     <Font size="18.0" />
+                  </font></Label>
+            </children>
+         </Pane>
+      </top>
     </BorderPane>
 </AnchorPane>

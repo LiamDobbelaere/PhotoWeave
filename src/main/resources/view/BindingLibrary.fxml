@@ -37,7 +37,7 @@
                 <Cursor fx:constant="HAND" />
             </cursor>
         </JFXButton>
-        <JFXButton alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="413.0" layoutY="9.0" mnemonicParsing="false" onMouseClicked="#applyBinding" prefHeight="40.0" prefWidth="174.0" style="-fx-background-color: #00b3b3;" styleClass="button-raised" text="Binding Library beheren" textAlignment="CENTER">
+        <JFXButton alignment="CENTER" contentDisplay="CENTER" defaultButton="true" layoutX="413.0" layoutY="9.0" mnemonicParsing="false" onMouseClicked="#openBindingFolder" prefHeight="40.0" prefWidth="174.0" style="-fx-background-color: #00b3b3;" styleClass="button-raised" text="Binding Library beheren" textAlignment="CENTER">
             <cursor>
                 <Cursor fx:constant="HAND" />
             </cursor>

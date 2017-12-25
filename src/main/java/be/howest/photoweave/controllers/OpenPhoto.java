@@ -16,7 +16,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
@@ -31,7 +30,6 @@ import javafx.stage.Stage;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -273,7 +271,6 @@ public class OpenPhoto {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            CreateWindow finalNewWindow = newWindow;
 
             newWindow.showWindow();
 
@@ -284,12 +281,6 @@ public class OpenPhoto {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ScrollPane sp = ((EditPhoto) newWindow.getController()).getImageScrollPane();
-            sp.layout();
-
-            //sp.setVvalue(((EditPhoto)  newWindow.getController()).getYScroll());
-            //sp.setHvalue(((EditPhoto)  newWindow.getController()).getXScroll());
-
 
         });
         task.setOnFailed(event -> task.getException().printStackTrace());
