@@ -33,6 +33,7 @@ public class ColorBindingLinker implements ThreadEventListener {
     public void initialize(FilteredImage filteredImage) {
         this.filteredImage = filteredImage;
         this.filteredImage.addThreadEventListener(this);
+        ((BindingFilter) this.filteredImage.getFilters().findRGBFilter(BindingFilter.class)).getRegions().clear();
 
         imageview.setImage(SwingFXUtils.toFXImage(filteredImage.getModifiedImage(), null));
 
