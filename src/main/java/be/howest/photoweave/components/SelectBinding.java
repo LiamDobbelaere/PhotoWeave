@@ -13,13 +13,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 
@@ -33,17 +32,15 @@ import java.util.Map;
  * Created by tomdo on 25/10/2017.
  */
 public class SelectBinding extends VBox {
-    @FXML
-    private GridPane gridPane;
+    public VBox selectBindingVBox;
     private ObservableList<Binding> bindingsList = FXCollections.observableArrayList();
     private ObservableList<Integer> levelsList = FXCollections.observableArrayList();
     private JFXComboBox<Integer> comboBoxLevels = new JFXComboBox<>(levelsList);
 
     private Map<Integer, Binding> bindings;
 
-    //new code
-    private Binding SELECTED_BINDING; //temp
-    private BindingPicker bindingPicker = new BindingPicker(0,0,SELECTED_BINDING);
+    private Binding selectedBinding;
+    private BindingPicker bindingPicker = new BindingPicker(0,0);
     private BindingFilter bindingFilter;
     private ChangeListener levelsChangeListener;
 
@@ -52,7 +49,7 @@ public class SelectBinding extends VBox {
         initializeLevelsListener();
         toggleLevelsChangeListener(true);
         initializeLevelsComboBox();
-        initializeGridPane();
+        initializeVbox();
     }
 
     private void loadMe() throws IOException {
@@ -64,8 +61,8 @@ public class SelectBinding extends VBox {
 
     private void initializeLevelsListener() {
         levelsChangeListener = (observable, oldValue, newValue) -> {
-            SELECTED_BINDING = bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem());
-            bindingPicker.setBinding(SELECTED_BINDING);
+            selectedBinding = bindings.get(comboBoxLevels.getSelectionModel().getSelectedItem());
+            bindingPicker.setBinding(selectedBinding);
         };
     }
 
@@ -80,17 +77,17 @@ public class SelectBinding extends VBox {
         comboBoxLevels.setTooltip(new Tooltip("Selecteer een kleur"));
     }
 
-    private void initializeGridPane() {
-        gridPane.setVgap(10);
-        gridPane.add(comboBoxLevels, 0, 0);
-        gridPane.add(bindingPicker, 0, 1);
-
+    private void initializeVbox() {
         JFXButton b = new JFXButton("Verander Binding");
-        //b.getStylesheets().setAll("@../style/style.css");
         b.getStyleClass().setAll("button-raised");
         b.setTooltip(new Tooltip("Opent de binding library waar je een nieuwe binding kan selecteren"));
         b.setOnMouseClicked(this::openBindingLibrary);
-        gridPane.add(b, 0, 2);
+
+        selectBindingVBox.setSpacing(10);
+        selectBindingVBox.getChildren().add(comboBoxLevels);
+        HBox hbox = new HBox(bindingPicker,b);
+        hbox.setSpacing(30);
+        selectBindingVBox.getChildren().add(hbox);
     }
 
     private void openBindingLibrary(MouseEvent mouseEvent) {
@@ -100,29 +97,30 @@ public class SelectBinding extends VBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ((BindingLibrary) newWindow.getController()).initialize(SELECTED_BINDING);
+        ((BindingLibrary) newWindow.getController()).initialize(selectedBinding);
 
         newWindow.focusWaitAndShowWindow(this.getScene().getWindow(),Modality.APPLICATION_MODAL);
 
-        SELECTED_BINDING = (((BindingLibrary) newWindow.getController()).applyBinding) ? ((BindingLibrary) newWindow.getController()).PASSED_BINDING : SELECTED_BINDING;
-        bindingPicker.setBinding(SELECTED_BINDING);
-        bindings.replace(comboBoxLevels.getSelectionModel().getSelectedItem(), SELECTED_BINDING);
+        selectedBinding = (((BindingLibrary) newWindow.getController()).applyBinding) ? ((BindingLibrary) newWindow.getController()).PASSED_BINDING : selectedBinding;
+        bindingPicker.setBinding(selectedBinding);
+        bindings.replace(comboBoxLevels.getSelectionModel().getSelectedItem(), selectedBinding);
         this.fireEvent(new BindingChanged());
     }
 
     public Binding getSelectedBinding() {
-        return SELECTED_BINDING;
+        return selectedBinding;
     }
 
     public void setBindingsMap(Map<Integer,Binding> bindings, BindingFilter bindingFilter) {
         this.bindings = bindings;
         this.bindingFilter = bindingFilter;
-        if (SELECTED_BINDING == null){
+
+        if (selectedBinding == null){
             Iterator<Integer> bindingsIterator = bindings.keySet().iterator();
 
             if (bindingsIterator.hasNext()) {
-                this.SELECTED_BINDING = bindings.get(bindingsIterator.next());
-                if (SELECTED_BINDING != null) this.bindingPicker.setBinding(SELECTED_BINDING);
+                this.selectedBinding = bindings.get(bindingsIterator.next());
+                if (selectedBinding != null) this.bindingPicker.setBinding(selectedBinding);
             }
         }
 
@@ -150,6 +148,23 @@ public class SelectBinding extends VBox {
         return comboBoxLevels;
     }
 
+    public void setSingleLevel(Integer key) {
+        comboBoxLevels.setVisible(false);
+        int colorInt = (int) Math.round(key * (255.0 / (bindingFilter.getPosterizeFilter().getLevelCount())));
+        Color color = new Color(colorInt, colorInt, colorInt);
+
+
+        String colorString = MessageFormat.format("rgb({0},{1},{2})", color.getRed(), color.getGreen(), color.getBlue());
+        Label pane = new Label(colorString);
+
+        int result = (colorInt < 127) ? 255 : 0;
+        pane.setStyle("-fx-border-color: black;-fx-text-fill:" + String.format("#%02x%02x%02x", result, result, result) + "; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
+        pane.setPrefSize(190, 40);
+        pane.setMinSize(190, 40);
+        pane.setMaxSize(190, 40);
+        selectBindingVBox.getChildren().set(0,pane);
+    }
+
     private class ColorListCell extends JFXListCell<Integer> {
         @Override
         protected void updateItem(Integer item, boolean empty) {
@@ -168,9 +183,9 @@ public class SelectBinding extends VBox {
 
                 int result = (colorInt < 127) ? 255 : 0;
                 pane.setStyle("-fx-border-color: black;-fx-text-fill:" + String.format("#%02x%02x%02x", result, result, result) + "; -fx-border-width: 2px; -fx-background-color: " + String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue()));
-                pane.setPrefSize(140, 40);
-                pane.setMinSize(140, 40);
-                pane.setMaxSize(140, 40);
+                pane.setPrefSize(190, 40);
+                pane.setMinSize(190, 40);
+                pane.setMaxSize(190, 40);
                 colorInfo.getChildren().add(pane);
                 setGraphic(colorInfo);
             }
@@ -183,7 +198,7 @@ public class SelectBinding extends VBox {
         private Label label1, label2;
         private Tooltip tooltip;
 
-        BindingPicker(int x, int y, Binding binding) {
+        BindingPicker(int x, int y) {
             this.x = x;
             this.y = y;
 

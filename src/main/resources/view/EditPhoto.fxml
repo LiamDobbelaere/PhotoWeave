@@ -6,6 +6,7 @@
 <?import com.jfoenix.controls.JFXCheckBox?>
 <?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXSlider?>
+<?import com.jfoenix.controls.JFXSpinner?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
@@ -29,7 +30,6 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 
-<?import com.jfoenix.controls.JFXSpinner?>
 <AnchorPane fx:id="anchorPaneWindow" minHeight="600.0" minWidth="800.0" prefHeight="662.0" prefWidth="1136.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.howest.photoweave.controllers.EditPhoto">
     <stylesheets>
         <URL value="@../style/style.css" />
@@ -54,16 +54,11 @@
         <HBox maxHeight="77.0" maxWidth="1.7976931348623157E308" minHeight="50.0" prefHeight="77.0" prefWidth="1143.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
             <Pane prefHeight="77.0" prefWidth="260.0" style="-fx-border-width: 2 0 2 0; -fx-background-color: teal; -fx-border-color: white; -fx-border-style: dashed;">
                 <children>
-                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="260.0" layoutX="34.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView cache="true" cacheHint="QUALITY" fitHeight="57.0" fitWidth="260.0" layoutX="49.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                         <image>
                             <Image url="@../logo-verilin-fat.png" />
                         </image>
                     </ImageView>
-                    <Label layoutX="14.0" layoutY="103.0" text="RECENT GEOPENDE BESTANDEN" textFill="#fffffff7">
-                        <font>
-                            <Font name="System Bold" size="14.0" />
-                        </font>
-                    </Label>
                 </children>
             </Pane>
             <HBox maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="600.0" HBox.hgrow="ALWAYS">
@@ -120,8 +115,8 @@
                             <Insets right="10.0" />
                         </HBox.margin>
                         <AnchorPane minWidth="70.0">
-                            <Label visible="false" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" text="0/0" textAlignment="CENTER" alignment="CENTER" fx:id="threadCompleteCount" minWidth="30.0" minHeight="30.0"/>
-                            <JFXSpinner radius="10.0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0" fx:id="loadingSpinner" visible="false" minWidth="30.0"/>
+                            <Label fx:id="threadCompleteCount" alignment="CENTER" minHeight="30.0" minWidth="30.0" text="0/0" textAlignment="CENTER" visible="false" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" />
+                            <JFXSpinner fx:id="loadingSpinner" minWidth="30.0" radius="10.0" visible="false" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" />
                         </AnchorPane>
                     </HBox>
                     <JFXButton alignment="CENTER" contentDisplay="GRAPHIC_ONLY" minWidth="30.0" mnemonicParsing="false" onAction="#zoomIn" styleClass="button-raised" textAlignment="CENTER">
@@ -181,7 +176,7 @@
             <Accordion maxWidth="260.0" minWidth="260.0" prefWidth="260.0" style="-fx-background-color: white;">
                 <panes>
                     <TitledPane fx:id="paneDefault" style="-fx-background-color: -app-color;" text="Afbeelding">
-                        <VBox spacing="24">
+                        <VBox spacing="16.0">
                             <Label fx:id="labelFileNameId" alignment="TOP_LEFT" styleClass="label-text" text="FileName.jpg" wrapText="true">
                                 <font>
                                     <Font size="18.0" />
@@ -216,7 +211,7 @@
                         <font>
                             <Font name="System Bold" size="14.0" />
                         </font>
-                        <VBox spacing="24">
+                        <VBox spacing="16.0">
                             <Label styleClass="label-text" text="Pas de slider aan om het aantal tinten te veranderen" wrapText="true">
                                 <font>
                                     <Font size="14.0" />
@@ -245,7 +240,7 @@
                             <Font name="System Bold" size="14.0" />
                         </font>
 
-                        <VBox spacing="24">
+                        <VBox spacing="16.0">
                             <Label styleClass="label-text" text="Selecteer de kleur dat je wilt aanpassen" wrapText="true" />
                             <SelectBinding fx:id="vboxSelectBinding" />
                             <JFXCheckBox fx:id="checkBoxMarkBinding" text="Markeer geselecteerde binding">
@@ -283,7 +278,7 @@
                         <font>
                             <Font name="System Bold" size="14.0" />
                         </font>
-                        <VBox spacing="24">
+                        <VBox spacing="16.0">
                             <JFXCheckBox fx:id="checkBoxFloaters" text="Toon floaters">
                                 <tooltip>
                                     <Tooltip text="Markeert floaters (vlotters) op de afbeelding" />

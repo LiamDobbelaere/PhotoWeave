@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextField?>
+<?import be.howest.photoweave.components.SelectBinding?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.ComboBox?>
-<fx:root type="be.howest.photoweave.components.SelectBinding" xmlns:fx="http://javafx.com/fxml">
+<fx:root type="be.howest.photoweave.components.SelectBinding" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
     <GridPane fx:id="gridPane">
         <columnConstraints>
             <ColumnConstraints />
@@ -15,4 +16,5 @@
             <RowConstraints />
         </rowConstraints>
     </GridPane>
+   <VBox fx:id="selectBindingVBox" />
 </fx:root>
