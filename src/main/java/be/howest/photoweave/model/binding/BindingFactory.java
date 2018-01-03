@@ -1,5 +1,6 @@
 package be.howest.photoweave.model.binding;
 
+import be.howest.photoweave.model.util.ConfigUtil;
 import be.howest.photoweave.model.util.ImageUtil;
 import org.apache.commons.io.FileUtils;
 
@@ -32,7 +33,7 @@ public class BindingFactory {
     }
 
     private void getBindingsFromInternalResources() throws Exception {
-        File[] directories = new File("./bindings").listFiles(File::isDirectory);
+        File[] directories = new File(ConfigUtil.getBindingsPath()).listFiles(File::isDirectory);
 
         for (File directory : directories){
             Collection<File> files = FileUtils.listFiles(

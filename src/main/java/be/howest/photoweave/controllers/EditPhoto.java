@@ -14,9 +14,7 @@ import be.howest.photoweave.model.imaging.FilteredImage;
 import be.howest.photoweave.model.imaging.rgbfilters.BindingFilter;
 import be.howest.photoweave.model.imaging.rgbfilters.bindingfilter.Region;
 import be.howest.photoweave.model.properties.*;
-import be.howest.photoweave.model.util.CreateFilePicker;
-import be.howest.photoweave.model.util.CreateWindow;
-import be.howest.photoweave.model.util.ImageUtil;
+import be.howest.photoweave.model.util.*;
 import com.jfoenix.controls.*;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -65,6 +63,7 @@ public class EditPhoto implements ParametersInterface {
     public JFXCheckBox checkBoxMarkBinding, checkBoxInvert, checkBoxFloaters;
     public JFXTextField textFieldXFloaters, textFieldYFloaters;
     public JFXButton toggleEditButton, togglePickerButton;
+    public Label bindingsPath;
 
     /* User Interface Data */
     int imageWidth, imageHeight, posterizeScale;
@@ -167,6 +166,8 @@ public class EditPhoto implements ParametersInterface {
         updateBindingSelection();
 
         paneDefault.setExpanded(true);
+
+        updateBindingsPath();
     }
 
     public void setScrollPane() {
@@ -682,9 +683,28 @@ public class EditPhoto implements ParametersInterface {
         selectionsList.getSelectionModel().clearSelection();
     }
 
+    public void changeBindingsPath(ActionEvent actionEvent) {
+        File newPath = new CreateDirectoryPicker("Kies map naar bindings").show();
+
+        if (newPath != null) {
+            ConfigUtil.setBindingsPath(newPath.getAbsolutePath());
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("Hint!");
+        alert.setContentText("Het is aangeraden dat je je werk opslaat en PhotoWeave herstart om de nieuwe bindingenmap toe te passen. De gekozen bindingen vooraleer de map werd aangepast, blijven behouden.");
+        alert.show();
+
+        updateBindingsPath();
+    }
+
     private enum SaveWarningResult {
         SAVE,
         IGNORE,
         CANCEL
+    }
+
+    private void updateBindingsPath() {
+        bindingsPath.setText(ConfigUtil.getBindingsPath());
     }
 }
