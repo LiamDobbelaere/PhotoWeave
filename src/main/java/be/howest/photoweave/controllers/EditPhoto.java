@@ -7,6 +7,7 @@ import be.howest.photoweave.components.SelectionListCell;
 import be.howest.photoweave.components.events.BindingChanged;
 import be.howest.photoweave.components.events.BindingChangedEventHandler;
 import be.howest.photoweave.model.ParametersInterface;
+import be.howest.photoweave.model.binding.BindingFactory;
 import be.howest.photoweave.model.customFile.LoadFilteredImageController;
 import be.howest.photoweave.model.customFile.SaveFilteredImageController;
 import be.howest.photoweave.model.customFile.data.UserInterfaceData;
@@ -500,7 +501,7 @@ public class EditPhoto implements ParametersInterface {
         if (saveWarningResult != SaveWarningResult.CANCEL) {
             Platform.runLater(() -> {
                 try {
-                    CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+                    CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions, null);
                     File file = fp.getFile();
 
                     if (file != null) {
@@ -522,7 +523,7 @@ public class EditPhoto implements ParametersInterface {
 
         if (saveWarningResult != SaveWarningResult.CANCEL) {
             Platform.runLater(() -> {
-                CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
+                CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions, null);
                 File file = fp.getFile();
 
                 if (file != null) {
@@ -557,12 +558,12 @@ public class EditPhoto implements ParametersInterface {
         System.out.println("SAVE FILE");
         CreateFilePicker fp;
         if (filterDescription == filterDescription.BITMAP) {
-            fp = new CreateFilePicker(BitmapProperties.title, this.stage, BitmapProperties.filterDescription, BitmapProperties.filterExtensions);
+            fp = new CreateFilePicker(BitmapProperties.title, this.stage, BitmapProperties.filterDescription, BitmapProperties.filterExtensions, null);
         } else if (filterDescription == filterDescription.JSON) {
             System.out.println("JSON FILE");
-            fp = new CreateFilePicker(JsonProperties.saveTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
+            fp = new CreateFilePicker(JsonProperties.saveTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions, null);
         } else {
-            fp = new CreateFilePicker(AllFilesProperties.saveTitle, this.stage, AllFilesProperties.filterDescription, AllFilesProperties.filterExtensions);
+            fp = new CreateFilePicker(AllFilesProperties.saveTitle, this.stage, AllFilesProperties.filterDescription, AllFilesProperties.filterExtensions, null);
         }
 
         File file = fp.saveFile();

@@ -52,6 +52,12 @@ public class BindingLibrary {
     private BindingRepresentation PREVIOUS_BIND_REP = null;
 
     public void initialize(Binding passedBinding){
+        try {
+            BindingFactory.getInstance().updateNewBindings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         scrollPane.setFitToWidth(true);
 
         this.applyBinding = false;

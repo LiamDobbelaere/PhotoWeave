@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,6 +51,42 @@ public class BindingFactory {
         }
 
         optimizedBindings = getSortedBindings(allBindings.get("default")).toArray(new Binding[allBindings.get("default").size()]);
+    }
+
+    public void updateNewBindings() throws Exception {
+        File[] directories = new File(ConfigUtil.getBindingsPath()).listFiles(File::isDirectory);
+
+        for (File directory : directories){
+            Collection<File> files = FileUtils.listFiles(
+                    directory, new String[] {"bmp"}, true);
+
+            boolean directoryAlreadyExists = allBindings.containsKey(directory.getName());
+
+            List<Binding> localBindings = directoryAlreadyExists ? allBindings.get(directory.getName()) : new ArrayList<>();
+            for (File file : files) {
+                InputStream is = new FileInputStream(file);
+                Binding b = new Binding(is,file.getName());
+
+                if (directoryAlreadyExists) {
+                    boolean isNewBinding = true;
+                    for (Binding binding : localBindings) {
+                        if (binding.getName().equals(b.getName())) {
+                            isNewBinding = false;
+                        }
+                    }
+
+                    if (isNewBinding) {
+                        localBindings.add(b);
+                        this.bindings.add(b);
+                    }
+                } else {
+                    localBindings.add(b);
+                    this.bindings.add(b);
+                }
+            }
+
+            if (!directoryAlreadyExists) allBindings.put(directory.getName(),localBindings);
+        }
     }
 
     public List<Binding> getBindings() {

@@ -145,7 +145,7 @@ public class OpenPhoto {
 
     /* FXML Hooks */
     public void openFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions, null);
 
         File file = fp.getFile();
 
@@ -156,7 +156,7 @@ public class OpenPhoto {
     }
 
     public void openNewFileDialog(ActionEvent actionEvent) {
-        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(ImageProperties.loadTitle, this.stage, ImageProperties.filterDescription, ImageProperties.filterExtensions, null);
 
         File file = fp.getFile();
 
@@ -172,7 +172,7 @@ public class OpenPhoto {
     }
 
     public void openCustomFileDialog() {
-        CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions);
+        CreateFilePicker fp = new CreateFilePicker(JsonProperties.loadTitle, this.stage, JsonProperties.filterDescription, JsonProperties.filterExtensions, null);
 
         File file = fp.getFile();
 
