@@ -294,6 +294,9 @@
                                     <Tooltip text="Dit bepaalt het maximaal aantal draden dat de draad boven of onder mag zijn" />
                                 </tooltip>
                             </JFXTextField>
+                            <Label text="Huidig pad voor bindings:"/>
+                            <Label fx:id="bindingsPath" styleClass="label-text" wrapText="true"/>
+                            <JFXButton onAction="#changeBindingsPath" text="Pad wijzigen" styleClass="button-raised"/>
                         </VBox>
                     </TitledPane>
                 </panes>

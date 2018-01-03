@@ -58,4 +58,23 @@ public class ConfigUtil {
 
         return recentFiles;
     }
+
+    public static String getBindingsPath() {
+        Object obj = getPropertiesConfig().getProperty("bindingspath");
+
+        String bindingsPath = "./bindings"; //The default value if nothing is provided
+
+        if (obj != null)
+        {
+            bindingsPath = (String) obj;
+        } else {
+            getPropertiesConfig().setProperty("bindingspath", bindingsPath);
+        }
+
+        return bindingsPath;
+    }
+
+    public static void setBindingsPath(String path) {
+        getPropertiesConfig().setProperty("bindingspath", path);
+    }
 }

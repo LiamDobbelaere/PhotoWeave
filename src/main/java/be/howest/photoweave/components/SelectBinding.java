@@ -78,7 +78,7 @@ public class SelectBinding extends VBox {
     }
 
     private void initializeVbox() {
-        JFXButton b = new JFXButton("Verander Binding");
+        JFXButton b = new JFXButton("Kies binding");
         b.getStyleClass().setAll("button-raised");
         b.setTooltip(new Tooltip("Opent de binding library waar je een nieuwe binding kan selecteren"));
         b.setOnMouseClicked(this::openBindingLibrary);
