@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Net;
 
 namespace PhotoWeave
 {
@@ -20,8 +21,56 @@ namespace PhotoWeave
             InitializeComponent();
         }
 
+        private void checkLatestVersion()
+        {
+            using (WebClient wc = new WebClient())
+            {
+                String latestVersionUrl = wc.DownloadString(Properties.Settings.Default.LatestVersionUrl);
+
+                Uri uri = new Uri(latestVersionUrl);
+                string newFilename = Path.GetFileName(uri.LocalPath);
+
+                string[] packageFiles = Directory.GetFiles(@".\package", "*.jar");
+                string currentFilename = "";
+
+                if (packageFiles.Length > 0)
+                {
+                    currentFilename = Path.GetFileName(packageFiles[0]);
+                }
+
+                if (!newFilename.Equals(currentFilename))
+                {
+                    DialogResult dlr = DialogResult.Yes;
+
+                    if (!currentFilename.Equals(""))
+                    {
+                        dlr = MessageBox.Show("Er is een nieuwe versie van PhotoWeave beschikbaar! Downloaden?" + Environment.NewLine + "Huidig: " + currentFilename + ", nieuw: " + newFilename, "PhotoWeave", MessageBoxButtons.YesNo);
+                    } else
+                    {
+                        MessageBox.Show("PhotoWeave moet nog gedownload worden. PhotoWeave zal starten eenmaal het gedownload is, klik op OK.");
+                    }
+
+                    if (dlr == DialogResult.Yes)
+                    {
+                        //Delete any old installations
+                        DirectoryInfo di = new DirectoryInfo(@".\package");
+
+                        foreach (FileInfo file in di.GetFiles())
+                        {
+                            if (file.Extension.Equals(".jar")) file.Delete();
+                        }
+
+                        new DownloadForm(latestVersionUrl, newFilename).ShowDialog();
+                    }
+                }
+            }
+        }
+
         private void frmMain_Load(object sender, EventArgs e)
         {
+            if (!Directory.Exists(@".\package")) crashCorrupt("Package map bestaat niet.");
+            if (!Properties.Settings.Default.SkipUpdating) checkLatestVersion();
+
             if (File.Exists(@".\package\jre\bin\java.exe"))
             {
                 LaunchApplication(sender, null);
@@ -37,7 +86,7 @@ namespace PhotoWeave
                 }
                 else
                 {
-                    crashCorrupt();
+                    crashCorrupt("jre.zip niet gevonden in package map");
                 }
             }
         }
@@ -62,10 +111,10 @@ namespace PhotoWeave
             }
             else
             {
-                crashCorrupt();
+                crashCorrupt("Geen .jar files in package map om te starten");
             }
 
-            Application.Exit();
+            Environment.Exit(0);
         }
 
         private void bgwExtract_DoWork(object sender, DoWorkEventArgs e)
@@ -74,10 +123,10 @@ namespace PhotoWeave
             File.Delete(@".\package\jre.zip");
         }
 
-        private void crashCorrupt()
+        private void crashCorrupt(string reason)
         {
-            MessageBox.Show("De installatie is corrupt, installeer PhotoWeave opnieuw.", "PhotoWeave", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly, false);
-            Application.Exit();
+            MessageBox.Show("De installatie is corrupt, installeer PhotoWeave opnieuw." + Environment.NewLine + "Reden: " + reason, "PhotoWeave", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly, false);
+            Environment.Exit(0);
         }
 
         private long DirSize(DirectoryInfo d)
