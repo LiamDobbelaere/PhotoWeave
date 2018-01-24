@@ -36,8 +36,11 @@ public class Region {
             if (point.y > maxY) maxY = point.y;
         }
 
-        int width = maxX - minX + 1;
-        int height = maxY - minY + 1;
+        minX = minX - 1;
+        minY = minY - 1;
+
+        int width = maxX - minX + 2;
+        int height = maxY - minY + 2;
 
         this.minX = minX;
         this.minY = minY;
@@ -49,6 +52,8 @@ public class Region {
 
         addSelectionToRegion(selection);
         autoFill();
+        flip();
+        addSelectionToRegion(selection);
     }
 
     public List<Point> getSelection() {
@@ -62,7 +67,7 @@ public class Region {
     }
 
     private void autoFill() {
-        if (this.width == 0 || this.height == 0) return;
+        /*if (this.width == 0 || this.height == 0) return;
 
         int fillX = 0;
         int fillY = 0;
@@ -79,9 +84,9 @@ public class Region {
                 }
 
             }
-        }
+        }*/
 
-        fill(fillX, fillY);
+        fill(0, 0);
     }
 
     private void fill(int x, int y) {
@@ -110,6 +115,14 @@ public class Region {
 
     private boolean canColor(int x, int y) {
         return (x >= 0 && y >= 0 && x < this.width && y < this.height) && !this.region[y][x];
+    }
+
+    private void flip() {
+        for (int y = 0; y < region.length; y++) {
+            for (int x = 0; x < region[0].length; x++) {
+                region[y][x] = !region[y][x];
+            }
+        }
     }
 
     public int getMinX() {
