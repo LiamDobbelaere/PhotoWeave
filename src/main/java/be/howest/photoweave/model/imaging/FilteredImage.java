@@ -27,6 +27,7 @@ public class FilteredImage {
 
     /**
      * Creates a grayscale, posterized version of an image from a source image.
+     *
      * @param originalImage The source image to use.
      */
     public FilteredImage(BufferedImage originalImage) {
@@ -61,6 +62,7 @@ public class FilteredImage {
     /**
      * Returns the modified image, which is the original image with the rgbfilters applied.
      * Call redraw() to update the modified image. You have to call redraw() at least once after creating a FilteredImage.
+     *
      * @return The modified source image.
      */
     public BufferedImage getModifiedImage() {
@@ -120,7 +122,8 @@ public class FilteredImage {
         System.out.println("FilteredImage redrawn");
     }
 
-    private void applyFilterThreaded(int[] imageData, int[] imageMetaData, int[] fullImageData, int[] fullImageMetaData, int actualStart) {
+    private void applyFilterThreaded(int[] imageData, int[] imageMetaData, int[] fullImageData, int[] fullImageMetaData,
+                                     int actualStart) {
         for (int i = 0; i < imageData.length; i++) {
             int rgb = imageData[i];
 
